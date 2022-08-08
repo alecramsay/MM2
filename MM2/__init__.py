@@ -3,3 +3,4 @@
 from .congress import *
 from .analytics import *
 from .io import *
+from .settings import *

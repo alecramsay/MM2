@@ -8,7 +8,7 @@ from MM2 import *
 
 ### DATA ###
 
-csv_data = "data/Reapportionment for 2010 Census.csv"
+csv_data = "data/census/Reapportionment for 2010 Census.csv"
 types = [str, str, int]
 
 reps_by_state = read_typed_csv(csv_data, types)

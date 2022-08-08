@@ -12,26 +12,7 @@ TODO
 - Assign additional seats to states
 - Calculate disproportionality
 
-- Define RDO enum
-
-- Get 2020 re-apportionment
-- Get 2000 re-apportionment
 """
-
-
-def prop_seats(r_v, d_v, tot_s, verbose=False):
-    """
-    Calculate the # of D seats closest to proportional,
-    for a state or nationally.
-    """
-    pass
-
-
-def gap(prop_s, d_s, verbose=False):
-    """
-    Calculate the national seat gap (+ = R, - = D).
-    """
-    pass
 
 
 def assign_seat(rdo_votes, rdo_seats, verbose=False):
@@ -50,6 +31,3 @@ def assign_seat(rdo_votes, rdo_seats, verbose=False):
     state step in the process may not be converging.
     """
     pass
-
-
-print("MM2 for Congress ...")
