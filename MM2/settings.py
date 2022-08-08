@@ -10,6 +10,6 @@ EPSILON = 1 / (10**6)
 
 
 class Party(Enum):
-    REP = 1
-    DEM = 2
-    OTH = 3
+    REP = "REP"
+    DEM = "DEM"
+    OTH = "OTH"

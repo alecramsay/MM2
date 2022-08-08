@@ -31,23 +31,16 @@ nVf, nSf, nPR, nGap = national_results(elections_by_state, verbose)
 # Inspect each state's results
 
 for state in elections_by_state:
-    Vf = state["DEM_V"] / (state["REP_V"] + state["DEM_V"])
-    Sf = state["DEM_S"] / (state["REP_S"] + state["DEM_S"])
-    PR = pr_seats(state["REP_S"] + state["DEM_S"], Vf)
-    gap = ue_seats(PR, state["DEM_S"])
+    party, Vf, Sf, PR, Df, scenario = assign_seat(state, verbose)
 
-    scenario = None
-    if abs(gap) > 1:
-        scenario = "Case 1"
-    elif abs(gap) > 0.5:
-        scenario = "Case 2"
-    else:
-        scenario = "Case 3"
+    XX = state["XX"]
+    Sn = state["DEM_S"]
+    N = state["REP_S"] + state["DEM_S"]
 
     if verbose:
         print(
-            "{}: Vf={:.2f}, Sf={:.2f}, PR={}, gap={}, case={}".format(
-                state["XX"], Vf, Sf, PR, gap, scenario
+            "{}: Assign to {} | Sn={:2}, N={:2} Vf={:.4f}, Sf={:.4f}, PR={:2}, Df={:+.4f}, {}".format(
+                XX, party, Sn, N, Vf, Sf, PR, Df, scenario
             )
         )
 

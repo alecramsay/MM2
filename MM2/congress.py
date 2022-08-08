@@ -4,17 +4,7 @@
 #
 
 from .analytics import *
-
-"""
-TODO
-- Calculate # proportional seats for each state
-- Calculate national two-party D vote share
-- Calculate national seat gap (+ = R, - = D)
-
-- Assign additional seats to states
-- Calculate disproportionality
-
-"""
+from .settings import *
 
 
 def national_results(elections_by_state, verbose=False):
@@ -43,19 +33,39 @@ def national_results(elections_by_state, verbose=False):
     return (Vf, Sf, PR, gap)
 
 
-def assign_seat(rdo_votes, rdo_seats, verbose=False):
+def assign_seat(election, verbose=False):
     """
     Assign a newly apportioned seat to the list pool to the R's or D's:
     * If two-party D seat share is greater than the two-party D vote share (Sf > Vf),
       then assign the seat to R's.
     * Otherwise (Sf <= Vf) or ((1 - Sf) > (1 - Vf)), then assign the seat to D's.
+    * When Sf == Vf, the state is already proportional, so assigning a new seat will make
+      it *less* proportional. Assigning these seats to D's helps counter the inherent
+      geographic bias that favors R's.
 
     For each newly assigned seat, there are three cases:
     * Case 1: # disproportional seats > 1 (so new disproportional seats still > 0)
     * Case 2: # disproportional seats between 0.5 and 1 (so new disproportionality is less)
-    * Case 3: # disproportional seats less than 0.5 (so new disproportionality is more)
+    * Case 3: # disproportional seats less than 0.5 (so new disproportionality is more).
 
     So, even though the overall party list pool process will eventaually terminate, each
     state step in the process may not be converging.
     """
-    pass
+
+    Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
+    N = election["REP_S"] + election["DEM_S"]
+    Sf = election["DEM_S"] / N
+    PR = pr_seats(N, Vf)
+    Df = disproportionality(PR / N, Sf)
+
+    scenario = None
+    if abs(Df) * N > 1:
+        scenario = "Case 1"
+    elif abs(Df) * N > 0.5:
+        scenario = "Case 2"
+    else:
+        scenario = "Case 3"
+
+    party = Party.REP if (Sf > Vf) else Party.DEM
+
+    return (party, Vf, Sf, PR, Df, scenario)

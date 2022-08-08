@@ -16,12 +16,23 @@ def pr_seats(N, Vf):
     return pr
 
 
-def ue_seats(pr, d_s):
+def ue_seats(PR, Sn):
     """
-    Calculate the # of unearned seats (UE), given a # of D seats.
+    Calculate the *whole* # of unearned seats (UE) for a # of D seats.
     Positive values show UE R seats, negative UE D seats.
     """
 
-    ue = pr - d_s
+    ue = PR - Sn
 
     return ue
+
+
+def disproportionality(PRf, Sf):
+    """
+    Calculate the *fractional* # of disproportional seats for a two-party D seat share (Sf).
+    Positive values show disportionality favoring R's', negative values favoring D's.
+    """
+
+    Df = PRf - Sf
+
+    return Df
