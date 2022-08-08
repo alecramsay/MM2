@@ -3,6 +3,8 @@
 # MM2 for Congress
 #
 
+from .analytics import *
+
 """
 TODO
 - Calculate # proportional seats for each state
@@ -13,6 +15,32 @@ TODO
 - Calculate disproportionality
 
 """
+
+
+def national_results(elections_by_state, verbose=False):
+    """
+    Calculate the national results for a congressional election.
+    """
+
+    totals = {"REP_V": 0, "DEM_V": 0, "REP_S": 0, "DEM_S": 0, "OTH_S": 0}
+    for state in elections_by_state:
+        totals["REP_V"] += state["REP_V"]
+        totals["DEM_V"] += state["DEM_V"]
+        totals["REP_S"] += state["REP_S"]
+        totals["DEM_S"] += state["DEM_S"]
+        totals["OTH_S"] += state["OTH_S"]
+
+    # The *national* two-party D vote share & seat share
+    Vf = totals["DEM_V"] / (totals["REP_V"] + totals["DEM_V"])
+    Sf = totals["DEM_S"] / (totals["REP_S"] + totals["DEM_S"])
+
+    # The proportional number of D seats (ignoring "other" wins)
+    PR = pr_seats(totals["REP_S"] + totals["DEM_S"], Vf)
+
+    # The *national* seat gap (+ = R, - = D)
+    gap = ue_seats(PR, totals["DEM_S"])
+
+    return (Vf, Sf, PR, gap)
 
 
 def assign_seat(rdo_votes, rdo_seats, verbose=False):
