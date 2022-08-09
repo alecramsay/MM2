@@ -3,10 +3,11 @@
 # CONGRESSIONAL APPORTIONMENT
 #
 
+import math
 from .settings import *
 
 
-class Apportion:
+class Apportioner:
     """
     See "Calculating Apportionment" in:
     https://www.census.gov/content/dam/Census/library/publications/2011/dec/c2010br-08.pdf
@@ -35,3 +36,10 @@ class Apportion:
         list = {"REP": 0, "DEM": 0}
         for xx in STATES:
             self.reps[xx] = {"nominal": 1, "list": list.copy()}
+
+    def priority_value(self, pop, nSeat):
+        pv = pop / math.sqrt(nSeat * (nSeat - 1))
+
+        # NOTE: How should floats be converted to ints here?
+
+        return int(pv)

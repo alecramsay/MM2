@@ -58,7 +58,10 @@ del elections_list
 
 ### INITIALIZE THE APPORTIONER ###
 
-app = Apportion(census, elections, verbose)
+app = Apportioner(census, elections, verbose)
+
+pv = app.priority_value(4802982, 2)
+pv = app.priority_value(4802982, 3)
 
 # Generate priority values for each state
 # Sort them in descending order
