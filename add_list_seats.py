@@ -5,11 +5,18 @@
 
 from MM2 import *
 
+"""
+VARIABLES
+
+Per state / election:
+
+National:
+
+"""
 
 ### ARGS ###
 
 verbose = True
-
 
 ### LOAD DATA ###
 
