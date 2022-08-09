@@ -36,22 +36,34 @@ cycle = "2010"
 year = "2012"
 verbose = True
 
+
 ### LOAD DATA ###
 
+csv_data = "data/census/{}_census.csv".format(cycle)
+types = [str, str, int]
+census_list = read_typed_csv(csv_data, types)
 
 csv_data = "data/census/Reapportionment for {} Census.csv".format(cycle)
 types = [str, str, int]
-reps = read_typed_csv(csv_data, types)
+reps_list = read_typed_csv(csv_data, types)
 
 csv_data = "data/elections/Congressional Elections ({}).csv".format(year)
 types = [str] * 3 + [int] * 8 + [float] * 2
-elections = read_typed_csv(csv_data, types)
+elections_list = read_typed_csv(csv_data, types)
+
+
+### INDEX ABSTRACTS OF THE DATA ###
+
+census = {}
+for state in census_list:
+    census[state["XX"]] = state["Population"]
 
 
 ### CALCULATE STATE & NATIONAL GAPS ###
 
-fV_Natl, fS_Natl, nPR_Natl, nGap_Natl = national_results(elections, verbose)
+fV_Natl, fS_Natl, nPR_Natl, nGap_Natl = national_results(elections_list, verbose)
 
+"""
 # Inspect each state's results
 
 for state in elections:
@@ -67,6 +79,7 @@ for state in elections:
                 XX, party, nS, N, fV, fS, nPR, fD, scenario
             )
         )
+"""
 
 
 ### REPLICATE 2010 REAPPORTIONMENT ###
@@ -75,4 +88,4 @@ for state in elections:
 ### ADD LIST SEATS FOR THE 2012 ELECTION ###
 
 
-print()
+print("Done.")
