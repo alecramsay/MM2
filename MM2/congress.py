@@ -48,13 +48,13 @@ def assign_seat(election, verbose=False):
 ### HELPERS ###
 
 
-def national_results(elections_by_state, verbose=False):
+def national_results(elections, verbose=False):
     """
     Calculate the national results for a congressional election.
     """
 
     totals = {"REP_V": 0, "DEM_V": 0, "REP_S": 0, "DEM_S": 0, "OTH_S": 0}
-    for state in elections_by_state:
+    for state in elections:
         totals["REP_V"] += state["REP_V"]
         totals["DEM_V"] += state["DEM_V"]
         totals["REP_S"] += state["REP_S"]
