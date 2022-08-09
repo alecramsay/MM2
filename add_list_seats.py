@@ -5,30 +5,6 @@
 
 from MM2 import *
 
-"""
-VARIABLES - using an amalgam of Hungrarian notation and Camel & Snake Case
-
-Per state / election:
-
-* XX - two-character state abbreviation
-* N - # of representatives apportioned to the state
-
-* party - { REP, DEM }
-* nS - # of two-party D seats won (whole number)
-* fV - two-party D vote share (fraction), unless noted as R
-* fS - two-party D seat share (fraction), unless noted as R
-* nPR - # of D seats closest to proportional (whole number), given fV
-* fD - disproportionality (fraction), fS, nPR, and N
-* scenario - { Case 1, Case 2, Case 3 }, for debugging
-
-National:
-
-* fV_Natl - national two-party D vote share (fraction)
-* fS_Natl - national two-party D seat share (fraction)
-* nPR_Natl - national # of D seats closest to proportional (whole number)
-* nGap_Natl - national gap PR and D seats won (whole number)
-
-"""
 
 ### ARGS ###
 
@@ -37,49 +13,59 @@ year = "2012"
 verbose = True
 
 
-### LOAD DATA ###
+### LOAD THE CENSUS ###
 
-# Census
 csv_data = "data/census/{}_census.csv".format(cycle)
 types = [str, str, int]
-census_list = read_typed_csv(csv_data, types)
+census = read_typed_csv(csv_data, types)
 
-# Apportionment
+
+### LOAD THE APPORTIONMENT ###
+
 csv_data = "data/census/Reapportionment for {} Census.csv".format(cycle)
 types = [str, str, int]
 reps_list = read_typed_csv(csv_data, types)
 
-# Election results
-csv_data = "data/elections/Congressional Elections ({}).csv".format(year)
-types = [str] * 3 + [int] * 8 + [float] * 2
-elections_list = read_typed_csv(csv_data, types)
-
-
-### INDEX ABSTRACTS OF THE DATA ###
-
-# Population by state XX
-census = {}
-for state in census_list:
-    census[state["XX"]] = state["Population"]
-
-# Nominal reps by state XX, along with initialized list reps
+# Index nominal reps by state XX, along with initialized list reps
 reps = {}
 list = {"REP": 0, "DEM": 0}
 for state in reps_list:
     reps[state["XX"]] = {"nominal": state["REPS"], "list": list.copy()}
 
-# D vote share (fV) & D wins (nS) by state XX
+del reps_list
+
+
+### LOAD THE ELECTION RESULTS ###
+
+csv_data = "data/elections/Congressional Elections ({}).csv".format(year)
+types = [str] * 3 + [int] * 8 + [float] * 2
+elections_list = read_typed_csv(csv_data, types)
+
+# Index D vote share (fV) & D wins (nS) by state XX
 elections = {}
 for state in elections_list:
     fV = state["DEM_V"] / (state["REP_V"] + state["DEM_V"])
     nS = state["DEM_S"]
-    # N = state["REP_S"] + state["DEM_S"]
-    elections[state["XX"]] = {"fV": fV, "nS": nS}  # , "N": N}
+    elections[state["XX"]] = {"fV": fV, "nS": nS}
+
+# Calculate national results
+
+fV, nGap = national_results(elections_list, verbose)
+
+del elections_list
 
 
-### CALCULATE STATE & NATIONAL GAPS ###
+### INITIALIZE THE APPORTIONER ###
 
-fV_Natl, fS_Natl, nPR_Natl, nGap_Natl = national_results(elections_list, verbose)
+# Inputs -- census, elections, verbose
+
+# Assign one seat to each state
+# Generate priority values for each state
+# Sort them in descending order
+# Set the assigned counter to 435
+
+# Replicate the 1990, 2000, 2010, and 2020 apportionments
+
 
 """
 # Inspect each state's results

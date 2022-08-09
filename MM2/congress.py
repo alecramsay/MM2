@@ -29,20 +29,10 @@ def assign_seat(election, verbose=False):
     fV = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
     N = election["REP_S"] + election["DEM_S"]
     fS = election["DEM_S"] / N
-    nPR = pr_seats(N, fV)
-    fD = disproportionality(nPR / N, fS)
-
-    scenario = None
-    if abs(fD) * N > 1:
-        scenario = "Case 1"
-    elif abs(fD) * N > 0.5:
-        scenario = "Case 2"
-    else:
-        scenario = "Case 3"
 
     party = Party.REP if (fS > fV) else Party.DEM
 
-    return (party, fV, fS, nPR, fD, scenario)
+    return party
 
 
 ### HELPERS ###
@@ -71,4 +61,4 @@ def national_results(elections, verbose=False):
     # The *national* seat gap (+ = R, - = D)
     nGap = ue_seats(nPR, totals["DEM_S"])
 
-    return (fV, fS, nPR, nGap)
+    return (fV, nGap)
