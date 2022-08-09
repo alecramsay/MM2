@@ -40,6 +40,6 @@ class Apportioner:
     def priority_value(self, pop, nSeat):
         pv = pop / math.sqrt(nSeat * (nSeat - 1))
 
-        # NOTE: How should floats be converted to ints here?
+        # TODO: Figure out how floats should be converted to ints here.
 
         return int(pv)
