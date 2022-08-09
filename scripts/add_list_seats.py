@@ -27,6 +27,7 @@ types = [str, str, int]
 reps_list = read_typed_csv(csv_data, types)
 
 # Index nominal reps by state XX, along with initialized list reps
+# TODO: Move this to the apportioner class
 reps = {}
 list = {"REP": 0, "DEM": 0}
 for state in reps_list:
@@ -57,36 +58,13 @@ del elections_list
 
 ### INITIALIZE THE APPORTIONER ###
 
-# Inputs -- census, elections, verbose
+app = Apportion(census, elections, verbose)
 
-# Assign one seat to each state
 # Generate priority values for each state
 # Sort them in descending order
 # Set the assigned counter to 435
 
 # Replicate the 1990, 2000, 2010, and 2020 apportionments
-
-
-"""
-# Inspect each state's results
-
-for state in elections:
-    party, fV, fS, nPR, fD, scenario = assign_seat(state, verbose)
-
-    XX = state["XX"]
-    nS = state["DEM_S"]
-    N = state["REP_S"] + state["DEM_S"]
-
-    if verbose:
-        print(
-            "{}: Assign to {} | nS={:2}, N={:2} fV={:.4f}, fS={:.4f}, nPR={:2}, Df={:+.4f}, {}".format(
-                XX, party, nS, N, fV, fS, nPR, fD, scenario
-            )
-        )
-"""
-
-
-### REPLICATE 2010 REAPPORTIONMENT ###
 
 
 ### ADD LIST SEATS FOR THE 2012 ELECTION ###

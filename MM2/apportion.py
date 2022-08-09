@@ -3,6 +3,8 @@
 # CONGRESSIONAL APPORTIONMENT
 #
 
+from .settings import *
+
 
 class Apportion:
     """
@@ -24,4 +26,12 @@ class Apportion:
 
     """
 
-    pass
+    def __init__(self, census, elections, verbose=False):
+        self._census = census
+        self._elections = elections
+        self._verbose = verbose
+
+        self.reps = {}
+        list = {"REP": 0, "DEM": 0}
+        for xx in STATES:
+            self.reps[xx] = {"nominal": 1, "list": list.copy()}
