@@ -10,10 +10,10 @@ from .settings import *
 def assign_seat(election, verbose=False):
     """
     Assign a newly apportioned seat to the list pool to the R's or D's:
-    * If two-party D seat share is greater than the two-party D vote share (Sf > Vf),
+    * If two-party D seat share is greater than the two-party D vote share (fS > fV),
       then assign the seat to R's.
-    * Otherwise (Sf <= Vf) or ((1 - Sf) > (1 - Vf)), then assign the seat to D's.
-    * When Sf == Vf, the state is already proportional, so assigning a new seat will make
+    * Otherwise (fS <= fV) or ((1 - fS) > (1 - fV)), then assign the seat to D's.
+    * When fS == fV, the state is already proportional, so assigning a new seat will make
       it *less* proportional. Assigning these seats to D's helps counter the inherent
       geographic bias that favors R's.
 
@@ -26,23 +26,23 @@ def assign_seat(election, verbose=False):
     state step in the process may not be converging.
     """
 
-    Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
+    fV = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
     N = election["REP_S"] + election["DEM_S"]
-    Sf = election["DEM_S"] / N
-    PR = pr_seats(N, Vf)
-    Df = disproportionality(PR / N, Sf)
+    fS = election["DEM_S"] / N
+    nPR = pr_seats(N, fV)
+    fD = disproportionality(nPR / N, fS)
 
     scenario = None
-    if abs(Df) * N > 1:
+    if abs(fD) * N > 1:
         scenario = "Case 1"
-    elif abs(Df) * N > 0.5:
+    elif abs(fD) * N > 0.5:
         scenario = "Case 2"
     else:
         scenario = "Case 3"
 
-    party = Party.REP if (Sf > Vf) else Party.DEM
+    party = Party.REP if (fS > fV) else Party.DEM
 
-    return (party, Vf, Sf, PR, Df, scenario)
+    return (party, fV, fS, nPR, fD, scenario)
 
 
 ### HELPERS ###
@@ -62,13 +62,13 @@ def national_results(elections_by_state, verbose=False):
         totals["OTH_S"] += state["OTH_S"]
 
     # The *national* two-party D vote share & seat share
-    Vf = totals["DEM_V"] / (totals["REP_V"] + totals["DEM_V"])
-    Sf = totals["DEM_S"] / (totals["REP_S"] + totals["DEM_S"])
+    fV = totals["DEM_V"] / (totals["REP_V"] + totals["DEM_V"])
+    fS = totals["DEM_S"] / (totals["REP_S"] + totals["DEM_S"])
 
     # The proportional number of D seats (ignoring "other" wins)
-    PR = pr_seats(totals["REP_S"] + totals["DEM_S"], Vf)
+    nPR = pr_seats(totals["REP_S"] + totals["DEM_S"], fV)
 
     # The *national* seat gap (+ = R, - = D)
-    gap = ue_seats(PR, totals["DEM_S"])
+    nGap = ue_seats(nPR, totals["DEM_S"])
 
-    return (Vf, Sf, PR, gap)
+    return (fV, fS, nPR, nGap)

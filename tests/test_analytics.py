@@ -10,37 +10,37 @@ class TestAnalytics:
     def test_pr_seats(self):
         N = 10
 
-        Vf = 0.4
-        pr = pr_seats(N, Vf)
-        assert pr == 4
+        fV = 0.4
+        nPR = pr_seats(N, fV)
+        assert nPR == 4
 
-        Vf = 0.5
-        pr = pr_seats(N, Vf)
-        assert pr == 5
+        fV = 0.5
+        nPR = pr_seats(N, fV)
+        assert nPR == 5
 
-        Vf = 0.6
-        pr = pr_seats(N, Vf)
-        assert pr == 6
+        fV = 0.6
+        nPR = pr_seats(N, fV)
+        assert nPR == 6
 
     def test_ue_seats(self):
-        pr = 5
+        nPR = 5
 
-        d_s = 3
-        ue = ue_seats(pr, d_s)
+        nS = 3
+        ue = ue_seats(nPR, nS)
         assert ue == 2
 
-        d_s = 4
-        ue = ue_seats(pr, d_s)
+        nS = 4
+        ue = ue_seats(nPR, nS)
         assert ue == 1
 
-        d_s = 5
-        ue = ue_seats(pr, d_s)
+        nS = 5
+        ue = ue_seats(nPR, nS)
         assert ue == 0
 
-        d_s = 6
-        ue = ue_seats(pr, d_s)
+        nS = 6
+        ue = ue_seats(nPR, nS)
         assert ue == -1
 
-        d_s = 7
-        ue = ue_seats(pr, d_s)
+        nS = 7
+        ue = ue_seats(nPR, nS)
         assert ue == -2

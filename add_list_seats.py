@@ -10,7 +10,23 @@ VARIABLES
 
 Per state / election:
 
+* XX - two-character state abbreviation
+* N - # of representatives apportioned to the state
+
+* party - { REP, DEM }
+* nS - # of two-party D seats won (whole number)
+* fV - two-party D vote share (fraction), unless noted as R
+* fS - two-party D seat share (fraction), unless noted as R
+* nPR - # of D seats closest to proportional (whole number), given fV
+* fD - disproportionality (fraction), fS, nPR, and N
+* scenario - { Case 1, Case 2, Case 3 }, for debugging
+
 National:
+
+* fVNatl - national two-party D vote share (fraction)
+* fSNatl - national two-party D seat share (fraction)
+* nPRNatl - national # of D seats closest to proportional (whole number)
+* nGapNatl - national gap PR and D seats won (whole number)
 
 """
 
@@ -33,21 +49,21 @@ elections_by_state = read_typed_csv(csv_data, types)
 
 ### CALCULATE STATE & NATIONAL GAPS ###
 
-nVf, nSf, nPR, nGap = national_results(elections_by_state, verbose)
+fVNatl, fSNatl, nPRNatl, nGapNatl = national_results(elections_by_state, verbose)
 
 # Inspect each state's results
 
 for state in elections_by_state:
-    party, Vf, Sf, PR, Df, scenario = assign_seat(state, verbose)
+    party, fV, fS, nPR, fD, scenario = assign_seat(state, verbose)
 
     XX = state["XX"]
-    Sn = state["DEM_S"]
+    nS = state["DEM_S"]
     N = state["REP_S"] + state["DEM_S"]
 
     if verbose:
         print(
-            "{}: Assign to {} | Sn={:2}, N={:2} Vf={:.4f}, Sf={:.4f}, PR={:2}, Df={:+.4f}, {}".format(
-                XX, party, Sn, N, Vf, Sf, PR, Df, scenario
+            "{}: Assign to {} | nS={:2}, N={:2} fV={:.4f}, fS={:.4f}, nPR={:2}, Df={:+.4f}, {}".format(
+                XX, party, nS, N, fV, fS, nPR, fD, scenario
             )
         )
 

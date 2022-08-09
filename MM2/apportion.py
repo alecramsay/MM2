@@ -15,7 +15,7 @@ class Apportion:
 
     Some supporting resources:
     https://www.census.gov/topics/public-sector/congressional-apportionment/about/computing.html
-    https://support.ndsnfp.com/portal/en/community/topic/method-of-equal-proportions-from-the-u-s-census
+    https://support.ndnfSp.com/portal/en/community/topic/method-of-equal-proportions-from-the-u-s-census
     https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.pdf
 
     There is implementation, but it's embedded in a general package and hard to understand & verify:

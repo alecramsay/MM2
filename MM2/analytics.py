@@ -6,33 +6,33 @@
 from .settings import *
 
 
-def pr_seats(N, Vf):
+def pr_seats(N, fV):
     """
-    The # of seats closest to proportional for a given vote fraction (Vf)
+    The # of seats closest to proportional for a given vote fraction (fV)
     and number of seats (N).
     """
-    pr = round((Vf * N) - EPSILON)
+    nPR = round((fV * N) - EPSILON)
 
-    return pr
+    return nPR
 
 
-def ue_seats(PR, Sn):
+def ue_seats(nPR, nS):
     """
     Calculate the *whole* # of unearned seats (UE) for a # of D seats.
     Positive values show UE R seats, negative UE D seats.
     """
 
-    ue = PR - Sn
+    nUE = nPR - nS
 
-    return ue
+    return nUE
 
 
-def disproportionality(PRf, Sf):
+def disproportionality(fPR, fS):
     """
-    Calculate the *fractional* # of disproportional seats for a two-party D seat share (Sf).
+    Calculate the *fractional* # of disproportional seats for a two-party D seat share (fS).
     Positive values show disportionality favoring R's', negative values favoring D's.
     """
 
-    Df = PRf - Sf
+    fD = fPR - fS
 
-    return Df
+    return fD
