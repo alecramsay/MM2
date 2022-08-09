@@ -23,10 +23,10 @@ Per state / election:
 
 National:
 
-* fVNatl - national two-party D vote share (fraction)
-* fSNatl - national two-party D seat share (fraction)
-* nPRNatl - national # of D seats closest to proportional (whole number)
-* nGapNatl - national gap PR and D seats won (whole number)
+* fV_Natl - national two-party D vote share (fraction)
+* fS_Natl - national two-party D seat share (fraction)
+* nPR_Natl - national # of D seats closest to proportional (whole number)
+* nGap_Natl - national gap PR and D seats won (whole number)
 
 """
 
@@ -49,7 +49,7 @@ elections_by_state = read_typed_csv(csv_data, types)
 
 ### CALCULATE STATE & NATIONAL GAPS ###
 
-fVNatl, fSNatl, nPRNatl, nGapNatl = national_results(elections_by_state, verbose)
+fV_Natl, fS_Natl, nPR_Natl, nGap_Natl = national_results(elections_by_state, verbose)
 
 # Inspect each state's results
 
