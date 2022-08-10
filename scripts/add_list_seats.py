@@ -20,6 +20,12 @@ types = [str, str, int]
 census = read_typed_csv(csv_data, types)
 
 
+### APPORTION THE 435 NOMINAL SEATS ###
+
+app = Apportioner(census)
+app.assign_435()
+
+
 ### LOAD THE ELECTION RESULTS ###
 
 csv_data = "data/elections/Congressional Elections ({}).csv".format(year)
@@ -38,12 +44,6 @@ for state in elections_list:
 fV, nGap = national_results(elections_list, verbose)
 
 del elections_list
-
-
-### APPORTION THE 435 NOMINAL SEATS ###
-
-app = Apportioner(census)
-app.assign_435()
 
 
 ### ADD LIST SEATS FOR THE 2012 ELECTION ###
