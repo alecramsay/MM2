@@ -18,13 +18,10 @@ class Apportioner:
     https://electionscience.org/library/congressional-apportionment-huntington-hill-method/
     https://en.wikipedia.org/wiki/Huntington%E2%80%93Hill_method
 
-    Some supporting resources:
-    https://www.census.gov/topics/public-sector/congressional-apportionment/about/computing.html
-
     2010 Census & apportionment data:
     https://www.census.gov/data/tables/2010/dec/2010-apportionment-data.html
     https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.xls
-    https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.pdf <<< logging
+    https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.pdf <<< log this
 
     """
 
@@ -34,18 +31,38 @@ class Apportioner:
 
         self.reps = {}
 
-        # Assign one seat to each state
+        # Pre-assign one seat to each state
         for xx in STATES:
             self.reps[xx] = 1
-        self.nAssigned = 50
+        self._nAssigned = 50
 
         self._make_priority_queue()
 
-    def assign_next(self, xx):
+    def assign_next(self):
         """
         Assign the next seat to the state with the highest priority value.
         """
-        pass
+
+        n = self._nAssigned - 50
+        xx = self._queue[n]["XX"]
+        pv = self._queue[n]["PV"]
+
+        self.reps[xx] += 1
+        self._nAssigned += 1
+
+        if self._verbose:
+            print("{},{},{},{}".format(self._nAssigned, pv, xx, self.reps[xx]))
+
+    def assign_435(self):
+        """
+        Assign seats 50–435.
+        """
+
+        if self._verbose:
+            print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
+
+        for i in range(51, 435 + 1):
+            self.assign_next()
 
     ### HELPERS ###
 

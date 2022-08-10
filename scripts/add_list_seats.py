@@ -43,12 +43,7 @@ del elections_list
 ### APPORTION THE 435 NOMINAL SEATS ###
 
 app = Apportioner(census, verbose)
-
-# Generate priority values for each state
-# Sort them in descending order
-# Set the assigned counter to 435
-
-# TODO
+app.assign_435()
 
 
 ### ADD LIST SEATS FOR THE 2012 ELECTION ###
