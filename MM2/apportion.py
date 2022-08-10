@@ -31,11 +31,6 @@ class Apportioner:
 
         self.reps = {}
 
-        # Pre-assign one seat to each state
-        for xx in STATES:
-            self.reps[xx] = 1
-        self._nAssigned = 50
-
         self._make_priority_queue()
 
     def assign_next(self):
@@ -55,8 +50,13 @@ class Apportioner:
 
     def assign_435(self):
         """
-        Assign seats 50–435.
+        Assign seats 1–435.
         """
+
+        # Pre-assign one seat to each state
+        for xx in STATES:
+            self.reps[xx] = 1
+        self._nAssigned = 50
 
         if self._verbose:
             print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
