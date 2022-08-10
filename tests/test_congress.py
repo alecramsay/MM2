@@ -7,7 +7,7 @@ from MM2 import *
 
 
 class TestCongress:
-    def test_assign_seat(self):
+    def test_pick_party(self):
         # NC : Case 1
         election = {
             "XX": "NC",
@@ -17,7 +17,7 @@ class TestCongress:
             "DEM_S": 4,
             "OTH_S": 0,
         }
-        party = assign_seat(election)
+        party = pick_party(election)
 
         assert party == Party.DEM
 
@@ -31,7 +31,7 @@ class TestCongress:
             "DEM_S": 7,
             "OTH_S": 0,
         }
-        party = assign_seat(election)
+        party = pick_party(election)
 
         assert party == Party.REP
 
@@ -45,7 +45,7 @@ class TestCongress:
             "DEM_S": 6,
             "OTH_S": 0,
         }
-        party = assign_seat(election)
+        party = pick_party(election)
 
         assert party == Party.REP
 
@@ -59,7 +59,7 @@ class TestCongress:
             "DEM_S": 3,
             "OTH_S": 0,
         }
-        party = assign_seat(election)
+        party = pick_party(election)
 
         assert party == Party.DEM
 
@@ -74,6 +74,6 @@ class TestCongress:
             "OTH_S": 0,
         }
 
-        party = assign_seat(election)
+        party = pick_party(election)
 
         assert party == Party.DEM

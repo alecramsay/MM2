@@ -7,7 +7,7 @@ from .analytics import *
 from .settings import *
 
 
-def assign_seat(election, verbose=False):
+def pick_party(election, verbose=False):
     """
     Assign a newly apportioned seat to the list pool to the R's or D's:
     * If two-party D seat share is greater than the two-party D vote share (fS > fV),

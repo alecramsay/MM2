@@ -9,6 +9,8 @@ from .settings import *
 
 class Apportioner:
     """
+    Apportionment of US House of Representatives to states.
+
     See "Calculating Apportionment" in:
     https://www.census.gov/content/dam/Census/library/publications/2011/dec/c2010br-08.pdf
 
@@ -18,24 +20,20 @@ class Apportioner:
 
     Some supporting resources:
     https://www.census.gov/topics/public-sector/congressional-apportionment/about/computing.html
-    https://support.ndnfSp.com/portal/en/community/topic/method-of-equal-proportions-from-the-u-s-census
-    https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.pdf
-
-    There is implementation, but it's embedded in a general package and hard to understand & verify:
-    https://pypi.org/project/apportionment/
-    https://github.com/martinlackner/apportionment
+    https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.pdf <<< logging
 
     """
 
-    def __init__(self, census, elections, verbose=False):
+    def __init__(self, census, verbose=False):
         self._census = census
-        self._elections = elections
         self._verbose = verbose
 
         self.reps = {}
-        list = {"REP": 0, "DEM": 0}
+
+        # Assign one seat to each state
         for xx in STATES:
-            self.reps[xx] = {"nominal": 1, "list": list.copy()}
+            self.reps[xx] = 1
+        self.nAssigned = 50
 
     def priority_value(self, pop, nSeat):
         pv = pop / math.sqrt(nSeat * (nSeat - 1))
@@ -43,3 +41,9 @@ class Apportioner:
         # TODO: Figure out how floats should be converted to ints here.
 
         return int(pv)
+
+    def assign_next(self, xx):
+        """
+        Assign the next seat to the state with the highest priority value.
+        """
+        pass
