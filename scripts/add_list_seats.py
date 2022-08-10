@@ -42,7 +42,7 @@ del elections_list
 
 ### APPORTION THE 435 NOMINAL SEATS ###
 
-app = Apportioner(census, verbose)
+app = Apportioner(census)
 app.assign_435()
 
 

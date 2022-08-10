@@ -18,10 +18,11 @@ class Apportioner:
     https://electionscience.org/library/congressional-apportionment-huntington-hill-method/
     https://en.wikipedia.org/wiki/Huntington%E2%80%93Hill_method
 
-    2010 Census & apportionment data:
+    Census results:
+    https://www.census.gov/data/tables/1990/dec/1990-apportionment-data.html
+    https://www.census.gov/data/tables/2000/dec/2000-apportionment-data.html
     https://www.census.gov/data/tables/2010/dec/2010-apportionment-data.html
-    https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.xls
-    https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.pdf <<< log this
+    https://www.census.gov/data/tables/2020/dec/2020-apportionment-data.html
 
     """
 
@@ -36,6 +37,8 @@ class Apportioner:
     def assign_next(self):
         """
         Assign the next seat to the state with the highest priority value.
+
+        Note: Call assign_435() before calling this to assign more seats.
         """
 
         n = self._nAssigned - 50
