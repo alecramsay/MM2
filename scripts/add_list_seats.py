@@ -20,22 +20,6 @@ types = [str, str, int]
 census = read_typed_csv(csv_data, types)
 
 
-### LOAD THE APPORTIONMENT ###
-
-csv_data = "data/census/Reapportionment for {} Census.csv".format(cycle)
-types = [str, str, int]
-reps_list = read_typed_csv(csv_data, types)
-
-# Index nominal reps by state XX, along with initialized list reps
-# TODO: Move this to the apportioner class
-reps = {}
-list = {"REP": 0, "DEM": 0}
-for state in reps_list:
-    reps[state["XX"]] = {"nominal": state["REPS"], "list": list.copy()}
-
-del reps_list
-
-
 ### LOAD THE ELECTION RESULTS ###
 
 csv_data = "data/elections/Congressional Elections ({}).csv".format(year)
@@ -56,21 +40,25 @@ fV, nGap = national_results(elections_list, verbose)
 del elections_list
 
 
-### INITIALIZE THE APPORTIONER ###
+### APPORTION THE 435 NOMINAL SEATS ###
 
 app = Apportioner(census, elections, verbose)
-
-pv = app.priority_value(4802982, 2)
-pv = app.priority_value(4802982, 3)
 
 # Generate priority values for each state
 # Sort them in descending order
 # Set the assigned counter to 435
 
-# Replicate the 1990, 2000, 2010, and 2020 apportionments
+# TODO
 
 
 ### ADD LIST SEATS FOR THE 2012 ELECTION ###
+
+# Initialize the list pool
+
+list_seats = {}
+template = {"REP": 0, "DEM": 0}
+for xx in STATES:
+    list_seats[xx] = list.copy()
 
 
 print("Done.")
