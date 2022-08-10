@@ -21,6 +21,8 @@ class Apportioner:
     Some supporting resources:
     https://www.census.gov/topics/public-sector/congressional-apportionment/about/computing.html
 
+    2010 Census & apportionment data:
+    https://www.census.gov/data/tables/2010/dec/2010-apportionment-data.html
     https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.xls
     https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.pdf <<< logging
 
@@ -50,9 +52,10 @@ class Apportioner:
     def _priority_value(self, pop, nSeat):
         pv = pop / math.sqrt(nSeat * (nSeat - 1))
 
-        # TODO: Figure out how floats should be converted to ints here.
+        # NOTE: By inspection, it appears that rounding is the way that floats are
+        # converted to integer priority values.
 
-        return int(pv)
+        return round(pv)
 
     def _make_priority_queue(self):
         """
