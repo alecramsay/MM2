@@ -42,7 +42,7 @@ del elections_list
 
 ### APPORTION THE 435 NOMINAL SEATS ###
 
-app = Apportioner(census, elections, verbose)
+app = Apportioner(census, verbose)
 
 # Generate priority values for each state
 # Sort them in descending order
@@ -58,7 +58,7 @@ app = Apportioner(census, elections, verbose)
 list_seats = {}
 template = {"REP": 0, "DEM": 0}
 for xx in STATES:
-    list_seats[xx] = list.copy()
+    list_seats[xx] = template.copy()
 
 
 print("Done.")

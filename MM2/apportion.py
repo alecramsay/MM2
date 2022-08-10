@@ -20,6 +20,8 @@ class Apportioner:
 
     Some supporting resources:
     https://www.census.gov/topics/public-sector/congressional-apportionment/about/computing.html
+
+    https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.xls
     https://www2.census.gov/programs-surveys/decennial/2010/data/apportionment/PriorityValues2010.pdf <<< logging
 
     """
@@ -35,15 +37,33 @@ class Apportioner:
             self.reps[xx] = 1
         self.nAssigned = 50
 
-    def priority_value(self, pop, nSeat):
-        pv = pop / math.sqrt(nSeat * (nSeat - 1))
-
-        # TODO: Figure out how floats should be converted to ints here.
-
-        return int(pv)
+        self._make_priority_queue()
 
     def assign_next(self, xx):
         """
         Assign the next seat to the state with the highest priority value.
         """
         pass
+
+    ### HELPERS ###
+
+    def _priority_value(self, pop, nSeat):
+        pv = pop / math.sqrt(nSeat * (nSeat - 1))
+
+        # TODO: Figure out how floats should be converted to ints here.
+
+        return int(pv)
+
+    def _make_priority_queue(self):
+        """
+        Make a sorted queue of priority values for each state.
+        """
+
+        self._queue = []
+
+        for state in self._census:
+            for i in range(2, 70 + 1):
+                pv = self._priority_value(state["Population"], i)
+                self._queue.append({"XX": state["XX"], "PV": pv})
+
+        self._queue = sorted(self._queue, key=lambda x: x["PV"], reverse=True)
