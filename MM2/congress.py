@@ -47,7 +47,7 @@ class MM2_Apportioner:
 ### HELPERS ###
 
 
-def pick_party(election):
+def pick_party(fV, fS):
     """
     Assign a newly apportioned seat to the list pool to the R's or D's:
     * If two-party D seat share is greater than the two-party D vote share (fS > fV),
@@ -65,10 +65,6 @@ def pick_party(election):
     So, even though the overall party list pool process will eventaually terminate, each
     state step in the process may not be converging.
     """
-
-    fV = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
-    N = election["REP_S"] + election["DEM_S"]
-    fS = election["DEM_S"] / N
 
     party = Party.REP if (fS > fV) else Party.DEM
 
