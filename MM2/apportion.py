@@ -44,8 +44,7 @@ class HHApportioner:
         self.reps[xx] += 1
         self._nAssigned += 1
 
-        if self._verbose:
-            print("{},{},{},{}".format(self._nAssigned, pv, xx, self.reps[xx]))
+        return (self._nAssigned, pv, xx, self.reps[xx])
 
     def assign_N(self, N):
         """
@@ -62,7 +61,10 @@ class HHApportioner:
             print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
         for i in range(51, N + 1):
-            self.assign_next()
+            hs, pv, xx, ss = self.assign_next()
+
+            if self._verbose:
+                print("{},{},{},{}".format(hs, pv, xx, ss))
 
     ### HELPERS ###
 
