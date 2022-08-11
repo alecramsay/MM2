@@ -42,33 +42,44 @@ class MM2_Apportioner:
         self.nDemSeats = totals["DEM_S"]
         self.nGap = ue_seats(self.nPR, self.nDemSeats)
 
-        # Initialize the list pool
+        # Initialize the list pool on a copy of the base apportionment by state
 
-        self.list_seats = {}
+        self.reps = {}
+        for xx in STATES:
+            self.reps[xx] = {}
+            self.reps[xx]["ANY"] = self._base_app.reps[xx]
+
         self.nListSeats = 0
         self.nDemListSeats = 0
-        template = {"REP": 0, "DEM": 0}
 
         for xx in STATES:
-            self.list_seats[xx] = template.copy()
+            self.reps[xx]["REP"] = 0
+            self.reps[xx]["DEM"] = 0
+
+        # Initialize the assignment log
+
+        self.log = []
 
         self._verbose = verbose
 
     def eliminate_gap(self):
-        if self._verbose:
-            print(
-                "HOUSE SEAT, PRIORITY VALUE, STATE ABBREVIATION, STATE SEAT, PARTY, GAP"
-            )
-            print(
-                "{:3}, {}, {}, {:2}, {}, {:2}".format(
-                    435, "------", "--", "--", "---", self.nGap
-                )
-            )
+        # TODO - DELETE
+        # if self._verbose:
+        #     print(
+        #         "HOUSE SEAT, PRIORITY VALUE, STATE ABBREVIATION, STATE SEAT, PARTY, GAP"
+        #     )
+        #     print(
+        #         "{:3}, {}, {}, {:2}, {}, {:2}".format(
+        #             435, "------", "--", "--", "---", self.nGap
+        #         )
+        #     )
 
         while self.nGap > 0:
             # Assign a list seat
 
-            hs, pv, xx, ss, party = self.assign_next()
+            self.assign_next()
+            # TODO - DELETE
+            # hs, pv, xx, ss, party = self.assign_next()
 
             # Recompute the gap, until it's zero.
 
@@ -77,12 +88,13 @@ class MM2_Apportioner:
             self.nPR = pr_seats(N, self.fV)
             self.nGap = ue_seats(self.nPR, D)
 
-            if self._verbose:
-                print(
-                    "{:3}, {:6}, {}, {:2}, {}, {:2}".format(
-                        hs, pv, xx, ss, party, self.nGap
-                    )
-                )
+            # TODO - DELETE
+            # if self._verbose:
+            #     print(
+            #         "{:3}, {:6}, {}, {:2}, {}, {:2}".format(
+            #             hs, pv, xx, ss, party, self.nGap
+            #         )
+            #     )
 
     def assign_next(self):
         # Assign the next seat to the state with the highest priority value.
@@ -92,30 +104,33 @@ class MM2_Apportioner:
         # Assign it to the party that makes the state *least* disproportional.
 
         fV = self._elections[xx]["fV"]
-        N = (
-            self._base_app.reps[xx]
-            + self.list_seats[xx]["REP"]
-            + self.list_seats[xx]["DEM"]
-        )
-        D = self._elections[xx]["nS"] + self.list_seats[xx]["DEM"]
+        N = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+        D = self._elections[xx]["nS"] + self.reps[xx]["DEM"]
         fS = D / N
 
         party = pick_party(fV, fS)
 
         # Housekeeping
 
-        self.list_seats[xx][party] += 1
+        self.reps[xx][party] += 1
         self.nListSeats += 1
         if party == "DEM":
             self.nDemListSeats += 1
 
-        ss = (
-            self._base_app.reps[xx]
-            + self.list_seats[xx]["REP"]
-            + self.list_seats[xx]["DEM"]
+        ss = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+
+        self.log.append(
+            {
+                "HOUSE SEAT": hs,
+                "PRIORITY VALUE": pv,
+                "STATE": xx,
+                "STATE SEAT": ss,
+                "PARTY": party,
+            }
         )
 
-        return (hs, pv, xx, ss, party)
+        # TODO - DELETE
+        # return (hs, pv, xx, ss, party)
 
 
 ### HELPERS ###
