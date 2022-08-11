@@ -7,7 +7,7 @@ import math
 from .settings import *
 
 
-class Apportioner:
+class HHApportioner:
     """
     Apportionment of US House of Representatives to states.
 
@@ -18,28 +18,24 @@ class Apportioner:
     https://electionscience.org/library/congressional-apportionment-huntington-hill-method/
     https://en.wikipedia.org/wiki/Huntington%E2%80%93Hill_method
 
-    Census results:
-    https://www.census.gov/data/tables/1990/dec/1990-apportionment-data.html
-    https://www.census.gov/data/tables/2000/dec/2000-apportionment-data.html
-    https://www.census.gov/data/tables/2010/dec/2010-apportionment-data.html
-    https://www.census.gov/data/tables/2020/dec/2020-apportionment-data.html
-
     """
 
     def __init__(self, census, verbose=False):
         self._census = census
+        self._nAssigned = 0
+        self._queue = []
         self._verbose = verbose
 
         self.reps = {}
-
-        self._make_priority_queue()
 
     def assign_next(self):
         """
         Assign the next seat to the state with the highest priority value.
 
-        Note: Call assign_435() before calling this to assign more seats.
+        Note: The first 50 seats must already be assigned, by calling assign_N().
         """
+
+        assert self._nAssigned >= 50
 
         n = self._nAssigned - 50
         xx = self._queue[n]["XX"]
@@ -51,20 +47,21 @@ class Apportioner:
         if self._verbose:
             print("{},{},{},{}".format(self._nAssigned, pv, xx, self.reps[xx]))
 
-    def assign_435(self):
+    def assign_N(self, N):
         """
-        Assign seats 1–435.
+        Assign seats 1–N (N > 50).
         """
 
-        # Pre-assign one seat to each state
         for xx in STATES:
             self.reps[xx] = 1
         self._nAssigned = 50
 
+        self._make_priority_queue()
+
         if self._verbose:
             print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
-        for i in range(51, 435 + 1):
+        for i in range(51, N + 1):
             self.assign_next()
 
     ### HELPERS ###
@@ -81,8 +78,6 @@ class Apportioner:
         """
         Make a sorted queue of priority values for each state.
         """
-
-        self._queue = []
 
         for state in self._census:
             for i in range(2, 70 + 1):

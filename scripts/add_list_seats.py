@@ -22,8 +22,8 @@ census = read_typed_csv(csv_data, types)
 
 ### APPORTION THE 435 NOMINAL SEATS ###
 
-app = Apportioner(census)
-app.assign_435()
+app = HHApportioner(census)
+app.assign_N(435)
 
 
 ### LOAD THE ELECTION RESULTS ###
