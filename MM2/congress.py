@@ -63,7 +63,7 @@ class MM2_Apportioner:
                 "HOUSE SEAT, PRIORITY VALUE, STATE ABBREVIATION, STATE SEAT, PARTY, GAP"
             )
 
-        for i in range(30):  # TODO
+        for i in range(100):  # TODO
             hs, pv, xx, ss, party = self.assign_next()
 
             # Recompute the gap
@@ -78,7 +78,10 @@ class MM2_Apportioner:
 
     def assign_next(self):
         # Assign the next seat to the state with the highest priority value.
+
         hs, pv, xx, _ = self._base_app.assign_next(list_seat=True)
+
+        # Assign it to the party that makes the state *least* disproportional.
 
         fV = self._elections[xx]["fV"]
         N = (
@@ -89,8 +92,10 @@ class MM2_Apportioner:
         D = self._elections[xx]["nS"] + self.list_seats[xx]["DEM"]
         fS = D / N
 
-        # Assign it to the party that makes the state least disproportional.
         party = pick_party(fV, fS)
+
+        # Housekeeping
+
         self.list_seats[xx][party] += 1
         self.nListSeats += 1
         if party == "DEM":
