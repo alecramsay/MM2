@@ -6,8 +6,8 @@ Add list seats to base congressional apportionment for an election.
 
 For example:
 
-$ scripts/add_reps.py 2000 2002 -v > results/2002_MM2_for_Congress.txt
-$ scripts/add_reps.py 2010 2012 -v > results/2012_MM2_for_Congress.txt
+$ scripts/add_list_seats.py 2000 2002
+$ scripts/add_list_seats.py 2010 2012
 
 For documentation, type:
 
@@ -50,3 +50,13 @@ elections = read_typed_csv(csv_data, types)
 
 app = MM2_Apportioner(census, elections, args.verbose)
 app.eliminate_gap()
+
+
+### WRITE THE RESULTS ###
+
+# write_csv("results/{}_reps_by_state.csv".format(args.election), app.reps)
+write_csv(
+    "results/{}_reps_by_priority.csv".format(args.election),
+    app.log,
+    ["HOUSE SEAT", "PRIORITY VALUE", "STATE", "STATE SEAT", "PARTY"],
+)
