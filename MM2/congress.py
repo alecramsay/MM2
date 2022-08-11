@@ -63,6 +63,8 @@ class MM2_Apportioner:
         self._verbose = verbose
 
     def eliminate_gap(self):
+        # Report the PR gap to be closed
+
         print(
             "The initial gap is {:+2} seats. (+ = excess R seats; – = excess D seats)".format(
                 self.nGap
@@ -74,7 +76,7 @@ class MM2_Apportioner:
 
             hs, pv, xx, ss, party = self.assign_next()
 
-            # Recompute the gap, until it's zero.
+            # Recompute the gap
 
             N = self.nNominalSeats + self.nListSeats
             D = self.nDemSeats + self.nDemListSeats
