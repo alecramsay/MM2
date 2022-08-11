@@ -59,9 +59,3 @@ STATES = [
 ]
 
 EPSILON = 1 / (10**6)
-
-
-class Party(Enum):
-    REP = "REP"
-    DEM = "DEM"
-    OTH = "OTH"

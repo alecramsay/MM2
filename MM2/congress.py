@@ -10,6 +10,8 @@ from .settings import *
 
 class MM2_Apportioner:
     def __init__(self, census, elections, verbose=False):
+        # Apportion the first 435 seats, using Census data.
+
         self._base_app = HH_Apportioner(census)
         self._base_app.assign_N(435)
 
@@ -33,15 +35,74 @@ class MM2_Apportioner:
 
         self.fV = totals["DEM_V"] / (totals["REP_V"] + totals["DEM_V"])
         # self.fS = totals["DEM_S"] / (totals["REP_S"] + totals["DEM_S"])
-        self.nPR = pr_seats(totals["REP_S"] + totals["DEM_S"], self.fV)
-        self.nGap = ue_seats(self.nPR, totals["DEM_S"])
+        self.nNominalSeats = (
+            totals["REP_S"] + totals["DEM_S"]
+        )  # NOTE: Removes "other" seats.
+        self.nPR = pr_seats(self.nNominalSeats, self.fV)
+        self.nDemSeats = totals["DEM_S"]
+        self.nGap = ue_seats(self.nPR, self.nDemSeats)
+
+        # Initialize the list pool
 
         self.list_seats = {}
+        self.nListSeats = 0
+        self.nDemListSeats = 0
         template = {"REP": 0, "DEM": 0}
+
         for xx in STATES:
             self.list_seats[xx] = template.copy()
 
         self._verbose = verbose
+
+    def eliminate_gap(self):
+        if self._verbose:
+            print(
+                "# proportional D seats: {:3} | gap: {:2}\n".format(self.nPR, self.nGap)
+            )
+            print(
+                "HOUSE SEAT, PRIORITY VALUE, STATE ABBREVIATION, STATE SEAT, PARTY, GAP"
+            )
+
+        for i in range(30):  # TODO
+            hs, pv, xx, ss, party = self.assign_next()
+
+            # Recompute the gap
+
+            N = self.nNominalSeats + self.nListSeats
+            D = self.nDemSeats + self.nDemListSeats
+            self.nPR = pr_seats(N, self.fV)
+            self.nGap = ue_seats(self.nPR, D)
+
+            if self._verbose:
+                print("{}, {}, {}, {}, {}, {}".format(hs, pv, xx, ss, party, self.nGap))
+
+    def assign_next(self):
+        # Assign the next seat to the state with the highest priority value.
+        hs, pv, xx, _ = self._base_app.assign_next(list_seat=True)
+
+        fV = self._elections[xx]["fV"]
+        N = (
+            self._base_app.reps[xx]
+            + self.list_seats[xx]["REP"]
+            + self.list_seats[xx]["DEM"]
+        )
+        D = self._elections[xx]["nS"] + self.list_seats[xx]["DEM"]
+        fS = D / N
+
+        # Assign it to the party that makes the state least disproportional.
+        party = pick_party(fV, fS)
+        self.list_seats[xx][party] += 1
+        self.nListSeats += 1
+        if party == "DEM":
+            self.nDemListSeats += 1
+
+        ss = (
+            self._base_app.reps[xx]
+            + self.list_seats[xx]["REP"]
+            + self.list_seats[xx]["DEM"]
+        )
+
+        return (hs, pv, xx, ss, party)
 
 
 ### HELPERS ###
@@ -66,6 +127,6 @@ def pick_party(fV, fS):
     state step in the process may not be converging.
     """
 
-    party = Party.REP if (fS > fV) else Party.DEM
+    party = "REP" if (fS > fV) else "DEM"
 
     return party

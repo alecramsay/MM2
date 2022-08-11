@@ -22,7 +22,7 @@ class TestCongress:
         fS = election["DEM_S"] / N
         party = pick_party(fV, fS)
 
-        assert party == Party.DEM
+        assert party == "DEM"
 
         # MD : Case 1
 
@@ -39,7 +39,7 @@ class TestCongress:
         fS = election["DEM_S"] / N
         party = pick_party(fV, fS)
 
-        assert party == Party.REP
+        assert party == "REP"
 
         # WA : Case 2
 
@@ -56,7 +56,7 @@ class TestCongress:
         fS = election["DEM_S"] / N
         party = pick_party(fV, fS)
 
-        assert party == Party.REP
+        assert party == "REP"
 
         # WI : Case 2
 
@@ -73,7 +73,7 @@ class TestCongress:
         fS = election["DEM_S"] / N
         party = pick_party(fV, fS)
 
-        assert party == Party.DEM
+        assert party == "DEM"
 
         # CO : Case 3
 
@@ -90,4 +90,4 @@ class TestCongress:
         fS = election["DEM_S"] / N
         party = pick_party(fV, fS)
 
-        assert party == Party.DEM
+        assert party == "DEM"
