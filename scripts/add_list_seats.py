@@ -54,9 +54,17 @@ app.eliminate_gap()
 
 ### WRITE THE RESULTS ###
 
-# write_csv("results/{}_reps_by_state.csv".format(args.election), app.reps)
+write_csv(
+    "results/{}_reps_by_state.csv".format(args.election),
+    [
+        {"XX": k, "ANY": v["ANY"], "REP": v["REP"], "DEM": v["DEM"]}
+        for k, v in app.reps.items()
+    ],
+    # rows,
+    ["XX", "ANY", "REP", "DEM"],
+)
 write_csv(
     "results/{}_reps_by_priority.csv".format(args.election),
     app.log,
-    ["HOUSE SEAT", "PRIORITY VALUE", "STATE", "STATE SEAT", "PARTY"],
+    ["HOUSE SEAT", "PRIORITY VALUE", "STATE", "STATE SEAT", "PARTY", "GAP"],
 )

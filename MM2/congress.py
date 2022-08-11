@@ -63,10 +63,16 @@ class MM2_Apportioner:
         self._verbose = verbose
 
     def eliminate_gap(self):
+        print(
+            "The initial gap is {:+2} seats. (+ = excess R seats; – = excess D seats)".format(
+                self.nGap
+            )
+        )
+
         while self.nGap > 0:
             # Assign a list seat
 
-            self.assign_next()
+            hs, pv, xx, ss, party = self.assign_next()
 
             # Recompute the gap, until it's zero.
 
@@ -74,6 +80,19 @@ class MM2_Apportioner:
             D = self.nDemSeats + self.nDemListSeats
             self.nPR = pr_seats(N, self.fV)
             self.nGap = ue_seats(self.nPR, D)
+
+            # Log the assignment
+
+            self.log.append(
+                {
+                    "HOUSE SEAT": hs,
+                    "PRIORITY VALUE": pv,
+                    "STATE": xx,
+                    "STATE SEAT": ss,
+                    "PARTY": party,
+                    "GAP": self.nGap,
+                }
+            )
 
     def assign_next(self):
         # Assign the next seat to the state with the highest priority value.
@@ -88,25 +107,16 @@ class MM2_Apportioner:
         fS = D / N
 
         party = pick_party(fV, fS)
+        self.reps[xx][party] += 1
 
         # Housekeeping
 
-        self.reps[xx][party] += 1
         self.nListSeats += 1
         if party == "DEM":
             self.nDemListSeats += 1
-
         ss = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
 
-        self.log.append(
-            {
-                "HOUSE SEAT": hs,
-                "PRIORITY VALUE": pv,
-                "STATE": xx,
-                "STATE SEAT": ss,
-                "PARTY": party,
-            }
-        )
+        return (hs, pv, xx, ss, party)
 
 
 ### HELPERS ###
