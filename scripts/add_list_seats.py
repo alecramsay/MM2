@@ -6,7 +6,8 @@ Add list seats to base congressional apportionment for an election.
 
 For example:
 
-$ scripts/add_list_seats.py 2010 2012 -v
+$ scripts/add_list_seats.py 2000 2002 -v > results/2002_MM2_for_Congress.txt
+$ scripts/add_list_seats.py 2010 2012 -v > results/2012_MM2_for_Congress.txt
 
 For documentation, type:
 
