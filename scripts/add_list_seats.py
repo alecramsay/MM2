@@ -20,12 +20,6 @@ types = [str, str, int]
 census = read_typed_csv(csv_data, types)
 
 
-### APPORTION THE 435 NOMINAL SEATS ###
-
-app = HHApportioner(census)
-app.assign_N(435)
-
-
 ### LOAD THE ELECTION RESULTS ###
 
 csv_data = "data/elections/Congressional Elections ({}).csv".format(year)
@@ -38,6 +32,14 @@ for state in elections_list:
     fV = state["DEM_V"] / (state["REP_V"] + state["DEM_V"])
     nS = state["DEM_S"]
     elections[state["XX"]] = {"fV": fV, "nS": nS}
+
+
+### APPORTION THE 435 NOMINAL SEATS ###
+
+app = MM2_Apportioner(census, elections, verbose)
+
+
+# TODO
 
 # Calculate national results
 

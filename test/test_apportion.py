@@ -7,14 +7,14 @@ from MM2 import *
 import pytest
 
 
-class TestHHApportioner:
+class TestHH_Apportioner:
     def test__priority_value(self):
         # Any census ...
         csv_data = "data/census/{}_census.csv".format(2010)
         types = [str, str, int]
         census = read_typed_csv(csv_data, types)
 
-        app = HHApportioner(census)
+        app = HH_Apportioner(census)
 
         assert app._priority_value(4802982, 2) == 3396221
         assert app._priority_value(4802982, 3) == 1960809
@@ -25,7 +25,7 @@ class TestHHApportioner:
         types = [str, str, int]
         census = read_typed_csv(csv_data, types)
 
-        app = HHApportioner(census)
+        app = HH_Apportioner(census)
         app.assign_N(435)
 
         csv_data = "data/census/Reapportionment for {} Census.csv".format(cycle)

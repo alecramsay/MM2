@@ -7,7 +7,7 @@ import math
 from .settings import *
 
 
-class HHApportioner:
+class HH_Apportioner:
     """
     Apportionment of US House of Representatives to states.
 

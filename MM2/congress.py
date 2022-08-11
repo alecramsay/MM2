@@ -3,8 +3,20 @@
 # MM2 for Congress
 #
 
+from .apportion import HH_Apportioner
 from .analytics import *
 from .settings import *
+
+
+class MM2_Apportioner:
+    def __init__(self, census, elections, verbose=False):
+        self._base_app = HH_Apportioner(census)
+        self._base_app.assign_N(435)
+
+        self._elections = elections
+        self._verbose = verbose
+
+        # TODO
 
 
 def pick_party(election, verbose=False):
