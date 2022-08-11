@@ -57,16 +57,20 @@ class MM2_Apportioner:
     def eliminate_gap(self):
         if self._verbose:
             print(
-                "# proportional D seats: {:3} | gap: {:2}\n".format(self.nPR, self.nGap)
-            )
-            print(
                 "HOUSE SEAT, PRIORITY VALUE, STATE ABBREVIATION, STATE SEAT, PARTY, GAP"
             )
+            print(
+                "{:3}, {}, {}, {:2}, {}, {:2}".format(
+                    435, "------", "--", "--", "---", self.nGap
+                )
+            )
 
-        for i in range(100):  # TODO
+        while self.nGap > 0:
+            # Assign a list seat
+
             hs, pv, xx, ss, party = self.assign_next()
 
-            # Recompute the gap
+            # Recompute the gap, until it's zero.
 
             N = self.nNominalSeats + self.nListSeats
             D = self.nDemSeats + self.nDemListSeats
@@ -74,7 +78,11 @@ class MM2_Apportioner:
             self.nGap = ue_seats(self.nPR, D)
 
             if self._verbose:
-                print("{}, {}, {}, {}, {}, {}".format(hs, pv, xx, ss, party, self.nGap))
+                print(
+                    "{:3}, {:6}, {}, {:2}, {}, {:2}".format(
+                        hs, pv, xx, ss, party, self.nGap
+                    )
+                )
 
     def assign_next(self):
         # Assign the next seat to the state with the highest priority value.

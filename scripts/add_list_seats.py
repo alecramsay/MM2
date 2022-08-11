@@ -1,7 +1,18 @@
 #!/usr/bin/env python3
 #
-# ADD MM2 LIST SEATS FOR THE 2012 ELECTION
-#
+
+"""
+Add list seats to base congressional apportionment for an election.
+
+For example:
+
+$ scripts/add_list_seats.py
+
+For documentation, type:
+
+$ scripts/add_list_seats.py -h
+
+"""
 
 from MM2 import *
 
@@ -31,5 +42,3 @@ elections = read_typed_csv(csv_data, types)
 
 app = MM2_Apportioner(census, elections, verbose)
 app.eliminate_gap()
-
-print("Done.")
