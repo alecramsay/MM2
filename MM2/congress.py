@@ -13,13 +13,41 @@ class MM2_Apportioner:
         self._base_app = HH_Apportioner(census)
         self._base_app.assign_N(435)
 
-        self._elections = elections
+        # Index the election results by state, and calculate the national results.
+
+        indexed_elections = {}
+        totals = {"REP_V": 0, "DEM_V": 0, "REP_S": 0, "DEM_S": 0, "OTH_S": 0}
+
+        for state in elections:
+            fV = state["DEM_V"] / (state["REP_V"] + state["DEM_V"])
+            nS = state["DEM_S"]
+            indexed_elections[state["XX"]] = {"fV": fV, "nS": nS}
+
+            totals["REP_V"] += state["REP_V"]
+            totals["DEM_V"] += state["DEM_V"]
+            totals["REP_S"] += state["REP_S"]
+            totals["DEM_S"] += state["DEM_S"]
+            totals["OTH_S"] += state["OTH_S"]
+
+        self._elections = indexed_elections
+
+        self.fV = totals["DEM_V"] / (totals["REP_V"] + totals["DEM_V"])
+        # self.fS = totals["DEM_S"] / (totals["REP_S"] + totals["DEM_S"])
+        self.nPR = pr_seats(totals["REP_S"] + totals["DEM_S"], self.fV)
+        self.nGap = ue_seats(self.nPR, totals["DEM_S"])
+
+        self.list_seats = {}
+        template = {"REP": 0, "DEM": 0}
+        for xx in STATES:
+            self.list_seats[xx] = template.copy()
+
         self._verbose = verbose
 
-        # TODO
+
+### HELPERS ###
 
 
-def pick_party(election, verbose=False):
+def pick_party(election):
     """
     Assign a newly apportioned seat to the list pool to the R's or D's:
     * If two-party D seat share is greater than the two-party D vote share (fS > fV),
@@ -45,32 +73,3 @@ def pick_party(election, verbose=False):
     party = Party.REP if (fS > fV) else Party.DEM
 
     return party
-
-
-### HELPERS ###
-
-
-def national_results(elections, verbose=False):
-    """
-    Calculate the national results for a congressional election.
-    """
-
-    totals = {"REP_V": 0, "DEM_V": 0, "REP_S": 0, "DEM_S": 0, "OTH_S": 0}
-    for state in elections:
-        totals["REP_V"] += state["REP_V"]
-        totals["DEM_V"] += state["DEM_V"]
-        totals["REP_S"] += state["REP_S"]
-        totals["DEM_S"] += state["DEM_S"]
-        totals["OTH_S"] += state["OTH_S"]
-
-    # The *national* two-party D vote share & seat share
-    fV = totals["DEM_V"] / (totals["REP_V"] + totals["DEM_V"])
-    fS = totals["DEM_S"] / (totals["REP_S"] + totals["DEM_S"])
-
-    # The proportional number of D seats (ignoring "other" wins)
-    nPR = pr_seats(totals["REP_S"] + totals["DEM_S"], fV)
-
-    # The *national* seat gap (+ = R, - = D)
-    nGap = ue_seats(nPR, totals["DEM_S"])
-
-    return (fV, nGap)

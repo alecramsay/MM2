@@ -24,38 +24,11 @@ census = read_typed_csv(csv_data, types)
 
 csv_data = "data/elections/Congressional Elections ({}).csv".format(year)
 types = [str] * 3 + [int] * 8 + [float] * 2
-elections_list = read_typed_csv(csv_data, types)
-
-# Index D vote share (fV) & D wins (nS) by state XX
-elections = {}
-for state in elections_list:
-    fV = state["DEM_V"] / (state["REP_V"] + state["DEM_V"])
-    nS = state["DEM_S"]
-    elections[state["XX"]] = {"fV": fV, "nS": nS}
+elections = read_typed_csv(csv_data, types)
 
 
-### APPORTION THE 435 NOMINAL SEATS ###
+### APPORTION THE 435 NOMINAL SEATS & ADD LIST SEATS FOR PR ###
 
 app = MM2_Apportioner(census, elections, verbose)
-
-
-# TODO
-
-# Calculate national results
-
-fV, nGap = national_results(elections_list, verbose)
-
-del elections_list
-
-
-### ADD LIST SEATS FOR THE 2012 ELECTION ###
-
-# Initialize the list pool
-
-list_seats = {}
-template = {"REP": 0, "DEM": 0}
-for xx in STATES:
-    list_seats[xx] = template.copy()
-
 
 print("Done.")
