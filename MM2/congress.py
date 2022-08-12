@@ -67,7 +67,7 @@ class MM2_Apportioner:
 
         if self._verbose:
             print(
-                "\nD's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap of {:+2} seats.".format(
+                "\nD's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap of {:+2} seats.\n".format(
                     self.fV, self.nDemSeats, self.nNominalSeats, self.nGap
                 )
             )
