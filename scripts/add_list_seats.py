@@ -20,6 +20,9 @@ $ scripts/add_reps.py -h
 import argparse
 from MM2 import *
 
+
+### PARSE ARGUMENTS ###
+
 parser = argparse.ArgumentParser(
     description="Add MM2 list seats to base congressional apportionment."
 )
@@ -62,11 +65,9 @@ for row in app._base_app._queue[n:]:
     remaining_pvs.add(row["XX"])
 
 if len(remaining_pvs) < 50:
-    print()
     print(
-        "Warning: One or more states have no remaining priority values. Increase MAX_SEATS & re-run."
+        "\nWarning: One or more states have no remaining priority values. Increase MAX_SEATS & re-run.\n"
     )
-    print()
 
 
 ### WRITE THE RESULTS ###
