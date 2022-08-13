@@ -54,6 +54,21 @@ app = MM2_Apportioner(census, elections, args.verbose)
 app.eliminate_gap()
 
 
+### MAKE SURE ALL STATES HAVE REMAINING PRIORITY VALUES ###
+
+remaining_pvs = set()
+n = app._base_app._nAssigned - 50
+for row in app._base_app._queue[n:]:
+    remaining_pvs.add(row["XX"])
+
+if len(remaining_pvs) < 50:
+    print()
+    print(
+        "Warning: One or more states have no remaining priority values. Increase MAX_SEATS & re-run."
+    )
+    print()
+
+
 ### WRITE THE RESULTS ###
 
 write_csv(
