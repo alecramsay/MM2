@@ -59,7 +59,7 @@ app.eliminate_gap()
 
 ### MAKE SURE ALL STATES HAVE REMAINING PRIORITY VALUES ###
 
-if not app.queue_is_ok():
+if args.verbose and not app.queue_is_ok():
     print(
         "\nWarning: One or more states have no remaining priority values. Increase MAX_SEATS & re-run.\n"
     )
