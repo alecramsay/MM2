@@ -66,6 +66,18 @@ class HH_Apportioner:
             if self._verbose:
                 print("{},{},{},{}".format(hs, pv, xx, ss))
 
+    def queue_is_ok(self):
+        """
+        All states still have priority values in the queue.
+        """
+
+        remaining_pvs = set()
+        n = self._nAssigned - 50
+        for row in self._queue[n:]:
+            remaining_pvs.add(row["XX"])
+
+        return len(remaining_pvs) == 50
+
     ### HELPERS ###
 
     def _priority_value(self, pop, nSeat):

@@ -62,6 +62,30 @@ class MM2_Apportioner:
 
         self._verbose = verbose
 
+    def assign_next(self):
+        # Assign the next seat to the state with the highest priority value.
+
+        hs, pv, xx, _ = self._base_app.assign_next()
+
+        # Assign it to the party that makes the state *least* disproportional.
+
+        fV = self._elections[xx]["fV"]
+        N = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+        D = self._elections[xx]["nS"] + self.reps[xx]["DEM"]
+        fS = D / N
+
+        party = pick_party(fV, fS)
+        self.reps[xx][party] += 1
+
+        # Housekeeping
+
+        self.nListSeats += 1
+        if party == "DEM":
+            self.nDemListSeats += 1
+        ss = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+
+        return (hs, pv, xx, ss, party)
+
     def eliminate_gap(self):
         # Report the PR gap to be closed
 
@@ -97,29 +121,11 @@ class MM2_Apportioner:
                 }
             )
 
-    def assign_next(self):
-        # Assign the next seat to the state with the highest priority value.
-
-        hs, pv, xx, _ = self._base_app.assign_next()
-
-        # Assign it to the party that makes the state *least* disproportional.
-
-        fV = self._elections[xx]["fV"]
-        N = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
-        D = self._elections[xx]["nS"] + self.reps[xx]["DEM"]
-        fS = D / N
-
-        party = pick_party(fV, fS)
-        self.reps[xx][party] += 1
-
-        # Housekeeping
-
-        self.nListSeats += 1
-        if party == "DEM":
-            self.nDemListSeats += 1
-        ss = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
-
-        return (hs, pv, xx, ss, party)
+    def queue_is_ok(self):
+        """
+        All states still have priority values in the queue.
+        """
+        return self._base_app.queue_is_ok()
 
 
 ### HELPERS ###
