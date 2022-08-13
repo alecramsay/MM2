@@ -28,7 +28,7 @@ class HH_Apportioner:
 
         self.reps = {}
 
-    def assign_next(self, list_seat=False):
+    def assign_next(self):
         """
         Assign the next seat to the state with the highest priority value.
 
@@ -41,8 +41,7 @@ class HH_Apportioner:
         xx = self._queue[n]["XX"]
         pv = self._queue[n]["PV"]
 
-        if not list_seat:
-            self.reps[xx] += 1
+        self.reps[xx] += 1
         self._nAssigned += 1
 
         return (self._nAssigned, pv, xx, self.reps[xx])

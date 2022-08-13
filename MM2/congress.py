@@ -100,7 +100,7 @@ class MM2_Apportioner:
     def assign_next(self):
         # Assign the next seat to the state with the highest priority value.
 
-        hs, pv, xx, _ = self._base_app.assign_next(list_seat=True)
+        hs, pv, xx, _ = self._base_app.assign_next()
 
         # Assign it to the party that makes the state *least* disproportional.
 
