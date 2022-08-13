@@ -5,6 +5,8 @@
 
 from enum import Enum
 
+MAX_REPS = 100
+
 STATES = [
     "AL",
     "AK",

@@ -83,7 +83,7 @@ class HH_Apportioner:
         """
 
         for state in self._census:
-            for i in range(2, 70 + 1):
+            for i in range(2, MAX_REPS + 1):
                 pv = self._priority_value(state["Population"], i)
                 self._queue.append({"XX": state["XX"], "PV": pv})
 
