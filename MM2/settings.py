@@ -5,7 +5,7 @@
 
 from enum import Enum
 
-MAX_REPS = 100
+MAX_SEATS = 100  # Choose this value, so CA doesn't run out of priority values.
 
 STATES = [
     "AL",
