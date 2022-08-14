@@ -6,10 +6,10 @@ Add list seats to base congressional apportionment for an election.
 
 For example:
 
-$ scripts/add_list_seats.py 2000 2002 -v
-$ scripts/add_list_seats.py 2000 2004 -v
-$ scripts/add_list_seats.py 2010 2012 -v
-$ scripts/add_list_seats.py 2010 2014 -v
+$ scripts/MM2_for_Congress.py 2000 2002 -v
+$ scripts/MM2_for_Congress.py 2000 2004 -v
+$ scripts/MM2_for_Congress.py 2010 2012 -v
+$ scripts/MM2_for_Congress.py 2010 2014 -v
 
 For documentation, type:
 
@@ -83,7 +83,7 @@ with open(out_path, "w") as f:
 
     print(
         "{} list seats were added for a total of {}.\n".format(
-            app.nListSeats, app.nListSeats + 435  # Includes 3rd-party seats
+            app.nListSeats, app._base_app.nAssigned
         ),
         file=f,
     )
