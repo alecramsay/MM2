@@ -83,7 +83,7 @@ with open(out_path, "w") as f:
 
     print(
         "{} list seats were added for a total of {}.\n".format(
-            app.nListSeats, app.nListSeats + app.nNominalSeats
+            app.nListSeats, app.nListSeats + 435  # Includes 3rd-party seats
         ),
         file=f,
     )
