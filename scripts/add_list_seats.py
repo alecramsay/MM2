@@ -57,14 +57,6 @@ app = MM2_Apportioner(census, elections, args.verbose)
 app.eliminate_gap()
 
 
-### MAKE SURE ALL STATES HAVE REMAINING PRIORITY VALUES ###
-
-if args.verbose and not app.queue_is_ok():
-    print(
-        "\nWarning: One or more states have no remaining priority values. Increase MAX_SEATS & re-run.\n"
-    )
-
-
 ### WRITE THE RESULTS ###
 
 write_csv(
@@ -81,3 +73,47 @@ write_csv(
     app.log,
     ["HOUSE SEAT", "PRIORITY VALUE", "STATE", "STATE SEAT", "PARTY", "GAP"],
 )
+
+
+### REPORT SOME BASIC INFO ###
+
+out_path = "results/{}_report.txt".format(args.election)
+with open(out_path, "w") as f:
+    print("{}\n".format(app.baseline), file=f)
+
+    print(
+        "{} list seats were added for a total of {}.\n".format(
+            app.nListSeats, app.nListSeats + app.nNominalSeats
+        ),
+        file=f,
+    )
+
+    if not app.queue_is_ok():
+        print(
+            "Warning: One or more states have no remaining priority values! Increase MAX_SEATS & re-run.\n",
+            file=f,
+        )
+    else:
+        print("All states have remaining priority values.\n", file=f)
+
+    ones = app.one_rep_states()
+    if len(ones) > 0:
+        print(
+            "Some states still have only one representative: {}\n".format(
+                ", ".join(ones)
+            ),
+            file=f,
+        )
+    else:
+        print("All states have more than one representative.\n", file=f)
+
+    unbalanced = app.unbalanced_states()
+    if len(unbalanced) > 0:
+        print(
+            "Some states are still disproportional more than one seat: {}\n".format(
+                ", ".join(unbalanced)
+            ),
+            file=f,
+        )
+    else:
+        print("All states are within one seat of proportional.\n", file=f)

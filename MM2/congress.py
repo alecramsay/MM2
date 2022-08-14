@@ -89,12 +89,15 @@ class MM2_Apportioner:
     def eliminate_gap(self):
         # Report the PR gap to be closed
 
-        if self._verbose:
-            print(
-                "\nD's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap of {:+2} seats.\n".format(
-                    self.fV, self.nDemSeats, self.nNominalSeats, self.nGap
-                )
-            )
+        # if self._verbose:
+        #     print(
+        #         "\nD's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap of {:+2} seats.\n".format(
+        #             self.fV, self.nDemSeats, self.nNominalSeats, self.nGap
+        #         )
+        #     )
+        self.baseline = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap of {:+2} seats.".format(
+            self.fV, self.nDemSeats, self.nNominalSeats, self.nGap
+        )
 
         while self.nGap > 0:
             # Assign a list seat
@@ -126,6 +129,37 @@ class MM2_Apportioner:
         All states still have priority values in the queue.
         """
         return self._base_app.queue_is_ok()
+
+    def one_rep_states(self):
+        """
+        Return a list of states with one representative.
+        """
+
+        ones = []
+
+        for xx in STATES:
+            N = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+            if N == 1:
+                ones.append(xx)
+
+        return ones
+
+    def unbalanced_states(self):
+        """
+        Return a list of states where (Sf - Vf) * N > 1 seat.
+        """
+
+        unbalanced = []
+
+        for xx in STATES:
+            N = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+            D = self._elections[xx]["nS"] + self.reps[xx]["DEM"]
+            fS = D / N
+            fV = self._elections[xx]["fV"]
+            if ((fS - fV) * N) > 1:
+                unbalanced.append(xx)
+
+        return unbalanced
 
 
 ### HELPERS ###
