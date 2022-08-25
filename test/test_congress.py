@@ -7,7 +7,7 @@ from MM2 import *
 
 
 class TestCongress:
-    def test_minimize_state_skew(self):
+    def test_make_least_disproportional(self):
         # NC : Case 1
         election = {
             "XX": "NC",
@@ -21,7 +21,7 @@ class TestCongress:
         t_i = election["REP_V"] + election["DEM_V"]
         s_i = election["DEM_S"]
         n_i = election["REP_S"] + election["DEM_S"]
-        party = minimize_state_skew(v_i, t_i, s_i, n_i)
+        party = make_least_disproportional(v_i, t_i, s_i, n_i)
 
         assert party == "DEM"
 
@@ -39,7 +39,7 @@ class TestCongress:
         t_i = election["REP_V"] + election["DEM_V"]
         s_i = election["DEM_S"]
         n_i = election["REP_S"] + election["DEM_S"]
-        party = minimize_state_skew(v_i, t_i, s_i, n_i)
+        party = make_least_disproportional(v_i, t_i, s_i, n_i)
 
         assert party == "REP"
 
@@ -57,7 +57,7 @@ class TestCongress:
         t_i = election["REP_V"] + election["DEM_V"]
         s_i = election["DEM_S"]
         n_i = election["REP_S"] + election["DEM_S"]
-        party = minimize_state_skew(v_i, t_i, s_i, n_i)
+        party = make_least_disproportional(v_i, t_i, s_i, n_i)
 
         assert party == "REP"
 
@@ -75,7 +75,7 @@ class TestCongress:
         t_i = election["REP_V"] + election["DEM_V"]
         s_i = election["DEM_S"]
         n_i = election["REP_S"] + election["DEM_S"]
-        party = minimize_state_skew(v_i, t_i, s_i, n_i)
+        party = make_least_disproportional(v_i, t_i, s_i, n_i)
 
         assert party == "DEM"
 
@@ -93,6 +93,6 @@ class TestCongress:
         t_i = election["REP_V"] + election["DEM_V"]
         s_i = election["DEM_S"]
         n_i = election["REP_S"] + election["DEM_S"]
-        party = minimize_state_skew(v_i, t_i, s_i, n_i)
+        party = make_least_disproportional(v_i, t_i, s_i, n_i)
 
         assert party == "DEM"

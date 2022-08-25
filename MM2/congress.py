@@ -81,16 +81,20 @@ class MM2_Apportioner:
 
         # Assign it to a party using the designated strategy
 
-        # TODO - Flesh out strategies
-
-        # Strategy 0: Minimize retrospective skew
-
         v_i = self._elections[xx]["v_i"]
         t_i = self._elections[xx]["t_i"]
         s_i = self._elections[xx]["s_i"] + self.reps[xx]["DEM"]
         n_i = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
 
-        party = minimize_state_skew(v_i, t_i, s_i, n_i)
+        match strategy:
+            case 0:
+                party = make_least_disproportional(v_i, t_i, s_i, n_i)
+            case 1:
+                party = minimize_state_skew(v_i, t_i, s_i, n_i)
+            # TODO - add more strategies
+            case _:
+                raise ValueError("Invalid strategy")
+
         self.reps[xx][party] += 1
 
         # Housekeeping
@@ -192,16 +196,22 @@ def skew_pct(V, T, S, N):
 # TODO - Add tests
 def minimize_state_skew(v_i, t_i, s_i, n_i):
     """
-    The args can represent prospective or retrospective values.
+    Pick the party that minimizes *prospective* skew.
     """
 
-    # Retrospective
-    # party = "REP" if (s_i / n_i) > (v_i / t_i) else "DEM"
-
-    # Prospective
     d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1)
     r_skew = skew_pct(v_i, t_i, s_i, n_i + 1)
 
     party = "REP" if r_skew < d_skew else "DEM"
+
+    return party
+
+
+def make_least_disproportional(v_i, t_i, s_i, n_i):
+    """
+    Pick the party that results in the *least* disproportionality (retrospective).
+    """
+
+    party = "REP" if (s_i / n_i) > (v_i / t_i) else "DEM"
 
     return party
