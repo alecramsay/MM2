@@ -58,7 +58,7 @@ elections = read_typed_csv(csv_data, types)
 ### APPORTION THE 435 NOMINAL SEATS & ADD LIST SEATS FOR PR ###
 
 app = MM2_Apportioner(census, elections, args.verbose)
-app.eliminate_gap()
+app.eliminate_gap(strategy=args.strategy)
 
 
 ### WRITE THE RESULTS ###
@@ -87,7 +87,7 @@ with open(out_path, "w") as f:
 
     print(
         "{} list seats were added for a total of {}.\n".format(
-            app.nListSeats, app._base_app.nAssigned
+            app.L, app._base_app.nAssigned
         ),
         file=f,
     )

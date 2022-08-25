@@ -17,10 +17,10 @@ class TestCongress:
             "DEM_S": 4,
             "OTH_S": 0,
         }
-        fV = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
+        Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
         N = election["REP_S"] + election["DEM_S"]
         fS = election["DEM_S"] / N
-        party = pick_party(fV, fS)
+        party = pick_party(Vf, fS)
 
         assert party == "DEM"
 
@@ -34,10 +34,10 @@ class TestCongress:
             "DEM_S": 7,
             "OTH_S": 0,
         }
-        fV = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
+        Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
         N = election["REP_S"] + election["DEM_S"]
         fS = election["DEM_S"] / N
-        party = pick_party(fV, fS)
+        party = pick_party(Vf, fS)
 
         assert party == "REP"
 
@@ -51,10 +51,10 @@ class TestCongress:
             "DEM_S": 6,
             "OTH_S": 0,
         }
-        fV = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
+        Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
         N = election["REP_S"] + election["DEM_S"]
         fS = election["DEM_S"] / N
-        party = pick_party(fV, fS)
+        party = pick_party(Vf, fS)
 
         assert party == "REP"
 
@@ -68,10 +68,10 @@ class TestCongress:
             "DEM_S": 3,
             "OTH_S": 0,
         }
-        fV = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
+        Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
         N = election["REP_S"] + election["DEM_S"]
         fS = election["DEM_S"] / N
-        party = pick_party(fV, fS)
+        party = pick_party(Vf, fS)
 
         assert party == "DEM"
 
@@ -85,9 +85,9 @@ class TestCongress:
             "DEM_S": 3,
             "OTH_S": 0,
         }
-        fV = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
+        Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
         N = election["REP_S"] + election["DEM_S"]
         fS = election["DEM_S"] / N
-        party = pick_party(fV, fS)
+        party = pick_party(Vf, fS)
 
         assert party == "DEM"
