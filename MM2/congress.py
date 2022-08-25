@@ -87,7 +87,6 @@ class MM2_Apportioner:
 
         v_i = self._elections[xx]["v_i"]
         t_i = self._elections[xx]["t_i"]
-        # TODO - This doesn't quite match Benji's notation, I don't think
         s_i = self._elections[xx]["s_i"] + self.reps[xx]["DEM"]
         n_i = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
 
@@ -196,6 +195,13 @@ def minimize_state_skew(v_i, t_i, s_i, n_i):
     The args can represent prospective or retrospective values.
     """
 
-    party = "REP" if (s_i / n_i) > (v_i / t_i) else "DEM"
+    # Retrospective
+    # party = "REP" if (s_i / n_i) > (v_i / t_i) else "DEM"
+
+    # Prospective
+    d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1)
+    r_skew = skew_pct(v_i, t_i, s_i, n_i + 1)
+
+    party = "REP" if r_skew < d_skew else "DEM"
 
     return party
