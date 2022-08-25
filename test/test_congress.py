@@ -7,7 +7,7 @@ from MM2 import *
 
 
 class TestCongress:
-    def test_pick_party(self):
+    def test_minimize_state_skew(self):
         # NC : Case 1
         election = {
             "XX": "NC",
@@ -17,10 +17,11 @@ class TestCongress:
             "DEM_S": 4,
             "OTH_S": 0,
         }
-        Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
-        N = election["REP_S"] + election["DEM_S"]
-        fS = election["DEM_S"] / N
-        party = pick_party(Vf, fS)
+        v_i = election["DEM_V"]
+        t_i = election["REP_V"] + election["DEM_V"]
+        s_i = election["DEM_S"]
+        n_i = election["REP_S"] + election["DEM_S"]
+        party = minimize_state_skew(v_i, t_i, s_i, n_i)
 
         assert party == "DEM"
 
@@ -34,10 +35,11 @@ class TestCongress:
             "DEM_S": 7,
             "OTH_S": 0,
         }
-        Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
-        N = election["REP_S"] + election["DEM_S"]
-        fS = election["DEM_S"] / N
-        party = pick_party(Vf, fS)
+        v_i = election["DEM_V"]
+        t_i = election["REP_V"] + election["DEM_V"]
+        s_i = election["DEM_S"]
+        n_i = election["REP_S"] + election["DEM_S"]
+        party = minimize_state_skew(v_i, t_i, s_i, n_i)
 
         assert party == "REP"
 
@@ -51,10 +53,11 @@ class TestCongress:
             "DEM_S": 6,
             "OTH_S": 0,
         }
-        Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
-        N = election["REP_S"] + election["DEM_S"]
-        fS = election["DEM_S"] / N
-        party = pick_party(Vf, fS)
+        v_i = election["DEM_V"]
+        t_i = election["REP_V"] + election["DEM_V"]
+        s_i = election["DEM_S"]
+        n_i = election["REP_S"] + election["DEM_S"]
+        party = minimize_state_skew(v_i, t_i, s_i, n_i)
 
         assert party == "REP"
 
@@ -68,10 +71,11 @@ class TestCongress:
             "DEM_S": 3,
             "OTH_S": 0,
         }
-        Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
-        N = election["REP_S"] + election["DEM_S"]
-        fS = election["DEM_S"] / N
-        party = pick_party(Vf, fS)
+        v_i = election["DEM_V"]
+        t_i = election["REP_V"] + election["DEM_V"]
+        s_i = election["DEM_S"]
+        n_i = election["REP_S"] + election["DEM_S"]
+        party = minimize_state_skew(v_i, t_i, s_i, n_i)
 
         assert party == "DEM"
 
@@ -85,9 +89,10 @@ class TestCongress:
             "DEM_S": 3,
             "OTH_S": 0,
         }
-        Vf = election["DEM_V"] / (election["REP_V"] + election["DEM_V"])
-        N = election["REP_S"] + election["DEM_S"]
-        fS = election["DEM_S"] / N
-        party = pick_party(Vf, fS)
+        v_i = election["DEM_V"]
+        t_i = election["REP_V"] + election["DEM_V"]
+        s_i = election["DEM_S"]
+        n_i = election["REP_S"] + election["DEM_S"]
+        party = minimize_state_skew(v_i, t_i, s_i, n_i)
 
         assert party == "DEM"

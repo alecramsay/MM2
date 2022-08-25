@@ -45,11 +45,7 @@ class MM2_Apportioner:
 
         # These are fixed - national D vote and two-party vote totals
         self.V = totals["DEM_V"]
-        self.T = totals["REP_V"] + totals["DEM_V"]
-        # TODO - DELETE
-        # self.Vf = self.V / self.T
-
-        # self.Reps = totals["REP_S"] + totals["DEM_S"]  # NOTE: Removes "other" seats.
+        self.T = totals["REP_V"] + totals["DEM_V"]  # NOTE: Removes "other" seats.
 
         # These grow; snapshot initial values - national D seats and two-party seats
         self.S = totals["DEM_S"]
@@ -60,9 +56,6 @@ class MM2_Apportioner:
 
         # This changes - the delta from PR
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
-        # TODO - DELETE
-        # self.PR = pr_seats(self.Reps, self.Vf)
-        # self.nGap = ue_seats(self.PR, self.S)
 
         # Initialize the list pool on a copy of the base apportionment by state
 
@@ -70,10 +63,6 @@ class MM2_Apportioner:
         for xx in STATES:
             self.reps[xx] = {}
             self.reps[xx]["ANY"] = self._base_app.reps[xx]
-
-        # TODO - DELETE
-        # self.L = 0
-        # self.nDemListSeats = 0
 
         for xx in STATES:
             self.reps[xx]["REP"] = 0
@@ -103,9 +92,6 @@ class MM2_Apportioner:
         n_i = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
 
         party = minimize_state_skew(v_i, t_i, s_i, n_i)
-        # TODO - DELETE
-        # fS = D / N
-        # party = pick_party(Vf, fS)
         self.reps[xx][party] += 1
 
         # Housekeeping
@@ -132,14 +118,7 @@ class MM2_Apportioner:
 
             # Recompute the gap
 
-            # TODO - DELETE
-            # N = self.Reps + self.L
-            # S = self.nDemSeats + self.nDemListSeats
-
             self.gap = gap_seats(self.V, self.T, self.S, self.N)
-            # TODO - DELETE
-            # self.PR = pr_seats(N, self.Vf)
-            # self.nGap = ue_seats(self.PR, S)
 
             # Log the assignment
 
@@ -209,24 +188,6 @@ def skew_pct(V, T, S, N):
     skew = abs(disproportionality(pr_seats(N, V / T) / N, S / N))
 
     return skew
-
-
-# TODO - Add tests
-def pick_party(Vf, Sf):
-    """
-    Strategies:
-    0. Minimize retrospective skew
-    1. Minimize the prospective state skew (v_i, t_i, s_i, n_i).
-    2. Minimize the prospective national gap (V, T, S, N).
-    3. Balance the two.
-
-    """
-
-    # TODO - Add strategies
-
-    party = "REP" if (Sf > Vf) else "DEM"
-
-    return party
 
 
 # TODO - Add tests
