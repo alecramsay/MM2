@@ -21,9 +21,19 @@ class MM2_Apportioner:
         totals = {"REP_V": 0, "DEM_V": 0, "REP_S": 0, "DEM_S": 0, "OTH_S": 0}
 
         for state in elections:
-            Vf = state["DEM_V"] / (state["REP_V"] + state["DEM_V"])
-            S = state["DEM_S"]
-            indexed_elections[state["XX"]] = {"Vf": Vf, "S": S}
+            v_i = state["DEM_V"]
+            t_i = state["REP_V"] + state["DEM_V"]
+            s_i = state["DEM_S"]
+            n_i = (
+                state["REP_S"] + state["DEM_S"] + state["OTH_S"]
+            )  # The apportioned # of seats
+
+            indexed_elections[state["XX"]] = {
+                "v_i": v_i,
+                "t_i": t_i,
+                "s_i": s_i,
+                "n_i": n_i,
+            }
 
             totals["REP_V"] += state["REP_V"]
             totals["DEM_V"] += state["DEM_V"]
@@ -33,19 +43,23 @@ class MM2_Apportioner:
 
         self._elections = indexed_elections
 
-        # These are fixed
+        # These are fixed - national D vote and two-party vote totals
         self.V = totals["DEM_V"]
         self.T = totals["REP_V"] + totals["DEM_V"]
-        self.Vf = self.V / self.T
+        # TODO - DELETE
+        # self.Vf = self.V / self.T
 
-        self.Reps = totals["REP_S"] + totals["DEM_S"]  # NOTE: Removes "other" seats.
+        # self.Reps = totals["REP_S"] + totals["DEM_S"]  # NOTE: Removes "other" seats.
 
-        # These grow
+        # These grow; snapshot initial values - national D seats and two-party seats
         self.S = totals["DEM_S"]
-        self.N = self.Reps
+        self.N = totals["REP_S"] + totals["DEM_S"]  # NOTE: Removes "other" seats.
 
-        # This changes
-        self.gap = gap_seats(self.N, self.S, self.Vf)
+        self.S0 = self.S
+        self.N0 = self.N
+
+        # This changes - the delta from PR
+        self.gap = gap_seats(self.V, self.T, self.S, self.N)
         # TODO - DELETE
         # self.PR = pr_seats(self.Reps, self.Vf)
         # self.nGap = ue_seats(self.PR, self.S)
@@ -71,28 +85,35 @@ class MM2_Apportioner:
 
         self._verbose = verbose
 
-    # TODO - HERE
     def assign_next(self, strategy):
         # Assign the next seat to the state with the highest priority value.
 
         hs, pv, xx, _ = self._base_app.assign_next()
 
-        # Assign it to the party that makes the state *least* disproportional.
+        # Assign it to a party using the designated strategy
 
-        Vf = self._elections[xx]["Vf"]
-        N = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
-        D = self._elections[xx]["nS"] + self.reps[xx]["DEM"]
-        fS = D / N
+        # TODO - Flesh out strategies
 
-        # TODO - Use strategy here
-        party = pick_party(Vf, fS)
+        # Strategy 0: Minimize retrospective skew
+
+        v_i = self._elections[xx]["v_i"]
+        t_i = self._elections[xx]["t_i"]
+        # TODO - This doesn't quite match Benji's notation, I don't think
+        s_i = self._elections[xx]["s_i"] + self.reps[xx]["DEM"]
+        n_i = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+
+        party = minimize_state_skew(v_i, t_i, s_i, n_i)
+        # TODO - DELETE
+        # fS = D / N
+        # party = pick_party(Vf, fS)
         self.reps[xx][party] += 1
 
         # Housekeeping
 
-        self.L += 1
+        self.N += 1
         if party == "DEM":
-            self.nDemListSeats += 1
+            self.S += 1
+
         ss = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
 
         return (hs, pv, xx, ss, party)
@@ -101,20 +122,21 @@ class MM2_Apportioner:
         # Report the PR gap to be closed
 
         self.baseline = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap of {:+2} seats.".format(
-            self.Vf, self.nDemSeats, self.Reps, self.nGap
+            self.V / self.T, self.S, self.N, self.gap
         )
 
-        while self.nGap > 0:
+        while self.gap > 0:
             # Assign a list seat
 
             hs, pv, xx, ss, party = self.assign_next(strategy)
 
             # Recompute the gap
 
-            N = self.Reps + self.L
-            S = self.nDemSeats + self.nDemListSeats
+            # TODO - DELETE
+            # N = self.Reps + self.L
+            # S = self.nDemSeats + self.nDemListSeats
 
-            self.gap = gap_seats(N, self.S, self.Vf)
+            self.gap = gap_seats(self.V, self.T, self.S, self.N)
             # TODO - DELETE
             # self.PR = pr_seats(N, self.Vf)
             # self.nGap = ue_seats(self.PR, S)
@@ -128,7 +150,7 @@ class MM2_Apportioner:
                     "STATE": xx,
                     "STATE SEAT": ss,
                     "PARTY": party,
-                    "GAP": self.nGap,
+                    "GAP": self.gap,
                 }
             )
 
@@ -160,11 +182,12 @@ class MM2_Apportioner:
         unbalanced = []
 
         for xx in STATES:
-            N = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
-            D = self._elections[xx]["nS"] + self.reps[xx]["DEM"]
-            fS = D / N
-            Vf = self._elections[xx]["Vf"]
-            if ((fS - Vf) * N) > 1:
+            v_i = self._elections[xx]["v_i"]
+            t_i = self._elections[xx]["t_i"]
+            s_i = self._elections[xx]["s_i"] + self.reps[xx]["DEM"]
+            n_i = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+
+            if (((s_i / n_i) - (v_i / t_i)) * n_i) > 1:
                 unbalanced.append(xx)
 
         return unbalanced
@@ -174,8 +197,8 @@ class MM2_Apportioner:
 
 
 # TODO - Add tests
-def gap_seats(N, S, Vf):
-    PR = pr_seats(N, Vf)
+def gap_seats(V, T, S, N):
+    PR = pr_seats(N, V / T)
     gap = ue_seats(PR, S)
 
     return gap
@@ -188,15 +211,30 @@ def skew_pct(V, T, S, N):
     return skew
 
 
-def pick_party(Vf, fS):
+# TODO - Add tests
+def pick_party(Vf, Sf):
     """
     Strategies:
-    1. Minimize the prospective state skew.
-    2. Minimize the prospective national gap.
+    0. Minimize retrospective skew
+    1. Minimize the prospective state skew (v_i, t_i, s_i, n_i).
+    2. Minimize the prospective national gap (V, T, S, N).
     3. Balance the two.
 
     """
 
-    party = "REP" if (fS > Vf) else "DEM"
+    # TODO - Add strategies
+
+    party = "REP" if (Sf > Vf) else "DEM"
+
+    return party
+
+
+# TODO - Add tests
+def minimize_state_skew(v_i, t_i, s_i, n_i):
+    """
+    The args can represent prospective or retrospective values.
+    """
+
+    party = "REP" if (s_i / n_i) > (v_i / t_i) else "DEM"
 
     return party

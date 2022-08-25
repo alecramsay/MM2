@@ -86,7 +86,9 @@ with open(out_path, "w") as f:
     print("{}\n".format(app.baseline), file=f)
 
     print(
-        "{} list seats were added for a total of {}.\n".format(app.L, app._base_app.N),
+        "{} list seats were added for a total of {}.\n".format(
+            app.N - app.N0, app._base_app.N
+        ),
         file=f,
     )
 
