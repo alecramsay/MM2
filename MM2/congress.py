@@ -62,7 +62,7 @@ class MM2_Apportioner:
 
         self._verbose = verbose
 
-    def assign_next(self):
+    def assign_next(self, strategy):
         # Assign the next seat to the state with the highest priority value.
 
         hs, pv, xx, _ = self._base_app.assign_next()
@@ -74,6 +74,7 @@ class MM2_Apportioner:
         D = self._elections[xx]["nS"] + self.reps[xx]["DEM"]
         fS = D / N
 
+        # TODO - Use strategy here
         party = pick_party(fV, fS)
         self.reps[xx][party] += 1
 
@@ -86,7 +87,7 @@ class MM2_Apportioner:
 
         return (hs, pv, xx, ss, party)
 
-    def eliminate_gap(self):
+    def eliminate_gap(self, strategy=1):
         # Report the PR gap to be closed
 
         self.baseline = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap of {:+2} seats.".format(
@@ -96,7 +97,7 @@ class MM2_Apportioner:
         while self.nGap > 0:
             # Assign a list seat
 
-            hs, pv, xx, ss, party = self.assign_next()
+            hs, pv, xx, ss, party = self.assign_next(strategy)
 
             # Recompute the gap
 

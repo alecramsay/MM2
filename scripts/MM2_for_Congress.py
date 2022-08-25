@@ -6,10 +6,9 @@ Add list seats to base congressional apportionment for an election.
 
 For example:
 
-$ scripts/MM2_for_Congress.py 2000 2002 -v
-$ scripts/MM2_for_Congress.py 2000 2004 -v
-$ scripts/MM2_for_Congress.py 2010 2012 -v
-$ scripts/MM2_for_Congress.py 2010 2014 -v
+$ scripts/MM2_for_Congress.py 2010 2012
+$ scripts/MM2_for_Congress.py 2010 2012 -s 2
+$ scripts/MM2_for_Congress.py 2010 2012 -s 3 
 
 For documentation, type:
 
@@ -29,12 +28,17 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument("cycle", help="The census cycle (e.g., 2010)", type=int)
 parser.add_argument("election", help="The election year (e.g., 2012)", type=int)
+parser.add_argument(
+    "-s", "--strategy", default=1, help="The list-assignment strategy", type=int
+)
 
 parser.add_argument(
     "-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode"
 )
 
 args = parser.parse_args()
+
+print("strategy: {}".format(args.strategy))
 
 
 ### LOAD THE CENSUS ###
@@ -60,7 +64,7 @@ app.eliminate_gap()
 ### WRITE THE RESULTS ###
 
 write_csv(
-    "results/{}_reps_by_state.csv".format(args.election),
+    "results/{}_reps_by_state({}).csv".format(args.election, args.strategy),
     [
         {"XX": k, "ANY": v["ANY"], "REP": v["REP"], "DEM": v["DEM"]}
         for k, v in app.reps.items()
@@ -69,7 +73,7 @@ write_csv(
     ["XX", "ANY", "REP", "DEM"],
 )
 write_csv(
-    "results/{}_reps_by_priority.csv".format(args.election),
+    "results/{}_reps_by_priority({}).csv".format(args.election, args.strategy),
     app.log,
     ["HOUSE SEAT", "PRIORITY VALUE", "STATE", "STATE SEAT", "PARTY", "GAP"],
 )
@@ -77,7 +81,7 @@ write_csv(
 
 ### REPORT SOME BASIC INFO ###
 
-out_path = "results/{}_report.txt".format(args.election)
+out_path = "results/{}_report({}).txt".format(args.election, args.strategy)
 with open(out_path, "w") as f:
     print("{}\n".format(app.baseline), file=f)
 
