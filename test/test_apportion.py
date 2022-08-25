@@ -20,13 +20,13 @@ class TestHH_Apportioner:
         assert app._priority_value(4802982, 3) == 1960809
 
     @pytest.mark.parametrize("cycle", [1990, 2000, 2010, 2020])
-    def test_assign_N(self, cycle):
+    def test_assign_first_N(self, cycle):
         csv_data = "data/census/{}_census.csv".format(cycle)
         types = [str, str, int]
         census = read_typed_csv(csv_data, types)
 
         app = HH_Apportioner(census)
-        app.assign_N(435)
+        app.assign_first_N(435)
 
         csv_data = "data/census/Reapportionment for {} Census.csv".format(cycle)
         types = [str, str, int]

@@ -13,7 +13,7 @@ class MM2_Apportioner:
         # Apportion the first 435 seats, using Census data.
 
         self._base_app = HH_Apportioner(census)
-        self._base_app.assign_N(435)
+        self._base_app.assign_first_N(435)
 
         # Index the election results by state, and calculate the national results.
 

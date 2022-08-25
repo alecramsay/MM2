@@ -22,38 +22,38 @@ class HH_Apportioner:
 
     def __init__(self, census, verbose=False):
         self._census = census
-        self.nAssigned = 0
         self._queue = []
         self._verbose = verbose
 
+        self.N = 0
         self.reps = {}
 
     def assign_next(self):
         """
         Assign the next seat to the state with the highest priority value.
 
-        Note: The first 50 seats must already be assigned, by calling assign_N().
+        Note: The first 50 seats must already be assigned, by calling assign_first_N().
         """
 
-        assert self.nAssigned >= 50
+        assert self.N >= 50
 
-        n = self.nAssigned - 50
+        n = self.N - 50
         xx = self._queue[n]["XX"]
         pv = self._queue[n]["PV"]
 
         self.reps[xx] += 1
-        self.nAssigned += 1
+        self.N += 1
 
-        return (self.nAssigned, pv, xx, self.reps[xx])
+        return (self.N, pv, xx, self.reps[xx])
 
-    def assign_N(self, N):
+    def assign_first_N(self, N):
         """
         Assign seats 1–N (N > 50).
         """
 
         for xx in STATES:
             self.reps[xx] = 1
-        self.nAssigned = 50
+        self.N = 50
 
         self._make_priority_queue()
 
@@ -72,7 +72,7 @@ class HH_Apportioner:
         """
 
         remaining_pvs = set()
-        n = self.nAssigned - 50
+        n = self.N - 50
         for row in self._queue[n:]:
             remaining_pvs.add(row["XX"])
 
