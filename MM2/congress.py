@@ -100,7 +100,10 @@ class MM2_Apportioner:
                 party = minimize_state_skew_retro(Vf, Sf)
             case 1:
                 party = minimize_state_skew(d_skew, r_skew)
-            # TODO - add more strategies
+            case 2:
+                party = reduce_national_gap(gap)
+            case 3:
+                party = balance_state_and_national(d_skew, r_skew, threshold, gap)
             case _:
                 raise ValueError("Invalid strategy")
 
@@ -124,7 +127,7 @@ class MM2_Apportioner:
         )
 
         while self.gap > 0:
-            # Assign a list seat & log it
+            # Assign a list seat & log it for reporting
 
             (
                 hs,
@@ -234,6 +237,31 @@ def minimize_state_skew_retro(Vf, Sf):
     """
 
     party = "REP" if Sf > Vf else "DEM"
+
+    return party
+
+
+# TODO - Add tests
+def reduce_national_gap(gap):
+    """
+    Reduce the national gap by one seat.
+    """
+
+    party = "DEM" if gap > 0 else "REP"
+
+    return party
+
+
+# TODO - Add tests
+def balance_state_and_national(d_skew, r_skew, threshold, gap):
+    """
+    Balance state skew (pct) and national gap (seats).
+    """
+
+    if (d_skew < threshold) and (r_skew < threshold):
+        party = reduce_national_gap(gap)
+    else:
+        party = minimize_state_skew(d_skew, r_skew)
 
     return party
 
