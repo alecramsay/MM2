@@ -15,6 +15,23 @@ class MM2_Apportioner:
         self._base_app = HH_Apportioner(census)
         self._base_app.assign_first_N(435)
 
+        # Initialize the by-state tracker
+
+        self.byState = {}
+
+        for xx in STATES:
+            self.byState[xx] = {}
+            # TODO - "N"
+            self.byState[xx]["ANY"] = self._base_app.reps[xx]
+
+        for state in self._base_app._census:
+            self.byState[state["XX"]]["POP"] = state["Population"]
+
+        for xx in STATES:
+            # TODO - "S"
+            self.byState[xx]["REP"] = 0
+            self.byState[xx]["DEM"] = 0
+
         # Index the election results by state, and calculate the national results.
 
         indexed_elections = {}
@@ -34,6 +51,13 @@ class MM2_Apportioner:
                 "s_i": s_i,
                 "n_i": n_i,
             }
+
+            self.byState[state["XX"]]["V/T"] = v_i / t_i
+            self.byState[state["XX"]]["S"] = s_i
+            self.byState[state["XX"]]["SKEW"] = skew_pct(v_i, t_i, s_i, n_i)
+            self.byState[state["XX"]]["POWER"] = (
+                self.byState[state["XX"]]["POP"] / self.byState[xx]["ANY"]
+            )
 
             totals["REP_V"] += state["REP_V"]
             totals["DEM_V"] += state["DEM_V"]
@@ -57,20 +81,9 @@ class MM2_Apportioner:
         # This changes - the delta from PR
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
 
-        # Initialize the list pool on a copy of the base apportionment by state
+        # Initialize the by-priority assignment log
 
-        self.reps = {}
-        for xx in STATES:
-            self.reps[xx] = {}
-            self.reps[xx]["ANY"] = self._base_app.reps[xx]
-
-        for xx in STATES:
-            self.reps[xx]["REP"] = 0
-            self.reps[xx]["DEM"] = 0
-
-        # Initialize the assignment log
-
-        self.log = []
+        self.byPriority = []
 
         self._verbose = verbose
 
@@ -83,8 +96,10 @@ class MM2_Apportioner:
 
         v_i = self._elections[xx]["v_i"]
         t_i = self._elections[xx]["t_i"]
-        s_i = self._elections[xx]["s_i"] + self.reps[xx]["DEM"]
-        n_i = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+        s_i = self._elections[xx]["s_i"] + self.byState[xx]["DEM"]
+        n_i = (
+            self.byState[xx]["ANY"] + self.byState[xx]["REP"] + self.byState[xx]["DEM"]
+        )
 
         Vf = v_i / t_i
         Sf = s_i / n_i
@@ -107,7 +122,7 @@ class MM2_Apportioner:
             case _:
                 raise ValueError("Invalid strategy")
 
-        self.reps[xx][party] += 1
+        self.byState[xx][party] += 1
 
         # Housekeeping
 
@@ -115,7 +130,7 @@ class MM2_Apportioner:
         if party == "DEM":
             self.S += 1
 
-        ss = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+        ss = self.byState[xx]["ANY"] + self.byState[xx]["REP"] + self.byState[xx]["DEM"]
 
         return (hs, pv, xx, ss, party, Vf, Sf, d_skew, r_skew, threshold)
 
@@ -142,7 +157,7 @@ class MM2_Apportioner:
                 threshold,
             ) = self.assign_next(strategy)
 
-            self.log.append(
+            self.byPriority.append(
                 {
                     "HOUSE SEAT": hs,
                     "PRIORITY VALUE": pv,
@@ -176,7 +191,11 @@ class MM2_Apportioner:
         ones = []
 
         for xx in STATES:
-            N = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+            N = (
+                self.byState[xx]["ANY"]
+                + self.byState[xx]["REP"]
+                + self.byState[xx]["DEM"]
+            )
             if N == 1:
                 ones.append(xx)
 
@@ -192,8 +211,12 @@ class MM2_Apportioner:
         for xx in STATES:
             v_i = self._elections[xx]["v_i"]
             t_i = self._elections[xx]["t_i"]
-            s_i = self._elections[xx]["s_i"] + self.reps[xx]["DEM"]
-            n_i = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
+            s_i = self._elections[xx]["s_i"] + self.byState[xx]["DEM"]
+            n_i = (
+                self.byState[xx]["ANY"]
+                + self.byState[xx]["REP"]
+                + self.byState[xx]["DEM"]
+            )
 
             if (((s_i / n_i) - (v_i / t_i)) * n_i) > 1:
                 unbalanced.append(xx)

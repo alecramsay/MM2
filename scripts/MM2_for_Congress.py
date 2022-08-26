@@ -68,15 +68,26 @@ app.eliminate_gap(strategy=args.strategy)
 write_csv(
     "results/{}_reps_by_state({}).csv".format(args.election, args.strategy),
     [
-        {"XX": k, "ANY": v["ANY"], "REP": v["REP"], "DEM": v["DEM"]}
-        for k, v in app.reps.items()
+        {
+            "XX": k,
+            "POP": v["POP"],
+            "ANY": v["ANY"],  # TODO - "N"
+            "V/T": v["V/T"],
+            "S": v["S"],
+            "SKEW": v["SKEW"],
+            "POWER": v["POWER"],
+            "REP": v["REP"],
+            "DEM": v["DEM"],
+            # TODO - More ...
+        }
+        for k, v in app.byState.items()
     ],
     # rows,
-    ["XX", "ANY", "REP", "DEM"],
+    ["XX", "POP", "ANY", "V/T", "S", "SKEW", "POWER", "REP", "DEM"],
 )
 write_csv(
     "results/{}_reps_by_priority({}).csv".format(args.election, args.strategy),
-    app.log,
+    app.byPriority,
     [
         "HOUSE SEAT",
         "PRIORITY VALUE",
