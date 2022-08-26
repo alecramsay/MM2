@@ -88,7 +88,7 @@ class MM2_Apportioner:
 
         match strategy:
             case 0:
-                party = make_least_disproportional(v_i, t_i, s_i, n_i)
+                party = minimize_state_skew_retro(v_i, t_i, s_i, n_i)
             case 1:
                 party = minimize_state_skew(v_i, t_i, s_i, n_i)
             # TODO - add more strategies
@@ -207,7 +207,8 @@ def minimize_state_skew(v_i, t_i, s_i, n_i):
     return party
 
 
-def make_least_disproportional(v_i, t_i, s_i, n_i):
+# TODO - How/where does this yield different results than minimize_state_skew?!?
+def minimize_state_skew_retro(v_i, t_i, s_i, n_i):
     """
     Pick the party that results in the *least* disproportionality (retrospective).
     """
