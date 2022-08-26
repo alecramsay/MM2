@@ -124,7 +124,7 @@ class MM2_Apportioner:
         )
 
         while self.gap > 0:
-            # Assign a list seat
+            # Assign a list seat & log it
 
             (
                 hs,
@@ -138,12 +138,6 @@ class MM2_Apportioner:
                 r_skew,
                 threshold,
             ) = self.assign_next(strategy)
-
-            # Recompute the gap
-
-            self.gap = gap_seats(self.V, self.T, self.S, self.N)
-
-            # Log the assignment
 
             self.log.append(
                 {
@@ -160,6 +154,10 @@ class MM2_Apportioner:
                     "GAP": self.gap,
                 }
             )
+
+            # Recompute the gap
+
+            self.gap = gap_seats(self.V, self.T, self.S, self.N)
 
     def queue_is_ok(self):
         """
