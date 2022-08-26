@@ -79,16 +79,25 @@ class MM2_Apportioner:
 
         hs, pv, xx, _ = self._base_app.assign_next()
 
-        # Assign it to a party using the designated strategy
+        # Gather relevant data for the assignment log.
 
         v_i = self._elections[xx]["v_i"]
         t_i = self._elections[xx]["t_i"]
         s_i = self._elections[xx]["s_i"] + self.reps[xx]["DEM"]
         n_i = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
 
+        Vf = v_i / t_i
+        Sf = s_i / n_i
+        d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1)
+        r_skew = skew_pct(v_i, t_i, s_i, n_i + 1)
+        threshold = skew_threshold(0.1, n_i)
+        gap = self.gap
+
+        # Assign it to a party using the designated strategy
+
         match strategy:
             case 0:
-                party = minimize_state_skew_retro(v_i, t_i, s_i, n_i)
+                party = minimize_state_skew_retro(Vf, Sf)
             case 1:
                 party = minimize_state_skew(v_i, t_i, s_i, n_i)
             # TODO - add more strategies
@@ -208,11 +217,21 @@ def minimize_state_skew(v_i, t_i, s_i, n_i):
 
 
 # TODO - How/where does this yield different results than minimize_state_skew?!?
-def minimize_state_skew_retro(v_i, t_i, s_i, n_i):
+def minimize_state_skew_retro(Vf, Sf):
     """
     Pick the party that results in the *least* disproportionality (retrospective).
     """
 
-    party = "REP" if (s_i / n_i) > (v_i / t_i) else "DEM"
+    party = "REP" if Sf > Vf else "DEM"
 
     return party
+
+
+# TODO - Add tests
+def skew_threshold(pct, N):
+    """
+    A state skew (disproportionality) threshold that is 'good enough'
+    after which point the national gap can be reduced instead.
+    """
+
+    return max(pct, 1 / N)

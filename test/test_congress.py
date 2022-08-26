@@ -21,7 +21,7 @@ class TestCongress:
         t_i = election["REP_V"] + election["DEM_V"]
         s_i = election["DEM_S"]
         n_i = election["REP_S"] + election["DEM_S"]
-        party = minimize_state_skew_retro(v_i, t_i, s_i, n_i)
+        party = minimize_state_skew_retro(v_i / t_i, s_i / n_i)
 
         assert party == "DEM"
 
@@ -39,7 +39,7 @@ class TestCongress:
         t_i = election["REP_V"] + election["DEM_V"]
         s_i = election["DEM_S"]
         n_i = election["REP_S"] + election["DEM_S"]
-        party = minimize_state_skew_retro(v_i, t_i, s_i, n_i)
+        party = minimize_state_skew_retro(v_i / t_i, s_i / n_i)
 
         assert party == "REP"
 
@@ -57,7 +57,7 @@ class TestCongress:
         t_i = election["REP_V"] + election["DEM_V"]
         s_i = election["DEM_S"]
         n_i = election["REP_S"] + election["DEM_S"]
-        party = minimize_state_skew_retro(v_i, t_i, s_i, n_i)
+        party = minimize_state_skew_retro(v_i / t_i, s_i / n_i)
 
         assert party == "REP"
 
@@ -75,7 +75,7 @@ class TestCongress:
         t_i = election["REP_V"] + election["DEM_V"]
         s_i = election["DEM_S"]
         n_i = election["REP_S"] + election["DEM_S"]
-        party = minimize_state_skew_retro(v_i, t_i, s_i, n_i)
+        party = minimize_state_skew_retro(v_i / t_i, s_i / n_i)
 
         assert party == "DEM"
 
@@ -93,6 +93,6 @@ class TestCongress:
         t_i = election["REP_V"] + election["DEM_V"]
         s_i = election["DEM_S"]
         n_i = election["REP_S"] + election["DEM_S"]
-        party = minimize_state_skew_retro(v_i, t_i, s_i, n_i)
+        party = minimize_state_skew_retro(v_i / t_i, s_i / n_i)
 
         assert party == "DEM"
