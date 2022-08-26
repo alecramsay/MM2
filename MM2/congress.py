@@ -10,28 +10,32 @@ from .settings import *
 
 class MM2_Apportioner:
     def __init__(self, census, elections, verbose=False):
-        # Apportion the first 435 seats, using Census data.
+
+        # Apportion the first 435 seats, using Census data
 
         self._base_app = HH_Apportioner(census)
         self._base_app.assign_first_N(435)
 
-        # Initialize the by-state tracker:
-        # - Census population (POP)
-        # - Apportioned # reps (N)
-        # - Democratic two-party vote share (V/T)
-        # - Democratic seats won (S)
-        # - SKEW and POWER
+        # Initialize the by-priority assignment log
+
+        self.byPriority = []
+
+        # Initialize the by-state summary.
 
         self.byState = {}
-
         for xx in STATES:
             self.byState[xx] = {}
-            # TODO - "N"
-            self.byState[xx]["ANY"] = self._base_app.reps[xx]
 
+        # Include the census population (POP)
         for state in self._base_app._census:
             self.byState[state["XX"]]["POP"] = state["Population"]
 
+        # Include the # of apportioned seats (ANY)
+        for xx in STATES:
+            # TODO - "N"
+            self.byState[xx]["ANY"] = self._base_app.reps[xx]
+
+        # Include the # of D list seats (S) and total list seats (N)
         for xx in STATES:
             # TODO - "S"
             self.byState[xx]["REP"] = 0
@@ -57,9 +61,14 @@ class MM2_Apportioner:
                 "n_i": n_i,
             }
 
+            # Also add select election data to the by-state summary:
+            # - The two-party D vote share (V/T)
             self.byState[state["XX"]]["V/T"] = v_i / t_i
+            # - The # of nominal D seats won (S)
             self.byState[state["XX"]]["S"] = s_i
+            # - The skew for the nominal districts (SKEW)
             self.byState[state["XX"]]["SKEW"] = skew_pct(v_i, t_i, s_i, n_i)
+            # - The population / nominal district (POWER)
             self.byState[state["XX"]]["POWER"] = (
                 self.byState[state["XX"]]["POP"] / self.byState[xx]["ANY"]
             )
@@ -70,34 +79,34 @@ class MM2_Apportioner:
             totals["DEM_S"] += state["DEM_S"]
             totals["OTH_S"] += state["OTH_S"]
 
+        # Election data indexed by state (XX)
         self._elections = indexed_elections
 
-        # These are fixed - national D vote and two-party vote totals
+        # Calculate the national results
+        # - The D vote and two-party vote totals (these are fixed)
         self.V = totals["DEM_V"]
         self.T = totals["REP_V"] + totals["DEM_V"]  # NOTE: Removes "other" seats.
 
-        # These grow; snapshot initial values - national D seats and two-party seats
+        # - The D seats and two-party seats (these grow w/ list seats)
         self.S = totals["DEM_S"]
         self.N = totals["REP_S"] + totals["DEM_S"]  # NOTE: Removes "other" seats.
 
+        # - The initial values for nominal seats
         self.S0 = self.S
         self.N0 = self.N
 
-        # This changes - the delta from PR
+        # - The delta from PR (this changes)
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
-
-        # Initialize the by-priority assignment log
-
-        self.byPriority = []
 
         self._verbose = verbose
 
     def assign_next(self, strategy):
-        # Assign the next seat to the state with the highest priority value.
+
+        # Assign the next seat to the state with the highest priority value
 
         hs, pv, xx, _ = self._base_app.assign_next()
 
-        # Gather relevant data for the assignment log.
+        # Gather relevant data for the assignment log
 
         v_i = self._elections[xx]["v_i"]
         t_i = self._elections[xx]["t_i"]
@@ -142,6 +151,7 @@ class MM2_Apportioner:
     def eliminate_gap(self, strategy=1):
         # Report the PR gap to be closed
 
+        # TODO - Factor this out
         self.baseline = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap of {:+2} seats.".format(
             self.V / self.T, self.S, self.N, self.gap
         )
@@ -162,6 +172,7 @@ class MM2_Apportioner:
                 threshold,
             ) = self.assign_next(strategy)
 
+            # TODO - Fold this into the assign_next function
             self.byPriority.append(
                 {
                     "HOUSE SEAT": hs,
