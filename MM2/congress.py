@@ -15,7 +15,12 @@ class MM2_Apportioner:
         self._base_app = HH_Apportioner(census)
         self._base_app.assign_first_N(435)
 
-        # Initialize the by-state tracker
+        # Initialize the by-state tracker:
+        # - Census population (POP)
+        # - Apportioned # reps (N)
+        # - Democratic two-party vote share (V/T)
+        # - Democratic seats won (S)
+        # - SKEW and POWER
 
         self.byState = {}
 
