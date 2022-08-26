@@ -77,7 +77,19 @@ write_csv(
 write_csv(
     "results/{}_reps_by_priority({}).csv".format(args.election, args.strategy),
     app.log,
-    ["HOUSE SEAT", "PRIORITY VALUE", "STATE", "STATE SEAT", "PARTY", "GAP"],
+    [
+        "HOUSE SEAT",
+        "PRIORITY VALUE",
+        "STATE",
+        "STATE SEAT",
+        "Vf",
+        "Sf",
+        "SKEW|D",
+        "SKEW|R",
+        "THRESHOLD",
+        "PARTY",
+        "GAP",
+    ],
 )
 
 

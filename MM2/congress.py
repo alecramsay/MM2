@@ -114,7 +114,7 @@ class MM2_Apportioner:
 
         ss = self.reps[xx]["ANY"] + self.reps[xx]["REP"] + self.reps[xx]["DEM"]
 
-        return (hs, pv, xx, ss, party)
+        return (hs, pv, xx, ss, party, Vf, Sf, d_skew, r_skew, threshold)
 
     def eliminate_gap(self, strategy=1):
         # Report the PR gap to be closed
@@ -126,7 +126,18 @@ class MM2_Apportioner:
         while self.gap > 0:
             # Assign a list seat
 
-            hs, pv, xx, ss, party = self.assign_next(strategy)
+            (
+                hs,
+                pv,
+                xx,
+                ss,
+                party,
+                Vf,
+                Sf,
+                d_skew,
+                r_skew,
+                threshold,
+            ) = self.assign_next(strategy)
 
             # Recompute the gap
 
@@ -140,6 +151,11 @@ class MM2_Apportioner:
                     "PRIORITY VALUE": pv,
                     "STATE": xx,
                     "STATE SEAT": ss,
+                    "Vf": Vf,
+                    "Sf": Sf,
+                    "SKEW|D": d_skew,
+                    "SKEW|R": r_skew,
+                    "THRESHOLD": threshold,
                     "PARTY": party,
                     "GAP": self.gap,
                 }
