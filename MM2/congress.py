@@ -99,7 +99,7 @@ class MM2_Apportioner:
             case 0:
                 party = minimize_state_skew_retro(Vf, Sf)
             case 1:
-                party = minimize_state_skew(v_i, t_i, s_i, n_i)
+                party = minimize_state_skew(d_skew, r_skew)
             # TODO - add more strategies
             case _:
                 raise ValueError("Invalid strategy")
@@ -203,13 +203,10 @@ def skew_pct(V, T, S, N):
 
 
 # TODO - Add tests
-def minimize_state_skew(v_i, t_i, s_i, n_i):
+def minimize_state_skew(d_skew, r_skew):
     """
     Pick the party that minimizes *prospective* skew.
     """
-
-    d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1)
-    r_skew = skew_pct(v_i, t_i, s_i, n_i + 1)
 
     party = "REP" if r_skew < d_skew else "DEM"
 
