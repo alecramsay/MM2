@@ -319,6 +319,6 @@ def skew_threshold(pct, N):
 
 def lt_threshold(x, threshold):
     """
-    Handle floating point imprecision
+    (x < threshold) handling floating point imprecision
     """
     return (abs(x) < threshold) and not abs(x) == approx(threshold)
