@@ -76,6 +76,11 @@ class MM2_Apportioner:
         # - The delta from PR (this changes)
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
 
+        # Characterize the base apportionment
+        self.baseline = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap of {:+2} seats.".format(
+            self.V / self.T, self.S, self.N, self.gap
+        )
+
     def _abstract_byState_data(self):
         self.byState = {}
 
@@ -146,7 +151,7 @@ class MM2_Apportioner:
 
         self.byState[xx][party] += 1
 
-        # Housekeeping
+        # Do housekeeping
 
         self.N += 1
         if party == "DEM":
@@ -154,52 +159,34 @@ class MM2_Apportioner:
 
         ss = self.byState[xx]["ANY"] + self.byState[xx]["REP"] + self.byState[xx]["DEM"]
 
-        return (hs, pv, xx, ss, party, Vf, Sf, d_skew, r_skew, threshold)
+        # Log the assignment for reporting purposes
 
-    def eliminate_gap(self, strategy=1):
-        # Report the PR gap to be closed
-
-        # TODO - Factor this out
-        self.baseline = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap of {:+2} seats.".format(
-            self.V / self.T, self.S, self.N, self.gap
+        self.byPriority.append(
+            {
+                "HOUSE SEAT": hs,
+                "PRIORITY VALUE": pv,
+                "STATE": xx,
+                "STATE SEAT": ss,
+                "Vf": Vf,
+                "Sf": Sf,
+                "SKEW|D": d_skew,
+                "SKEW|R": r_skew,
+                "THRESHOLD": threshold,
+                "PARTY": party,
+                "GAP": gap,
+            }
         )
 
+    def eliminate_gap(self, strategy=1):
+        # While there's a PR gap
         while self.gap > 0:
-            # Assign a list seat & log it for reporting
-
-            (
-                hs,
-                pv,
-                xx,
-                ss,
-                party,
-                Vf,
-                Sf,
-                d_skew,
-                r_skew,
-                threshold,
-            ) = self.assign_next(strategy)
-
-            # TODO - Fold this into the assign_next function
-            self.byPriority.append(
-                {
-                    "HOUSE SEAT": hs,
-                    "PRIORITY VALUE": pv,
-                    "STATE": xx,
-                    "STATE SEAT": ss,
-                    "Vf": Vf,
-                    "Sf": Sf,
-                    "SKEW|D": d_skew,
-                    "SKEW|R": r_skew,
-                    "THRESHOLD": threshold,
-                    "PARTY": party,
-                    "GAP": self.gap,
-                }
-            )
+            # Assign a list seat
+            self.assign_next(strategy)
 
             # Recompute the gap
-
             self.gap = gap_seats(self.V, self.T, self.S, self.N)
+
+        # TODO - Post-process results (new SKEW and POWER)
 
     def queue_is_ok(self):
         """
