@@ -119,7 +119,7 @@ class MM2_Apportioner:
 
         hs, pv, xx, _ = self._base_app.assign_next()
 
-        # Gather relevant data for the assignment log
+        # Gather relevant data for various assignment strategies
 
         v_i = self._elections[xx]["v_i"]
         t_i = self._elections[xx]["t_i"]
@@ -135,7 +135,7 @@ class MM2_Apportioner:
         threshold = skew_threshold(0.1, n_i)
         gap = self.gap
 
-        # Assign it to a party using the designated strategy
+        # Assign the seat to a party using the designated strategy
 
         match strategy:
             case 0:
@@ -151,7 +151,7 @@ class MM2_Apportioner:
 
         self.byState[xx][party] += 1
 
-        # Do housekeeping
+        # Update counters
 
         self.N += 1
         if party == "DEM":
@@ -159,7 +159,9 @@ class MM2_Apportioner:
 
         ss = self.byState[xx]["ANY"] + self.byState[xx]["REP"] + self.byState[xx]["DEM"]
 
-        # Log the assignment for reporting purposes
+        self.gap = gap_seats(self.V, self.T, self.S, self.N)
+
+        # Log the assignment for reporting
 
         self.byPriority.append(
             {
@@ -173,18 +175,13 @@ class MM2_Apportioner:
                 "SKEW|R": r_skew,
                 "THRESHOLD": threshold,
                 "PARTY": party,
-                "GAP": gap,
+                "GAP": self.gap,
             }
         )
 
     def eliminate_gap(self, strategy=1):
-        # While there's a PR gap
         while self.gap > 0:
-            # Assign a list seat ...
             self.assign_next(strategy)
-
-            # ... and recompute the gap
-            self.gap = gap_seats(self.V, self.T, self.S, self.N)
 
         # Compute the new SKEW & POWER including list seats
 
