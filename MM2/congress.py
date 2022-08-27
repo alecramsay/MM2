@@ -93,23 +93,23 @@ class MM2_Apportioner:
 
         # Include the # of apportioned seats (ANY)
         for xx in STATES:
-            # TODO - "N"
+            # TODO - labels
             self.byState[xx]["ANY"] = self._base_app.reps[xx]
 
         # Also add select election data
         for k, v in self._elections.items():
-            # - The two-party D vote share (V/T)
-            self.byState[k]["V/T"] = v["v_i"] / v["t_i"]
-            # - The # of nominal D seats won (S)
-            self.byState[k]["S"] = v["s_i"]
-            # - The skew for the nominal districts (SKEW)
+            self.byState[k]["v"] = v["v_i"]
+            self.byState[k]["t"] = v["t_i"]
+            self.byState[k]["v/t"] = v["v_i"] / v["t_i"]
+            self.byState[k]["s"] = v["s_i"]
+
+            # Compute SKEW & POWER for the nominal seats
             self.byState[k]["SKEW"] = skew_pct(v["v_i"], v["t_i"], v["s_i"], v["n_i"])
-            # - The population / nominal district (POWER)
             self.byState[k]["POWER"] = self.byState[k]["POP"] / self.byState[k]["ANY"]
 
         # Include the # of D list seats (S) and total list seats (N)
         for xx in STATES:
-            # TODO - "S"
+            # TODO - labels
             self.byState[xx]["REP"] = 0
             self.byState[xx]["DEM"] = 0
 
@@ -180,13 +180,21 @@ class MM2_Apportioner:
     def eliminate_gap(self, strategy=1):
         # While there's a PR gap
         while self.gap > 0:
-            # Assign a list seat
+            # Assign a list seat ...
             self.assign_next(strategy)
 
-            # Recompute the gap
+            # ... and recompute the gap
             self.gap = gap_seats(self.V, self.T, self.S, self.N)
 
-        # TODO - Post-process results (new SKEW and POWER)
+        # Compute the new SKEW & POWER including list seats
+
+        for k, v in self.byState.items():
+            # TODO - labels
+            self.byState[k]["s'"] = v["s"] + v["DEM"]
+            self.byState[k]["n'"] = v["ANY"] + v["DEM"] + v["REP"]
+
+            self.byState[k]["SKEW'"] = skew_pct(v["v"], v["t"], v["s"], v["ANY"])
+            self.byState[k]["POWER'"] = v["POP"] / v["n'"]
 
     def queue_is_ok(self):
         """

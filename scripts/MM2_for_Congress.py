@@ -70,20 +70,20 @@ write_csv(
     [
         {
             "XX": k,
-            "POP": v["POP"],
-            "ANY": v["ANY"],  # TODO - "N"
-            "V/T": v["V/T"],
-            "S": v["S"],
+            "n": v["ANY"],
+            "v/t": v["v/t"],
+            "s": v["s"],
             "SKEW": v["SKEW"],
             "POWER": v["POWER"],
-            "REP": v["REP"],
-            "DEM": v["DEM"],
-            # TODO - More ...
+            "n'": v["n'"],
+            "s'": v["s'"],
+            "SKEW'": v["SKEW'"],
+            "POWER'": v["POWER'"],
         }
         for k, v in app.byState.items()
     ],
     # rows,
-    ["XX", "POP", "ANY", "V/T", "S", "SKEW", "POWER", "REP", "DEM"],
+    ["XX", "n", "v/t", "s", "SKEW", "POWER", "n'", "s'", "SKEW'", "POWER'"],
 )
 write_csv(
     "results/{}_reps_by_priority({}).csv".format(args.election, args.strategy),
