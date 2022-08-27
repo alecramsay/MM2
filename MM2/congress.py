@@ -3,6 +3,9 @@
 # MM2 for Congress
 #
 
+
+from pytest import approx
+
 from .apportion import HH_Apportioner
 from .analytics import *
 from .settings import *
@@ -269,7 +272,6 @@ def minimize_state_skew(d_skew, r_skew):
     return party
 
 
-# TODO - How/where does this yield different results than minimize_state_skew?!?
 def minimize_state_skew_retro(Vf, Sf):
     """
     Pick the party that results in the *least* disproportionality (retrospective).
@@ -297,7 +299,7 @@ def balance_state_and_national(d_skew, r_skew, threshold, gap):
     Balance state skew (pct) and national gap (seats).
     """
 
-    if (d_skew < threshold) and (r_skew < threshold):
+    if lt_threshold(d_skew, threshold) and lt_threshold(r_skew, threshold):
         party = reduce_national_gap(gap)
     else:
         party = minimize_state_skew(d_skew, r_skew)
@@ -313,3 +315,10 @@ def skew_threshold(pct, N):
     """
 
     return max(pct, 1 / N)
+
+
+def lt_threshold(x, threshold):
+    """
+    Handle floating point imprecision
+    """
+    return (abs(x) < threshold) and not abs(x) == approx(threshold)
