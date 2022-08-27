@@ -256,6 +256,9 @@ def gap_seats(V, T, S, N):
 
 # TODO - Add tests
 def skew_pct(V, T, S, N):
+    """
+    NOTE - This definition of skew uses integral PR seats, not fractional PR seats.
+    """
     skew = abs(disproportionality(pr_seats(N, V / T) / N, S / N))
 
     return skew
