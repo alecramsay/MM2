@@ -29,41 +29,22 @@ class MM2_Apportioner:
 
         # Index the election results by state, and calculate the national results
 
-        self._preprocess_elections()
+        self._sum_national_totals()
 
         # Initialize a by-state summary
 
         self._abstract_byState_data()
 
-    def _preprocess_elections(self):
-        indexed_elections = {}
+    def _sum_national_totals(self):
         totals = {"REP_V": 0, "DEM_V": 0, "REP_S": 0, "DEM_S": 0, "OTH_S": 0}
 
         for state in self._elections:
-            v_i = state["DEM_V"]
-            t_i = state["REP_V"] + state["DEM_V"]
-            s_i = state["DEM_S"]
-            n_i = (
-                state["REP_S"] + state["DEM_S"] + state["OTH_S"]
-            )  # The apportioned # of seats
-
-            indexed_elections[state["XX"]] = {
-                "v_i": v_i,
-                "t_i": t_i,
-                "s_i": s_i,
-                "n_i": n_i,
-            }
-
             totals["REP_V"] += state["REP_V"]
             totals["DEM_V"] += state["DEM_V"]
             totals["REP_S"] += state["REP_S"]
             totals["DEM_S"] += state["DEM_S"]
             totals["OTH_S"] += state["OTH_S"]
 
-        # Reset the election data to be indexed by state (XX)
-        self._elections = indexed_elections
-
-        # Calculate the national results
         # - The D vote and two-party vote totals (these are fixed)
         self.V = totals["DEM_V"]
         self.T = totals["REP_V"] + totals["DEM_V"]  # NOTE: Removes "other" seats.
@@ -86,7 +67,6 @@ class MM2_Apportioner:
 
     def _abstract_byState_data(self):
         self.byState = {}
-
         for xx in STATES:
             self.byState[xx] = {}
 
@@ -95,21 +75,30 @@ class MM2_Apportioner:
             self.byState[state["XX"]]["POP"] = state["Population"]
 
         # Add select election data
-        for k, v in self._elections.items():
-            self.byState[k]["v"] = v["v_i"]
-            self.byState[k]["t"] = v["t_i"]
-            self.byState[k]["v/t"] = v["v_i"] / v["t_i"]
-            self.byState[k]["s"] = v["s_i"]
-            self.byState[k]["n"] = v["n_i"]  # TODO - Handle "other" seats?
+        for state in self._elections:
+            xx = state["XX"]
+
+            self.byState[xx]["v"] = state["DEM_V"]
+            self.byState[xx]["t"] = state["REP_V"] + state["DEM_V"]
+            self.byState[xx]["s"] = state["DEM_S"]
+            # NOTE - The apportioned # of seats including "other" seats.
+            self.byState[xx]["n"] = state["REP_S"] + state["DEM_S"] + state["OTH_S"]
+
+            self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
+
+            # Compute SKEW & POWER for the nominal seats
+            self.byState[xx]["SKEW"] = skew_pct(
+                self.byState[xx]["v"],
+                self.byState[xx]["t"],
+                self.byState[xx]["s"],
+                self.byState[xx]["n"],
+            )
+            self.byState[xx]["POWER"] = self.byState[xx]["POP"] / self.byState[xx]["n"]
 
             # Initialize the total # of D seats including list seats (s'),
             # and the total # of seats including list seats (n')
-            self.byState[k]["s'"] = self.byState[k]["s"]
-            self.byState[k]["n'"] = self.byState[k]["n"]
-
-            # Compute SKEW & POWER for the nominal seats
-            self.byState[k]["SKEW"] = skew_pct(v["v_i"], v["t_i"], v["s_i"], v["n_i"])
-            self.byState[k]["POWER"] = self.byState[k]["POP"] / self.byState[k]["n"]
+            self.byState[xx]["s'"] = self.byState[xx]["s"]
+            self.byState[xx]["n'"] = self.byState[xx]["n"]
 
     def assign_next(self, strategy):
 
