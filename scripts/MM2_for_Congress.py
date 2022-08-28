@@ -70,7 +70,7 @@ write_csv(
     [
         {
             "XX": k,
-            "n": v["ANY"],
+            "n": v["n"],
             "v/t": v["v/t"],
             "s": v["s"],
             "SKEW": v["SKEW"],

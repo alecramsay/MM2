@@ -94,27 +94,22 @@ class MM2_Apportioner:
         for state in self._census:
             self.byState[state["XX"]]["POP"] = state["Population"]
 
-        # Include the # of apportioned seats (ANY)
-        for xx in STATES:
-            # TODO - labels
-            self.byState[xx]["ANY"] = self._base_app.reps[xx]
-
-        # Also add select election data
+        # Add select election data
         for k, v in self._elections.items():
             self.byState[k]["v"] = v["v_i"]
             self.byState[k]["t"] = v["t_i"]
             self.byState[k]["v/t"] = v["v_i"] / v["t_i"]
             self.byState[k]["s"] = v["s_i"]
+            self.byState[k]["n"] = v["n_i"]  # TODO - Handle "other" seats?
+
+            # Initialize the total # of D seats including list seats (s'),
+            # and the total # of seats including list seats (n')
+            self.byState[k]["s'"] = self.byState[k]["s"]
+            self.byState[k]["n'"] = self.byState[k]["n"]
 
             # Compute SKEW & POWER for the nominal seats
             self.byState[k]["SKEW"] = skew_pct(v["v_i"], v["t_i"], v["s_i"], v["n_i"])
-            self.byState[k]["POWER"] = self.byState[k]["POP"] / self.byState[k]["ANY"]
-
-        # Include the # of D list seats (S) and total list seats (N)
-        for xx in STATES:
-            # TODO - labels
-            self.byState[xx]["REP"] = 0
-            self.byState[xx]["DEM"] = 0
+            self.byState[k]["POWER"] = self.byState[k]["POP"] / self.byState[k]["n"]
 
     def assign_next(self, strategy):
 
@@ -124,12 +119,10 @@ class MM2_Apportioner:
 
         # Gather relevant data for various assignment strategies
 
-        v_i = self._elections[xx]["v_i"]
-        t_i = self._elections[xx]["t_i"]
-        s_i = self._elections[xx]["s_i"] + self.byState[xx]["DEM"]
-        n_i = (
-            self.byState[xx]["ANY"] + self.byState[xx]["REP"] + self.byState[xx]["DEM"]
-        )
+        v_i = self.byState[xx]["v"]
+        t_i = self.byState[xx]["t"]
+        s_i = self.byState[xx]["s'"]
+        n_i = self.byState[xx]["n'"]
 
         Vf = v_i / t_i
         Sf = s_i / n_i
@@ -152,15 +145,15 @@ class MM2_Apportioner:
             case _:
                 raise ValueError("Invalid strategy")
 
-        self.byState[xx][party] += 1
-
         # Update counters
 
-        self.N += 1
         if party == "DEM":
+            self.byState[xx]["s'"] += 1
             self.S += 1
 
-        ss = self.byState[xx]["ANY"] + self.byState[xx]["REP"] + self.byState[xx]["DEM"]
+        self.N += 1
+        self.byState[xx]["n'"] += 1
+        ss = self.byState[xx]["n'"]
 
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
 
@@ -187,12 +180,7 @@ class MM2_Apportioner:
             self.assign_next(strategy)
 
         # Compute the new SKEW & POWER including list seats
-
         for k, v in self.byState.items():
-            # TODO - labels
-            self.byState[k]["s'"] = v["s"] + v["DEM"]
-            self.byState[k]["n'"] = v["ANY"] + v["DEM"] + v["REP"]
-
             self.byState[k]["SKEW'"] = skew_pct(v["v"], v["t"], v["s'"], v["n'"])
             self.byState[k]["POWER'"] = v["POP"] / v["n'"]
 
@@ -210,12 +198,7 @@ class MM2_Apportioner:
         ones = []
 
         for xx in STATES:
-            N = (
-                self.byState[xx]["ANY"]
-                + self.byState[xx]["REP"]
-                + self.byState[xx]["DEM"]
-            )
-            if N == 1:
+            if self.byState[xx]["n'"] == 1:
                 ones.append(xx)
 
         return ones
@@ -228,14 +211,10 @@ class MM2_Apportioner:
         unbalanced = []
 
         for xx in STATES:
-            v_i = self._elections[xx]["v_i"]
-            t_i = self._elections[xx]["t_i"]
-            s_i = self._elections[xx]["s_i"] + self.byState[xx]["DEM"]
-            n_i = (
-                self.byState[xx]["ANY"]
-                + self.byState[xx]["REP"]
-                + self.byState[xx]["DEM"]
-            )
+            v_i = self.byState[xx]["v"]
+            t_i = self.byState[xx]["t"]
+            s_i = self.byState[xx]["s'"]
+            n_i = self.byState[xx]["n'"]
 
             if (((s_i / n_i) - (v_i / t_i)) * n_i) > 1:
                 unbalanced.append(xx)
