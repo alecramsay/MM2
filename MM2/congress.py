@@ -13,30 +13,27 @@ from .settings import *
 
 class MM2_Apportioner:
     def __init__(self, census, elections, verbose=False):
-
         self._census = census
         self._elections = elections
         self._verbose = verbose
 
-        # Apportion the first 435 seats, using Census data
+        # Apportion the first 435 seats, using census data
 
         self._base_app = HH_Apportioner(census)
         self._base_app.assign_first_N(435)
 
-        # TODO - Move this to eliminate gap() ... or another post-init function,
-        # so eliminate gap can take a responsiveness
-
-        # Initialize a by-priority assignment log
+        # Initialize MM2 report structures
 
         self.byPriority = []
+        self.byState = {}
 
-        # Index the election results by state, and calculate the national results
-
-        self._sum_national_totals()
-
-        # Initialize a by-state summary
+        # Consolidate census & election data by state
 
         self._abstract_byState_data()
+
+        # Aggregate national election totals
+
+        self._sum_national_totals()
 
     def _sum_national_totals(self):
         totals = {"REP_V": 0, "DEM_V": 0, "REP_S": 0, "DEM_S": 0, "OTH_S": 0}
@@ -69,7 +66,6 @@ class MM2_Apportioner:
         )
 
     def _abstract_byState_data(self):
-        self.byState = {}
         for xx in STATES:
             self.byState[xx] = {}
 
@@ -89,15 +85,6 @@ class MM2_Apportioner:
 
             self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
 
-            # Compute SKEW & POWER for the nominal seats
-            self.byState[xx]["SKEW"] = skew_pct(
-                self.byState[xx]["v"],
-                self.byState[xx]["t"],
-                self.byState[xx]["s"],
-                self.byState[xx]["n"],
-            )
-            self.byState[xx]["POWER"] = self.byState[xx]["POP"] / self.byState[xx]["n"]
-
             # Initialize the total # of D seats including list seats (s'),
             # and the total # of seats including list seats (n')
             self.byState[xx]["s'"] = self.byState[xx]["s"]
@@ -105,6 +92,7 @@ class MM2_Apportioner:
 
     def assign_next(self, strategy):
 
+        # TODO - Refactor into Assigner class
         # Assign the next seat to the state with the highest priority value
 
         hs, pv, xx, _ = self._base_app.assign_next()
@@ -136,6 +124,7 @@ class MM2_Apportioner:
                 party = balance_state_and_national(d_skew, r_skew, threshold, gap)
             case _:
                 raise ValueError("Invalid strategy")
+        ###
 
         # Update counters
 
@@ -168,8 +157,24 @@ class MM2_Apportioner:
         )
 
     def eliminate_gap(self, strategy=1):
+        # TODO - Instantiate an assignment rule
+
         while self.gap > 0:
             self.assign_next(strategy)
+
+        # Calculate analytics for reports
+        self._calc_analytics()
+
+    def _calc_analytics(self):
+        # Compute the SKEW & POWER for the nominal seats
+        for k, v in self.byState.items():
+            self.byState[k]["SKEW"] = skew_pct(
+                v["v"],
+                v["t"],
+                v["s"],
+                v["n"],
+            )
+            self.byState[k]["POWER"] = v["POP"] / v["n"]
 
         # Compute the new SKEW & POWER including list seats
         for k, v in self.byState.items():
