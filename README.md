@@ -5,7 +5,7 @@ Code for exploring Benjamin Plener Cover's [Two-Party Structural Countermanderin
 ## Congressional Apportionment
 
 The HH_Apportioner class implements the Huntington-Hill method used to apportion the representatives to states for the US Congress.
-It takes a census data as input: a list of dicts read from a CSV by DictReader (see `read_typed_csv()`).
+It takes a census data as input: a list of dicts read from a CSV by DictReader (using `read_typed_csv()`).
 Examples are in the data/census/ directory.
 To apportion representatives to states based on a census, call the assign_first_N() method with a 435.
 
@@ -30,3 +30,11 @@ There are three strategies for eliminating the gap:
 1. Minimize the prospective skew for the state
 2. Reduce the national gap 
 3. Balance the two -- when the prospectives skews would both be below a threshold, eliminate the national gap; otherwise minimize the state skew.
+
+The MM2_for_Congress.py script in the scripts/ directory takes a census decade, an election year, and a strategy, 
+loads the census and election data, eliminates the national gap assigning list seats to states using the specified strategy,
+and writes the results to three files:
+
+1. {election year}_report({strategy}).txt summarizes the run.
+2. {election year}_reps_by_priority({strategy}).csv shows the seat-by-seat assignments.
+3. {election year}_reps_by_state({strategy}).csv summarizes nominal & list seats by state.
