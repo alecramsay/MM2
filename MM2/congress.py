@@ -193,7 +193,7 @@ class MM2_Apportioner:
             self.byState[k]["s'"] = v["s"] + v["DEM"]
             self.byState[k]["n'"] = v["ANY"] + v["DEM"] + v["REP"]
 
-            self.byState[k]["SKEW'"] = skew_pct(v["v"], v["t"], v["s"], v["ANY"])
+            self.byState[k]["SKEW'"] = skew_pct(v["v"], v["t"], v["s'"], v["n'"])
             self.byState[k]["POWER'"] = v["POP"] / v["n'"]
 
     def queue_is_ok(self):
