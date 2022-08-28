@@ -219,31 +219,7 @@ class MM2_Apportioner:
         return unbalanced
 
 
-### HELPERS ###
-
-
-# TODO - Add tests
-def gap_seats(V, T, S, N):
-    PR = pr_seats(N, V / T)
-    gap = ue_seats(PR, S)
-
-    return gap
-
-
-def skew_pct(V, T, S, N, r=1):
-    """
-    This is a generalized definition of skew, using an ideal responsiveness, 'r'.
-    It expresses the absolute % deviation of vote share from the ideal seat share,
-    given 'r'. The simple version where r=1 captures deviation from proportionality.
-    When r=2, skew measures the efficiency gap (EG).
-    """
-    Vf = V / T
-    Sf = S / N
-
-    skew = abs((r * (Vf - 0.5)) - (Sf - 0.5))
-
-    return skew
-
+### STRATEGIES ###
 
 # TODO - Add tests
 def minimize_state_skew(d_skew, r_skew):
@@ -289,6 +265,31 @@ def balance_state_and_national(d_skew, r_skew, threshold, gap):
         party = minimize_state_skew(d_skew, r_skew)
 
     return party
+
+
+### HELPERS ###
+
+# TODO - Add tests
+def gap_seats(V, T, S, N):
+    PR = pr_seats(N, V / T)
+    gap = ue_seats(PR, S)
+
+    return gap
+
+
+def skew_pct(V, T, S, N, r=1):
+    """
+    This is a generalized definition of skew, using an ideal responsiveness, 'r'.
+    It expresses the absolute % deviation of vote share from the ideal seat share,
+    given 'r'. The simple version where r=1 captures deviation from proportionality.
+    When r=2, skew measures the efficiency gap (EG).
+    """
+    Vf = V / T
+    Sf = S / N
+
+    skew = abs((r * (Vf - 0.5)) - (Sf - 0.5))
+
+    return skew
 
 
 # TODO - Add tests
