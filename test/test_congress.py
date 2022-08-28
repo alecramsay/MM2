@@ -3,6 +3,8 @@
 # TEST MM2 FOR CONGRESS
 #
 
+from pytest import approx
+
 from MM2 import *
 
 
@@ -96,6 +98,12 @@ class TestCongress:
         party = minimize_state_skew_retro(v_i / t_i, s_i / n_i)
 
         assert party == "DEM"
+
+    def test_skew_pct(self):
+        assert skew_pct(0.5, 1.0, 0.5, 1.0) == approx(0.0)
+        assert skew_pct(0.65, 1.0, 0.55, 1.0) == approx(0.1)
+        assert skew_pct(0.55, 1.0, 0.65, 1.0) == approx(0.1)
+        assert skew_pct(0.53, 1.0, 0.55, 1.0) == approx(0.02)
 
     def test_lt_threshold(self):
         assert lt_threshold(0.65 - 0.55, 0.1) == False
