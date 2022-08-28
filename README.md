@@ -32,8 +32,13 @@ There are three strategies for eliminating the gap:
 3. Balance the two -- when the prospectives skews would both be below a threshold, eliminate the national gap; otherwise minimize the state skew.
 
 The MM2_for_Congress.py script in the scripts/ directory takes a census decade, an election year, and a strategy, 
-loads the census and election data, eliminates the national gap assigning list seats to states using the specified strategy,
-and writes the results to three files:
+loads the census and election data, eliminates the national gap assigning list seats to states using the specified strategy:
+
+```shell
+scripts/MM2_for_Congress.py 2010 2012 -s 3
+```
+
+It writes the results to three files:
 
 1. {election year}_report({strategy}).txt summarizes the run.
 2. {election year}_reps_by_priority({strategy}).csv shows the seat-by-seat assignments.
