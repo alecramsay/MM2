@@ -23,6 +23,9 @@ class MM2_Apportioner:
         self._base_app = HH_Apportioner(census)
         self._base_app.assign_first_N(435)
 
+        # TODO - Move this to eliminate gap() ... or another post-init function,
+        # so eliminate gap can take a responsiveness
+
         # Initialize a by-priority assignment log
 
         self.byPriority = []
@@ -222,13 +225,17 @@ def gap_seats(V, T, S, N):
     return gap
 
 
-def skew_pct(V, T, S, N):
+def skew_pct(V, T, S, N, r=1):
     """
-    NOTE - This would be the integral variation:
+    This is a generalized definition of skew, using an ideal responsiveness, 'r'.
+    It expresses the absolute % deviation of vote share from the ideal seat share,
+    given 'r'. The simple version where r=1 captures deviation from proportionality.
+    When r=2, skew measures the efficiency gap (EG).
+    """
+    Vf = V / T
+    Sf = S / N
 
-    skew = abs(disproportionality(pr_seats(N, V / T) / N, S / N))
-    """
-    skew = abs(disproportionality(V / T, S / N))
+    skew = abs((r * (Vf - 0.5)) - (Sf - 0.5))
 
     return skew
 

@@ -105,6 +105,12 @@ class TestCongress:
         assert skew_pct(0.55, 1.0, 0.65, 1.0) == approx(0.1)
         assert skew_pct(0.53, 1.0, 0.55, 1.0) == approx(0.02)
 
+        # When 'r' = 2
+        assert skew_pct(0.5, 1.0, 0.5, 1.0, r=2) == approx(0.0)
+        assert skew_pct(0.55, 1.0, 0.60, 1.0, r=2) == approx(0.0)
+        assert skew_pct(0.55, 1.0, 0.65, 1.0, r=2) == approx(0.05)
+        assert skew_pct(0.45, 1.0, 0.40, 1.0, r=2) == approx(0.0)
+
     def test_lt_threshold(self):
         assert lt_threshold(0.65 - 0.55, 0.1) == False
         assert lt_threshold(0.55 - 0.65, 0.1) == False
