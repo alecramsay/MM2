@@ -13,30 +13,27 @@ from .settings import *
 
 class MM2_Apportioner:
     def __init__(self, census, elections, verbose=False):
-
         self._census = census
         self._elections = elections
         self._verbose = verbose
 
-        # Apportion the first 435 seats, using Census data
+        # Apportion the first 435 seats, using census data
 
         self._base_app = HH_Apportioner(census)
         self._base_app.assign_first_N(435)
 
-        # TODO - Move this to eliminate gap() ... or another post-init function,
-        # so eliminate gap can take a responsiveness
-
-        # Initialize a by-priority assignment log
+        # Initialize MM2 report structures
 
         self.byPriority = []
+        self.byState = {}
 
-        # Index the election results by state, and calculate the national results
-
-        self._sum_national_totals()
-
-        # Initialize a by-state summary
+        # Consolidate census & election data by state
 
         self._abstract_byState_data()
+
+        # Aggregate national election totals
+
+        self._sum_national_totals()
 
     def _sum_national_totals(self):
         totals = {"REP_V": 0, "DEM_V": 0, "REP_S": 0, "DEM_S": 0, "OTH_S": 0}
@@ -69,7 +66,6 @@ class MM2_Apportioner:
         )
 
     def _abstract_byState_data(self):
-        self.byState = {}
         for xx in STATES:
             self.byState[xx] = {}
 
@@ -89,27 +85,17 @@ class MM2_Apportioner:
 
             self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
 
-            # Compute SKEW & POWER for the nominal seats
-            self.byState[xx]["SKEW"] = skew_pct(
-                self.byState[xx]["v"],
-                self.byState[xx]["t"],
-                self.byState[xx]["s"],
-                self.byState[xx]["n"],
-            )
-            self.byState[xx]["POWER"] = self.byState[xx]["POP"] / self.byState[xx]["n"]
-
             # Initialize the total # of D seats including list seats (s'),
             # and the total # of seats including list seats (n')
             self.byState[xx]["s'"] = self.byState[xx]["s"]
             self.byState[xx]["n'"] = self.byState[xx]["n"]
 
-    def assign_next(self, strategy):
-
-        # Assign the next seat to the state with the highest priority value
+    def assign_next(self):
+        # Assign the next seat to the *state* with the highest priority value
 
         hs, pv, xx, _ = self._base_app.assign_next()
 
-        # Gather relevant data for various assignment strategies
+        # Assign it to the *party* based on the chosen strategy
 
         v_i = self.byState[xx]["v"]
         t_i = self.byState[xx]["t"]
@@ -118,14 +104,16 @@ class MM2_Apportioner:
 
         Vf = v_i / t_i
         Sf = s_i / n_i
-        d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1)
-        r_skew = skew_pct(v_i, t_i, s_i, n_i + 1)
-        threshold = skew_threshold(0.1, n_i)
+        d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
+        r_skew = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
+        threshold = (
+            skew_threshold(0.05, n_i)
+            if self._strategy == 4
+            else skew_threshold(0.1, n_i)
+        )
         gap = self.gap
 
-        # Assign the seat to a party using the designated strategy
-
-        match strategy:
+        match self._strategy:
             case 0:
                 party = minimize_state_skew_retro(Vf, Sf)
             case 1:
@@ -133,6 +121,8 @@ class MM2_Apportioner:
             case 2:
                 party = reduce_national_gap(gap)
             case 3:
+                party = balance_state_and_national(d_skew, r_skew, threshold, gap)
+            case 4:
                 party = balance_state_and_national(d_skew, r_skew, threshold, gap)
             case _:
                 raise ValueError("Invalid strategy")
@@ -168,12 +158,36 @@ class MM2_Apportioner:
         )
 
     def eliminate_gap(self, strategy=1):
-        while self.gap > 0:
-            self.assign_next(strategy)
+        # Pre-processing
+        self._setup_assignment_rule(strategy)
+
+        while self.gap != 0:
+            self.assign_next()
+
+        # Post-processing for reports
+        self._calc_analytics()
+
+    def _setup_assignment_rule(self, strategy):
+        self._strategy = strategy
+        self._r = 2 if strategy == 4 else 1
+
+    def _calc_analytics(self):
+        # Compute the SKEW & POWER for the nominal seats
+        for k, v in self.byState.items():
+            self.byState[k]["SKEW"] = skew_pct(
+                v["v"],
+                v["t"],
+                v["s"],
+                v["n"],
+                self._r,
+            )
+            self.byState[k]["POWER"] = v["POP"] / v["n"]
 
         # Compute the new SKEW & POWER including list seats
         for k, v in self.byState.items():
-            self.byState[k]["SKEW'"] = skew_pct(v["v"], v["t"], v["s'"], v["n'"])
+            self.byState[k]["SKEW'"] = skew_pct(
+                v["v"], v["t"], v["s'"], v["n'"], self._r
+            )
             self.byState[k]["POWER'"] = v["POP"] / v["n'"]
 
     def queue_is_ok(self):
@@ -214,31 +228,7 @@ class MM2_Apportioner:
         return unbalanced
 
 
-### HELPERS ###
-
-
-# TODO - Add tests
-def gap_seats(V, T, S, N):
-    PR = pr_seats(N, V / T)
-    gap = ue_seats(PR, S)
-
-    return gap
-
-
-def skew_pct(V, T, S, N, r=1):
-    """
-    This is a generalized definition of skew, using an ideal responsiveness, 'r'.
-    It expresses the absolute % deviation of vote share from the ideal seat share,
-    given 'r'. The simple version where r=1 captures deviation from proportionality.
-    When r=2, skew measures the efficiency gap (EG).
-    """
-    Vf = V / T
-    Sf = S / N
-
-    skew = abs((r * (Vf - 0.5)) - (Sf - 0.5))
-
-    return skew
-
+### STRATEGIES ###
 
 # TODO - Add tests
 def minimize_state_skew(d_skew, r_skew):
@@ -284,6 +274,35 @@ def balance_state_and_national(d_skew, r_skew, threshold, gap):
         party = minimize_state_skew(d_skew, r_skew)
 
     return party
+
+
+### HELPERS ###
+
+# TODO - Add tests
+def gap_seats(V, T, S, N):
+    """
+    The *whole* # of seats different from proportional.
+    Positive values indicate excess R seats, negative execess D seats.
+    """
+    PR = pr_seats(N, V / T)
+    gap = ue_seats(PR, S)
+
+    return gap
+
+
+def skew_pct(V, T, S, N, r=1):
+    """
+    This is a generalized definition of skew, using an ideal responsiveness, 'r'.
+    It expresses the absolute % deviation of vote share from the ideal seat share,
+    given 'r'. The simple version where r=1 captures deviation from proportionality.
+    When r=2, skew measures the efficiency gap (EG).
+    """
+    Vf = V / T
+    Sf = S / N
+
+    skew = abs((r * (Vf - 0.5)) - (Sf - 0.5))
+
+    return skew
 
 
 # TODO - Add tests

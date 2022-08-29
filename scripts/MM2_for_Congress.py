@@ -10,7 +10,8 @@ $ scripts/MM2_for_Congress.py 2010 2012
 $ scripts/MM2_for_Congress.py 2010 2012 -s 0
 $ scripts/MM2_for_Congress.py 2010 2012 -s 1
 $ scripts/MM2_for_Congress.py 2010 2012 -s 2
-$ scripts/MM2_for_Congress.py 2010 2012 -s 3 
+$ scripts/MM2_for_Congress.py 2010 2012 -s 3
+$ scripts/MM2_for_Congress.py 2010 2012 -s 4 
 
 For documentation, type:
 
