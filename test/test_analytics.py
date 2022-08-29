@@ -22,6 +22,14 @@ class TestAnalytics:
         PR = pr_seats(N, Vf)
         assert PR == 6
 
+        Vf = 0.51
+        PR = pr_seats(N, Vf)
+        assert PR == 5
+
+        Vf = 0.56
+        PR = pr_seats(N, Vf)
+        assert PR == 6
+
     def test_ue_seats(self):
         PR = 5
 

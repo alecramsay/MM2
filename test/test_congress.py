@@ -99,6 +99,27 @@ class TestCongress:
 
         assert party == "DEM"
 
+    def test_minimize_state_skew(self):
+        assert minimize_state_skew(0.05, 0.10) == "DEM"
+        assert minimize_state_skew(0.10, 0.05) == "REP"
+        assert minimize_state_skew(0.05, 0.05) == "DEM"
+
+    def test_reduce_national_gap(self):
+        assert reduce_national_gap(1) == "DEM"
+        assert reduce_national_gap(-1) == "REP"
+        # NOTE - Should never be called with gap = 0
+
+    def test_balance_state_and_national(self):
+        assert balance_state_and_national(0.05, 0.06, 0.10, 10) == "DEM"
+        assert balance_state_and_national(0.06, 0.05, 0.10, 10) == "DEM"
+        assert balance_state_and_national(0.15, 0.16, 0.10, 10) == "DEM"
+        assert balance_state_and_national(0.16, 0.15, 0.10, 10) == "REP"
+
+        assert balance_state_and_national(0.05, 0.06, 0.10, -10) == "REP"
+        assert balance_state_and_national(0.06, 0.05, 0.10, -10) == "REP"
+        assert balance_state_and_national(0.15, 0.16, 0.10, -10) == "DEM"
+        assert balance_state_and_national(0.16, 0.15, 0.10, -10) == "REP"
+
     def test_skew_pct(self):
         assert skew_pct(0.5, 1.0, 0.5, 1.0) == approx(0.0)
         assert skew_pct(0.65, 1.0, 0.55, 1.0) == approx(0.1)
@@ -110,6 +131,10 @@ class TestCongress:
         assert skew_pct(0.55, 1.0, 0.60, 1.0, r=2) == approx(0.0)
         assert skew_pct(0.55, 1.0, 0.65, 1.0, r=2) == approx(0.05)
         assert skew_pct(0.45, 1.0, 0.40, 1.0, r=2) == approx(0.0)
+
+    def test_skew_threshold(self):
+        assert skew_threshold(0.10, 20) == approx(0.10)
+        assert skew_threshold(0.10, 5) == approx(0.20)
 
     def test_lt_threshold(self):
         assert lt_threshold(0.65 - 0.55, 0.1) == False

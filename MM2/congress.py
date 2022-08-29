@@ -230,7 +230,7 @@ class MM2_Apportioner:
 
 ### STRATEGIES ###
 
-# TODO - Add tests
+
 def minimize_state_skew(d_skew, r_skew):
     """
     Pick the party that minimizes *prospective* skew.
@@ -251,18 +251,18 @@ def minimize_state_skew_retro(Vf, Sf):
     return party
 
 
-# TODO - Add tests
 def reduce_national_gap(gap):
     """
     Reduce the national gap by one seat.
     """
+
+    assert gap != 0
 
     party = "DEM" if gap > 0 else "REP"
 
     return party
 
 
-# TODO - Add tests
 def balance_state_and_national(d_skew, r_skew, threshold, gap):
     """
     Balance state skew (pct) and national gap (seats).
@@ -278,7 +278,7 @@ def balance_state_and_national(d_skew, r_skew, threshold, gap):
 
 ### HELPERS ###
 
-# TODO - Add tests
+
 def gap_seats(V, T, S, N):
     """
     The *whole* # of seats different from proportional.
@@ -305,7 +305,6 @@ def skew_pct(V, T, S, N, r=1):
     return skew
 
 
-# TODO - Add tests
 def skew_threshold(pct, N):
     """
     A state skew (disproportionality) threshold that is 'good enough'
