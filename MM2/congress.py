@@ -47,7 +47,7 @@ class MM2_Apportioner:
 
         # - The D vote and two-party vote totals (these are fixed)
         self.V = totals["DEM_V"]
-        self.T = totals["REP_V"] + totals["DEM_V"]  # NOTE: Removes "other" seats.
+        self.T = totals["REP_V"] + totals["DEM_V"]  # NOTE: Removes "other" votes.
 
         # - The D seats and two-party seats (these grow w/ list seats)
         self.S = totals["DEM_S"]

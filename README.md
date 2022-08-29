@@ -43,3 +43,9 @@ It writes the results to three files:
 1. {election year}_report({strategy}).txt summarizes the run.
 2. {election year}_reps_by_priority({strategy}).csv shows the seat-by-seat assignments.
 3. {election year}_reps_by_state({strategy}).csv summarizes nominal & list seats by state.
+
+## TODO
+
+If 3rd-party or independent represenatives win more seats, we may need to revisit the calculations.
+The national targets are two-party vote and seat shares.
+The total # of nominal seats by state ('n') includes all apportioned seats though.
