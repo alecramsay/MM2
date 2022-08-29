@@ -106,7 +106,11 @@ class MM2_Apportioner:
         Sf = s_i / n_i
         d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
         r_skew = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
-        threshold = skew_threshold(0.1, n_i)
+        threshold = (
+            skew_threshold(0.05, n_i)
+            if self._strategy == 4
+            else skew_threshold(0.1, n_i)
+        )
         gap = self.gap
 
         match self._strategy:
@@ -117,6 +121,8 @@ class MM2_Apportioner:
             case 2:
                 party = reduce_national_gap(gap)
             case 3:
+                party = balance_state_and_national(d_skew, r_skew, threshold, gap)
+            case 4:
                 party = balance_state_and_national(d_skew, r_skew, threshold, gap)
             case _:
                 raise ValueError("Invalid strategy")
