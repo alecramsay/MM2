@@ -90,14 +90,12 @@ class MM2_Apportioner:
             self.byState[xx]["s'"] = self.byState[xx]["s"]
             self.byState[xx]["n'"] = self.byState[xx]["n"]
 
-    def assign_next(self, strategy):
-
-        # TODO - Refactor into Assigner class
-        # Assign the next seat to the state with the highest priority value
+    def assign_next(self):
+        # Assign the next seat to the *state* with the highest priority value
 
         hs, pv, xx, _ = self._base_app.assign_next()
 
-        # Gather relevant data for various assignment strategies
+        # Assign it to the *party* based on the chosen strategy
 
         v_i = self.byState[xx]["v"]
         t_i = self.byState[xx]["t"]
@@ -106,14 +104,12 @@ class MM2_Apportioner:
 
         Vf = v_i / t_i
         Sf = s_i / n_i
-        d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1)
-        r_skew = skew_pct(v_i, t_i, s_i, n_i + 1)
+        d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
+        r_skew = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold = skew_threshold(0.1, n_i)
         gap = self.gap
 
-        # Assign the seat to a party using the designated strategy
-
-        match strategy:
+        match self._strategy:
             case 0:
                 party = minimize_state_skew_retro(Vf, Sf)
             case 1:
@@ -124,7 +120,6 @@ class MM2_Apportioner:
                 party = balance_state_and_national(d_skew, r_skew, threshold, gap)
             case _:
                 raise ValueError("Invalid strategy")
-        ###
 
         # Update counters
 
@@ -157,13 +152,18 @@ class MM2_Apportioner:
         )
 
     def eliminate_gap(self, strategy=1):
-        # TODO - Instantiate an assignment rule
+        # Pre-processing
+        self._setup_assignment_rule(strategy)
 
         while self.gap > 0:
-            self.assign_next(strategy)
+            self.assign_next()
 
-        # Calculate analytics for reports
+        # Post-processing for reports
         self._calc_analytics()
+
+    def _setup_assignment_rule(self, strategy):
+        self._strategy = strategy
+        self._r = 2 if strategy == 4 else 1
 
     def _calc_analytics(self):
         # Compute the SKEW & POWER for the nominal seats
@@ -173,12 +173,15 @@ class MM2_Apportioner:
                 v["t"],
                 v["s"],
                 v["n"],
+                self._r,
             )
             self.byState[k]["POWER"] = v["POP"] / v["n"]
 
         # Compute the new SKEW & POWER including list seats
         for k, v in self.byState.items():
-            self.byState[k]["SKEW'"] = skew_pct(v["v"], v["t"], v["s'"], v["n'"])
+            self.byState[k]["SKEW'"] = skew_pct(
+                v["v"], v["t"], v["s'"], v["n'"], self._r
+            )
             self.byState[k]["POWER'"] = v["POP"] / v["n'"]
 
     def queue_is_ok(self):
