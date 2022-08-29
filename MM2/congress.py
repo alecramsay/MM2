@@ -161,7 +161,7 @@ class MM2_Apportioner:
         # Pre-processing
         self._setup_assignment_rule(strategy)
 
-        while self.gap > 0:
+        while self.gap != 0:
             self.assign_next()
 
         # Post-processing for reports
