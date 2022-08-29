@@ -14,6 +14,10 @@ app = HH_Apportioner(census)
 app.assign_first_N(435)
 ```
 
+The class generates a queue of priority values sorted in descending order, initially 100 entries per state.
+You can continue to allocate seats to states, by calling the `assign_next()` method which returns
+the # of the House seat, the priority value, the state that gets the seat, and the seat # for the state.
+
 ## MM2 for Congress
 
 The MM2_Apportioner class wraps the HH_Apportioner class and adds MM2 for Congress functionality.
