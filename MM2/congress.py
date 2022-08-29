@@ -280,6 +280,10 @@ def balance_state_and_national(d_skew, r_skew, threshold, gap):
 
 # TODO - Add tests
 def gap_seats(V, T, S, N):
+    """
+    The *whole* # of seats different from proportional.
+    Positive values indicate excess R seats, negative execess D seats.
+    """
     PR = pr_seats(N, V / T)
     gap = ue_seats(PR, S)
 
