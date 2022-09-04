@@ -41,7 +41,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-print("strategy: {}".format(args.strategy))
+print("{}({})|{}".format(args.election, args.strategy, args.cycle))
 
 
 ### LOAD THE CENSUS ###
