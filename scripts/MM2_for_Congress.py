@@ -112,8 +112,10 @@ with open(out_path, "w") as f:
     print("{}\n".format(app.baseline), file=f)
 
     print(
-        "{} list seats were added for a total of {}.\n".format(
-            app.N - app.N0, app._base_app.N
+        "{} list seats ({} Democratic) were added for a total of {}.\n".format(
+            app.N - app.N0,
+            app.S - app.S0,
+            app._base_app.N,  # Reports the total seats, including "other."
         ),
         file=f,
     )
