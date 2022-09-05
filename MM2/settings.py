@@ -3,9 +3,10 @@
 # SETTINGS
 #
 
-from enum import Enum
+MAX_STATE_SEATS = 100  # Choose this value, so CA doesn't run out of priority values.
 
-MAX_SEATS = 100  # Choose this value, so CA doesn't run out of priority values.
+NOMINAL_SEATS = 435  # The number of seats to apportion using the census data.
+LIST_SEATS = 50  # The number of list seats, if fixed.
 
 STATES = [
     "AL",
