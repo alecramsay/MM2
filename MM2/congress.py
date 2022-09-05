@@ -20,7 +20,7 @@ class MM2_Apportioner:
         # Apportion the first 435 seats, using census data
 
         self._base_app = HH_Apportioner(census)
-        self._base_app.assign_first_N(435)
+        self._base_app.assign_first_N(NOMINAL_SEATS)
 
         # Initialize MM2 report structures
 

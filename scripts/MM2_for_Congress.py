@@ -122,7 +122,7 @@ with open(out_path, "w") as f:
 
     if not app.queue_is_ok():
         print(
-            "Warning: One or more states have no remaining priority values! Increase MAX_SEATS & re-run.\n",
+            "Warning: One or more states have no remaining priority values! Increase MAX_STATE_SEATS & re-run.\n",
             file=f,
         )
     else:
