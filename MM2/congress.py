@@ -90,7 +90,7 @@ class MM2_Apportioner:
             self.byState[xx]["s'"] = self.byState[xx]["s"]
             self.byState[xx]["n'"] = self.byState[xx]["n"]
 
-    def assign_next(self):
+    def assignment_rule(self):
         # Assign the next seat to the *state* with the highest priority value
 
         hs, pv, xx, _ = self._base_app.assign_next()
@@ -124,6 +124,8 @@ class MM2_Apportioner:
                 party = balance_state_and_national(d_skew, r_skew, threshold, gap)
             case 4:
                 party = balance_state_and_national(d_skew, r_skew, threshold, gap)
+            case 5:
+                party = reduce_national_gap(gap)
             case _:
                 raise ValueError("Invalid strategy")
 
@@ -157,19 +159,30 @@ class MM2_Apportioner:
             }
         )
 
+    def termination_rule(self):
+        if self._strategy in [1, 2, 3, 4]:
+            # Stop when the gap is zero
+            return self.gap != 0
+        elif self._strategy in [5]:
+            # Stop when all list seats are assigned
+            return (self.N - self.N0) < LIST_SEATS
+        else:
+            raise ValueError("Invalid strategy")
+
     def eliminate_gap(self, strategy=1):
         # Pre-processing
-        self._setup_assignment_rule(strategy)
+        self._setup_strategy(strategy)
 
-        while self.gap != 0:
-            self.assign_next()
+        while self.termination_rule():
+            self.assignment_rule()
 
         # Post-processing for reports
         self._calc_analytics()
 
-    def _setup_assignment_rule(self, strategy):
+    def _setup_strategy(self, strategy):
         self._strategy = strategy
         self._r = 2 if strategy == 4 else 1
+        self._list_pool = LIST_SEATS if strategy == 5 else None
 
     def _calc_analytics(self):
         # Compute the SKEW & POWER for the nominal seats
@@ -254,9 +267,10 @@ def minimize_state_skew_retro(Vf, Sf):
 def reduce_national_gap(gap):
     """
     Reduce the national gap by one seat.
-    """
 
-    assert gap != 0
+    NOTE - The gap can be zero while more list seats are still being assigned.
+    At that point, the gap will flip back & forth between +1 and -1.
+    """
 
     party = "DEM" if gap > 0 else "REP"
 
