@@ -169,8 +169,8 @@ class MM2_Apportioner:
             # Stop when all list seats are assigned
             return (self.N - self.N0) < LIST_SEATS
         elif self._strategy in [6]:
-            # Stop when total seats are assigned
-            return self.N < TOTAL_SEATS
+            # Stop when total seats are assigned (including "other" seats)
+            return (self.N - self.N0) < (TOTAL_SEATS - NOMINAL_SEATS)
         else:
             raise ValueError("Invalid strategy")
 
