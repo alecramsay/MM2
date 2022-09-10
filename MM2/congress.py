@@ -108,7 +108,7 @@ class MM2_Apportioner:
         r_skew = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold = (
             skew_threshold(0.05, n_i)
-            if self._strategy == 4
+            if self._strategy in [4, 6]
             else skew_threshold(0.1, n_i)
         )
         gap = self.gap
@@ -126,6 +126,8 @@ class MM2_Apportioner:
                 party = balance_state_and_national(d_skew, r_skew, threshold, gap)
             case 5:
                 party = reduce_national_gap(gap)
+            case 6:
+                party = balance_state_and_national(d_skew, r_skew, threshold, gap)
             case _:
                 raise ValueError("Invalid strategy")
 
@@ -166,6 +168,9 @@ class MM2_Apportioner:
         elif self._strategy in [5]:
             # Stop when all list seats are assigned
             return (self.N - self.N0) < LIST_SEATS
+        elif self._strategy in [6]:
+            # Stop when total seats are assigned
+            return self.N < TOTAL_SEATS
         else:
             raise ValueError("Invalid strategy")
 
@@ -181,8 +186,8 @@ class MM2_Apportioner:
 
     def _setup_strategy(self, strategy):
         self._strategy = strategy
-        self._r = 2 if strategy == 4 else 1
-        self._list_pool = LIST_SEATS if strategy == 5 else None
+        self._r = 2 if strategy in [4, 6] else 1
+        # self._list_pool = LIST_SEATS if strategy == 5 else None
 
     def _calc_analytics(self):
         # Compute the SKEW & POWER for the nominal seats

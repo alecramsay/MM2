@@ -6,7 +6,8 @@
 MAX_STATE_SEATS = 100  # Choose this value, so CA doesn't run out of priority values.
 
 NOMINAL_SEATS = 435  # The number of seats to apportion using the census data.
-LIST_SEATS = 50  # The number of list seats, if fixed.
+LIST_SEATS = 50  # The number of list seats, if fixed (Strategy 5).
+TOTAL_SEATS = 600  # Total number of seats to apportion, if fixed (Strategy 6).
 
 STATES = [
     "AL",
