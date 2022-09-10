@@ -6,6 +6,12 @@ Q. How big does the House have to be for every state to have multiple seats?
 A. For the 2020 census, all states have multiple seats after 811 seats.
    WY is the last state to get a second seat.
 
+   After 435 seats, 6 states have multiple seats: {'ND', 'SD', 'VT', 'AK', 'DE', 'WY'}
+   After 500 seats, 5 states have multiple seats: {'ND', 'SD', 'VT', 'AK', 'WY'}
+   After 600 seats, 4 states have multiple seats: {'ND', 'VT', 'AK', 'WY'}
+   After 700 seats, 2 states have multiple seats: {'VT', 'WY'}
+   After 800 seats, 1 states have multiple seats: {'WY'}
+
 For example:
 
 $ scripts/mutiple_seats.py
@@ -37,6 +43,7 @@ single_seats = set(STATES)
 
 app._make_priority_queue()
 
+print()
 print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
 while single_seats:
@@ -44,6 +51,13 @@ while single_seats:
     print("{},{},{},{}".format(hs, pv, xx, ss))
 
     single_seats.discard(xx)
+
+    if (app.N == 435) or (app.N % 100 == 0):
+        print(
+            "After {} seats, {} states have multiple seats: {}".format(
+                app.N, len(single_seats), single_seats
+            )
+        )
 
 print(
     "For the {} census, all states have multiple seats after {} seats.".format(
