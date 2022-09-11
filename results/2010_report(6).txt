@@ -6,5 +6,5 @@ All states have remaining priority values.
 
 Some states still have only one representative: AK, ND, VT, WY
 
-Some states are still disproportional more than one seat: CA, HI, MD, MA, NY
+Some states are still disproportional more than one seat: CA, HI, MD, MA, NJ, NY
 

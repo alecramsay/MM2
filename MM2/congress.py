@@ -107,7 +107,8 @@ class MM2_Apportioner:
         d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
         r_skew = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold = (
-            skew_threshold(0.05, n_i)
+            skew_threshold(0.1, n_i)
+            # skew_threshold(0.05, n_i)  # NOTE - Too tight!
             if self._strategy in [4, 6]
             else skew_threshold(0.1, n_i)
         )
@@ -187,7 +188,6 @@ class MM2_Apportioner:
     def _setup_strategy(self, strategy):
         self._strategy = strategy
         self._r = 2 if strategy in [4, 6] else 1
-        # self._list_pool = LIST_SEATS if strategy == 5 else None
 
     def _calc_analytics(self):
         # Compute the SKEW & POWER for the nominal seats
