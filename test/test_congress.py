@@ -105,20 +105,24 @@ class TestCongress:
         assert minimize_state_skew(0.05, 0.05) == "DEM"
 
     def test_reduce_national_gap(self):
-        assert reduce_national_gap(1) == "DEM"
-        assert reduce_national_gap(-1) == "REP"
-        # NOTE - Should never be called with gap = 0
+        fn = make_reducer_fn(0.51, 1.0)
+        assert fn(1) == "DEM"
+        assert fn(-1) == "REP"
+        assert fn(0) == "DEM"
+        fn = make_reducer_fn(0.49, 1.0)
+        assert fn(0) == "REP"
 
     def test_balance_state_and_national(self):
-        assert balance_state_and_national(0.05, 0.06, 0.10, 10) == "DEM"
-        assert balance_state_and_national(0.06, 0.05, 0.10, 10) == "DEM"
-        assert balance_state_and_national(0.15, 0.16, 0.10, 10) == "DEM"
-        assert balance_state_and_national(0.16, 0.15, 0.10, 10) == "REP"
+        fn = make_balancer_fn(make_reducer_fn(0.51, 1.0))
+        assert fn(0.05, 0.06, 0.10, 10) == "DEM"
+        assert fn(0.06, 0.05, 0.10, 10) == "DEM"
+        assert fn(0.15, 0.16, 0.10, 10) == "DEM"
+        assert fn(0.16, 0.15, 0.10, 10) == "REP"
 
-        assert balance_state_and_national(0.05, 0.06, 0.10, -10) == "REP"
-        assert balance_state_and_national(0.06, 0.05, 0.10, -10) == "REP"
-        assert balance_state_and_national(0.15, 0.16, 0.10, -10) == "DEM"
-        assert balance_state_and_national(0.16, 0.15, 0.10, -10) == "REP"
+        assert fn(0.05, 0.06, 0.10, -10) == "REP"
+        assert fn(0.06, 0.05, 0.10, -10) == "REP"
+        assert fn(0.15, 0.16, 0.10, -10) == "DEM"
+        assert fn(0.16, 0.15, 0.10, -10) == "REP"
 
     def test_skew_pct(self):
         assert skew_pct(0.5, 1.0, 0.5, 1.0) == approx(0.0)

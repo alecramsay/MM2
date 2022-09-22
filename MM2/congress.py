@@ -120,15 +120,17 @@ class MM2_Apportioner:
             case 1:
                 party = minimize_state_skew(d_skew, r_skew)
             case 2:
-                party = reduce_national_gap(gap)
+                party = self._reducer_fn(gap)
             case 3:
-                party = balance_state_and_national(d_skew, r_skew, threshold, gap)
+                party = self._balancer_fn(d_skew, r_skew, threshold, gap)
             case 4:
-                party = balance_state_and_national(d_skew, r_skew, threshold, gap)
+                party = self._balancer_fn(d_skew, r_skew, threshold, gap)
             case 5:
-                party = reduce_national_gap(gap)
+                party = self._reducer_fn(gap)
             case 6:
-                party = balance_state_and_national(d_skew, r_skew, threshold, gap)
+                party = self._balancer_fn(
+                    d_skew, r_skew, threshold, gap, self._gap_eliminated
+                )
             case _:
                 raise ValueError("Invalid strategy")
 
@@ -188,6 +190,10 @@ class MM2_Apportioner:
     def _setup_strategy(self, strategy):
         self._strategy = strategy
         self._r = 2 if strategy in [4, 6] else 1
+        self._gap_eliminated = True if self.gap == 0 else False
+
+        self._reducer_fn = make_reducer_fn(self.V, self.T)
+        self._balancer_fn = make_balancer_fn(self._reducer_fn)
 
     def _calc_analytics(self):
         # Compute the SKEW & POWER for the nominal seats
@@ -269,30 +275,43 @@ def minimize_state_skew_retro(Vf, Sf):
     return party
 
 
-def reduce_national_gap(gap):
-    """
-    Reduce the national gap by one seat.
+def make_reducer_fn(V, T):
+    def reduce_national_gap(gap):
+        """
+        Reduce the national gap by one seat.
 
-    NOTE - The gap can be zero while more list seats are still being assigned.
-    At that point, the gap will flip back & forth between +1 and -1.
-    """
+        NOTE - The gap can be zero while more list seats are still being assigned.
+        At that point, the gap will flip back & forth between +1 and -1.
+        """
+        if gap > 0:
+            return "DEM"
+        if gap < 0:
+            return "REP"
+        # If the gap is zero, assign the seat to the party with the bigger national vote share
+        return "DEM" if (V / T) > 0.5 else "REP"
 
-    party = "DEM" if gap > 0 else "REP"
-
-    return party
+    return reduce_national_gap
 
 
-def balance_state_and_national(d_skew, r_skew, threshold, gap):
-    """
-    Balance state skew (pct) and national gap (seats).
-    """
+def make_balancer_fn(reducer_fn):
+    def balance_state_and_national(
+        d_skew, r_skew, threshold, gap, gap_eliminated=False
+    ):
+        """
+        Balance state skew (pct) and national gap (seats) until the gap has been eliminated.
+        Then just minimize the national gap.
+        """
 
-    if lt_threshold(d_skew, threshold) and lt_threshold(r_skew, threshold):
-        party = reduce_national_gap(gap)
-    else:
-        party = minimize_state_skew(d_skew, r_skew)
+        if (
+            lt_threshold(d_skew, threshold) and lt_threshold(r_skew, threshold)
+        ) or gap_eliminated:
+            party = reducer_fn(gap)
+        else:
+            party = minimize_state_skew(d_skew, r_skew)
 
-    return party
+        return party
+
+    return balance_state_and_national
 
 
 ### HELPERS ###
