@@ -118,16 +118,23 @@ class MM2_Apportioner:
             case 0:
                 party = minimize_state_skew_retro(Vf, Sf)
             case 1:
+                # Minimize the prospective skew for the state, until gap is zero
                 party = minimize_state_skew(d_skew, r_skew)
             case 2:
+                # Reduce the national gap, until gap is zero
                 party = self._reducer_fn(gap)
             case 3:
+                # Balance the two, until gap is zero
                 party = self._balancer_fn(d_skew, r_skew, threshold, gap)
             case 4:
+                # Balance the two, until gap is zero, except with skew(r=2)
                 party = self._balancer_fn(d_skew, r_skew, threshold, gap)
             case 5:
+                # Assign 50 list seats (485 total), reducing the national gap
                 party = self._reducer_fn(gap)
             case 6:
+                # Assign 165 list seats (600 total), balancing the two with skew(r=2),
+                # until gap is zero and then just minimize the national gap
                 party = self._balancer_fn(
                     d_skew, r_skew, threshold, gap, self._gap_eliminated
                 )
