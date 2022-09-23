@@ -112,7 +112,7 @@ class MM2_Apportioner:
             if self._strategy in [4, 6]
             else skew_threshold(0.1, n_i)
         )
-        gap = self.gap
+        gap = self.gap  # old gap
 
         match self._strategy:
             case 0:
@@ -138,6 +138,12 @@ class MM2_Apportioner:
                 party = self._balancer_fn(
                     d_skew, r_skew, threshold, gap, self._gap_eliminated
                 )
+            case 7:
+                # Assign 165 list seats (600 total), balancing the two with skew(r=1),
+                # until gap is zero and then just minimize the national gap
+                party = self._balancer_fn(
+                    d_skew, r_skew, threshold, gap, self._gap_eliminated
+                )
             case _:
                 raise ValueError("Invalid strategy")
 
@@ -151,7 +157,10 @@ class MM2_Apportioner:
         self.byState[xx]["n'"] += 1
         ss = self.byState[xx]["n'"]
 
-        self.gap = gap_seats(self.V, self.T, self.S, self.N)
+        self.gap = gap_seats(self.V, self.T, self.S, self.N)  # new gap
+        self._gap_eliminated = (
+            self._gap_eliminated or self.gap == 0
+        )  # gap has been zeroed
 
         # Log the assignment for reporting
 
@@ -178,7 +187,7 @@ class MM2_Apportioner:
         elif self._strategy in [5]:
             # Stop when all list seats are assigned
             return (self.N - self.N0) < LIST_SEATS
-        elif self._strategy in [6]:
+        elif self._strategy in [6, 7]:
             # Stop when total seats are assigned (including "other" seats)
             return (self.N - self.N0) < (TOTAL_SEATS - NOMINAL_SEATS)
         else:
