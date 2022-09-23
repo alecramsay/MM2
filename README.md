@@ -33,11 +33,11 @@ app.eliminate_gap(strategy=strategy)
 There are 7 strategies for eliminating the gap:
 1. Minimize the prospective skew for the state
 2. Reduce the national gap 
-3. Balance the two -- when the prospectives skews would both be below a threshold, eliminate the national gap; otherwise minimize the state skew.
+3. Balance the two -- when the prospective skews would both be below a threshold, eliminate the national gap; otherwise minimize the state skew
 4. Balance the two but define skew wrto a responsiveness = 2, i.e., efficiency gap = 0
 5. Assign 50 list seats, reducing the national gap
-6. Assign 165 list seats (600 total), balancing the two with skew(r=2), until gap is zero and then just minimize the national gap
-7. Assign 165 list seats (600 total), balancing the two with skew(r=1), until gap is zero and then just minimize the national gap
+6. Assign 165 list seats (600 total), balancing the two with skew(r=2) until gap is zero and then just minimize the national gap
+7. Assign 165 list seats (600 total), balancing the two with skew(r=1) until gap is zero and then just minimize the national gap
 
 The MM2_for_Congress.py script in the scripts/ directory takes a census decade, an election year, and a strategy, 
 loads the census and election data, eliminates the national gap assigning list seats to states using the specified strategy:
