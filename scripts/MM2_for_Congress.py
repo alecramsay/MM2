@@ -54,6 +54,7 @@ census = read_typed_csv(csv_data, types)
 ### LOAD THE ELECTION RESULTS ###
 
 csv_data = "data/elections/Congressional Elections ({}).csv".format(args.election)
+# TODO - Suppress the floats for non-imputed elections.
 types = [str] * 3 + [int] * 8 + [float] * 2
 elections = read_typed_csv(csv_data, types)
 
