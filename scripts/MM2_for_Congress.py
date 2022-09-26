@@ -7,11 +7,8 @@ Add list seats to base congressional apportionment for an election.
 For example:
 
 $ scripts/MM2_for_Congress.py 2010 2012
-$ scripts/MM2_for_Congress.py 2010 2012 -s 0
-$ scripts/MM2_for_Congress.py 2010 2012 -s 1
-$ scripts/MM2_for_Congress.py 2010 2012 -s 2
-$ scripts/MM2_for_Congress.py 2010 2012 -s 3
-$ scripts/MM2_for_Congress.py 2010 2012 -s 4 
+$ scripts/MM2_for_Congress.py 2010 2012 -s 7
+$ scripts/MM2_for_Congress.py 2010 2012 -s 7 -r
 
 For documentation, type:
 
@@ -36,6 +33,9 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "-r", "--raw", dest="raw", action="store_true", help="Raw elections (not imputed)"
+)
+parser.add_argument(
     "-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode"
 )
 
@@ -53,9 +53,16 @@ census = read_typed_csv(csv_data, types)
 
 ### LOAD THE ELECTION RESULTS ###
 
-csv_data = "data/elections/Congressional Elections ({}).csv".format(args.election)
-# TODO - Suppress the floats for non-imputed elections.
-types = [str] * 3 + [int] * 8 + [float] * 2
+csv_data = (
+    "data/elections/Congressional Elections ({}).csv".format(args.election)
+    if args.raw == False
+    else "data/elections/not_imputed/Congressional Elections ({}).csv".format(
+        args.election
+    )
+)
+types = [str] * 3 + [int] * 8
+if args.raw == False:
+    types += [float] * 2
 elections = read_typed_csv(csv_data, types)
 
 
@@ -67,8 +74,13 @@ app.eliminate_gap(strategy=args.strategy)
 
 ### WRITE THE RESULTS ###
 
+raw_label = "|RAW" if args.raw == True else ""
+reps_by_state = "results/{}_reps_by_state({}{}).csv".format(
+    args.election, args.strategy, raw_label
+)
+
 write_csv(
-    "results/{}_reps_by_state({}).csv".format(args.election, args.strategy),
+    reps_by_state,
     [
         {
             "XX": k,
@@ -87,8 +99,12 @@ write_csv(
     # rows,
     ["XX", "n", "v/t", "s", "SKEW", "POWER", "n'", "s'", "SKEW'", "POWER'"],
 )
+
+reps_by_state = "results/{}_reps_by_priority({}{}).csv".format(
+    args.election, args.strategy, raw_label
+)
 write_csv(
-    "results/{}_reps_by_priority({}).csv".format(args.election, args.strategy),
+    reps_by_state,
     app.byPriority,
     [
         "HOUSE SEAT",
@@ -108,8 +124,8 @@ write_csv(
 
 ### REPORT SOME BASIC INFO ###
 
-out_path = "results/{}_report({}).txt".format(args.election, args.strategy)
-with open(out_path, "w") as f:
+report = "results/{}_report({}{}).txt".format(args.election, args.strategy, raw_label)
+with open(report, "w") as f:
     print("{}\n".format(app.baseline), file=f)
 
     print(
