@@ -100,11 +100,11 @@ write_csv(
     ["XX", "n", "v/t", "s", "SKEW", "POWER", "n'", "s'", "SKEW'", "POWER'"],
 )
 
-reps_by_state = "results/{}_reps_by_priority({}{}).csv".format(
+reps_by_priority = "results/{}_reps_by_priority({}{}).csv".format(
     args.election, args.strategy, raw_label
 )
 write_csv(
-    reps_by_state,
+    reps_by_priority,
     app.byPriority,
     [
         "HOUSE SEAT",
