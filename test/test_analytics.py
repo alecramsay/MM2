@@ -52,3 +52,17 @@ class TestAnalytics:
         S = 7
         ue = ue_seats(PR, S)
         assert ue == -2
+
+    def test_number_for_control(self):
+        assert reps_for_control(435) == 218
+        assert reps_for_control(434) == 218
+        assert reps_for_control(433) == 217
+        assert reps_for_control(600) == 301
+
+    def test_slack_formula(self):
+        assert slack_formula(215, 435) == 2
+        assert slack_formula(216, 435) == 1
+        assert slack_formula(217, 435) == 0
+        assert slack_formula(218, 435) == 0
+        assert slack_formula(219, 435) == -1
+        assert slack_formula(220, 435) == -2

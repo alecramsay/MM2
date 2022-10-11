@@ -57,12 +57,13 @@ class MM2_Apportioner:
         self.S0 = self.S
         self.N0 = self.N
 
-        # - The delta from PR (this changes)
+        # - The initial gap & slack (these change)
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
+        self.slack = actual_slack(self.V, self.T, self.S, self.N)
 
         # Characterize the base apportionment
-        self.baseline = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap of {:+2} seats.".format(
-            self.V / self.T, self.S, self.N, self.gap
+        self.baseline = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap & slack of {:+2} and {:+2} seats, respectively.".format(
+            self.V / self.T, self.S, self.N, self.gap, self.slack
         )
 
     def _abstract_byState_data(self):
@@ -106,12 +107,7 @@ class MM2_Apportioner:
         Sf = s_i / n_i
         d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
         r_skew = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
-        threshold = (
-            skew_threshold(0.1, n_i)
-            # skew_threshold(0.05, n_i)  # NOTE - Too tight!
-            if self._strategy in [4, 6]
-            else skew_threshold(0.1, n_i)
-        )
+        threshold = skew_threshold(0.1, n_i)
         gap = self.gap  # old gap
 
         match self._strategy:
@@ -144,6 +140,9 @@ class MM2_Apportioner:
                 party = self._balancer_fn(
                     d_skew, r_skew, threshold, gap, self._gap_eliminated
                 )
+            case 8:
+                # Minimize the prospective skew for the state (r=1), until 165 list seats are assigned
+                party = minimize_state_skew(d_skew, r_skew)
             case _:
                 raise ValueError("Invalid strategy")
 
@@ -157,10 +156,12 @@ class MM2_Apportioner:
         self.byState[xx]["n'"] += 1
         ss = self.byState[xx]["n'"]
 
-        self.gap = gap_seats(self.V, self.T, self.S, self.N)  # new gap
-        self._gap_eliminated = (
-            self._gap_eliminated or self.gap == 0
-        )  # gap has been zeroed
+        # New gap & slack w/o  "other" seats
+        self.gap = gap_seats(self.V, self.T, self.S, self.N)
+        self.slack = actual_slack(self.V, self.T, self.S, self.N)
+
+        # Gap has been zeroed (might subsequently go + or -)
+        self._gap_eliminated = self._gap_eliminated or self.gap == 0
 
         # Log the assignment for reporting
 
@@ -177,6 +178,7 @@ class MM2_Apportioner:
                 "THRESHOLD": threshold,
                 "PARTY": party,
                 "GAP": self.gap,
+                "SLACK": self.slack,
             }
         )
 
@@ -187,7 +189,7 @@ class MM2_Apportioner:
         elif self._strategy in [5]:
             # Stop when all list seats are assigned
             return (self.N - self.N0) < LIST_SEATS
-        elif self._strategy in [6, 7]:
+        elif self._strategy in [6, 7, 8]:
             # Stop when total seats are assigned (including "other" seats)
             return (self.N - self.N0) < (TOTAL_SEATS - NOMINAL_SEATS)
         else:
@@ -373,3 +375,20 @@ def lt_threshold(x, threshold):
     (x < threshold) handling floating point imprecision
     """
     return (abs(x) < threshold) and not abs(x) == approx(threshold)
+
+
+def expected_slack(V, T, S, N):
+    """
+    The # of seats of *expected* slack for the majority vote-winning party (+:R, -:D).
+    """
+    D = pr_seats(N, V / T)
+
+    return slack_formula(D, N)
+
+
+def actual_slack(V, T, S, N):
+    """
+    The # of seats of *actual* slack for the majority seat-winning party (+:R, -:D).
+    """
+
+    return slack_formula(S, N)

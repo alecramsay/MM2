@@ -9,6 +9,7 @@ For example:
 $ scripts/MM2_for_Congress.py 2010 2012
 $ scripts/MM2_for_Congress.py 2010 2012 -s 7
 $ scripts/MM2_for_Congress.py 2010 2012 -s 7 -r
+$ scripts/MM2_for_Congress.py 2000 2006
 
 For documentation, type:
 
@@ -29,7 +30,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument("cycle", help="The census cycle (e.g., 2010)", type=int)
 parser.add_argument("election", help="The election year (e.g., 2012)", type=int)
 parser.add_argument(
-    "-s", "--strategy", default=1, help="The list-assignment strategy", type=int
+    "-s", "--strategy", default=8, help="The list-assignment strategy", type=int
 )
 
 parser.add_argument(
@@ -118,6 +119,7 @@ write_csv(
         "THRESHOLD",
         "PARTY",
         "GAP",
+        "SLACK",
     ],
 )
 

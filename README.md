@@ -38,6 +38,7 @@ There are 7 strategies for eliminating the gap:
 5. Assign 50 list seats, reducing the national gap
 6. Assign 165 list seats (600 total), balancing the two with skew(r=2) until gap is zero and then just minimize the national gap
 7. Assign 165 list seats (600 total), balancing the two with skew(r=1) until gap is zero and then just minimize the national gap
+8. Assign 165 list seats (600 total), always minimizing the prospective skew for the state
 
 The MM2_for_Congress.py script in the scripts/ directory takes a census decade, an election year, and a strategy, 
 loads the census and election data, eliminates the national gap assigning list seats to states using the specified strategy:
@@ -45,6 +46,8 @@ loads the census and election data, eliminates the national gap assigning list s
 ```shell
 scripts/MM2_for_Congress.py 2010 2012 -s 3
 ```
+
+The default strategy is 8.
 
 It writes the results to three files:
 
