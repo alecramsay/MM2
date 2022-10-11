@@ -1,4 +1,4 @@
-D's got 50.68% of the vote and won 222 of 435 seats yielding a gap of -2 seats.
+D's got 50.68% of the vote and won 222 of 435 seats yielding a gap & slack of -2 and -4 seats, respectively.
 
 165 list seats (83 Democratic) were added for a total of 600.
 
