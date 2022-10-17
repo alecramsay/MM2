@@ -21,25 +21,25 @@ $ scripts/mutiple_seats.py
 from MM2 import *
 
 
-cycle = 2020
+cycle: int = 2020
 # verbose = True
 
 
 ### LOAD THE CENSUS ###
 
-csv_data = "data/census/{}_census.csv".format(cycle)
-types = [str, str, int]
-census = read_typed_csv(csv_data, types)
+csv_data: str = "data/census/{}_census.csv".format(cycle)
+types: list = [str, str, int]
+census: list = read_typed_csv(csv_data, types)
 
 
 ### APPORTION NOMINAL SEATS UNTIL EVERY STATE HAS MORE THAN 1 ###
 
-app = HH_Apportioner(census)
+app: HH_Apportioner = HH_Apportioner(census)
 
 for xx in STATES:
     app.reps[xx] = 1
 app.N = 50
-single_seats = set(STATES)
+single_seats: set[str] = set(STATES)
 
 app._make_priority_queue()
 
@@ -47,6 +47,7 @@ print()
 print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
 while single_seats:
+    # TODO
     hs, pv, xx, ss = app.assign_next()
     print("{},{},{},{}".format(hs, pv, xx, ss))
 

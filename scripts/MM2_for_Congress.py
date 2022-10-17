@@ -17,13 +17,16 @@ $ scripts/add_reps.py -h
 
 """
 
+from typing import LiteralString
 import argparse
+from argparse import ArgumentParser, Namespace
+
 from MM2 import *
 
 
 ### PARSE ARGUMENTS ###
 
-parser = argparse.ArgumentParser(
+parser: ArgumentParser = argparse.ArgumentParser(
     description="Add MM2 list seats to base congressional apportionment."
 )
 
@@ -40,16 +43,16 @@ parser.add_argument(
     "-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode"
 )
 
-args = parser.parse_args()
+args: Namespace = parser.parse_args()
 
 print("{}({})|{}".format(args.election, args.strategy, args.cycle))
 
 
 ### LOAD THE CENSUS ###
 
-csv_data = "data/census/{}_census.csv".format(args.cycle)
-types = [str, str, int]
-census = read_typed_csv(csv_data, types)
+csv_data: LiteralString = "data/census/{}_census.csv".format(args.cycle)
+types: list = [str, str, int]
+census: list = read_typed_csv(csv_data, types)
 
 
 ### LOAD THE ELECTION RESULTS ###
@@ -64,19 +67,19 @@ csv_data = (
 types = [str] * 3 + [int] * 8
 if args.raw == False:
     types += [float] * 2
-elections = read_typed_csv(csv_data, types)
+elections: list = read_typed_csv(csv_data, types)
 
 
 ### APPORTION THE 435 NOMINAL SEATS & ADD LIST SEATS FOR PR ###
 
-app = MM2_Apportioner(census, elections, args.verbose)
+app: MM2_Apportioner = MM2_Apportioner(census, elections, args.verbose)
 app.eliminate_gap(strategy=args.strategy)
 
 
 ### WRITE THE RESULTS ###
 
-raw_label = "|RAW" if args.raw == True else ""
-reps_by_state = "results/{}_reps_by_state({}{}).csv".format(
+raw_label: LiteralString = "|RAW" if args.raw == True else ""
+reps_by_state: str = "results/{}_reps_by_state({}{}).csv".format(
     args.election, args.strategy, raw_label
 )
 
@@ -101,7 +104,7 @@ write_csv(
     ["XX", "n", "v/t", "s", "SKEW", "POWER", "n'", "s'", "SKEW'", "POWER'"],
 )
 
-reps_by_priority = "results/{}_reps_by_priority({}{}).csv".format(
+reps_by_priority: LiteralString = "results/{}_reps_by_priority({}{}).csv".format(
     args.election, args.strategy, raw_label
 )
 write_csv(
@@ -126,7 +129,9 @@ write_csv(
 
 ### REPORT SOME BASIC INFO ###
 
-report = "results/{}_report({}{}).txt".format(args.election, args.strategy, raw_label)
+report: LiteralString = "results/{}_report({}{}).txt".format(
+    args.election, args.strategy, raw_label
+)
 with open(report, "w") as f:
     print("{}\n".format(app.baseline), file=f)
 
@@ -147,7 +152,7 @@ with open(report, "w") as f:
     else:
         print("All states have remaining priority values.\n", file=f)
 
-    ones = app.one_rep_states()
+    ones: list = app.one_rep_states()
     if len(ones) > 0:
         print(
             "Some states still have only one representative: {}\n".format(
@@ -158,7 +163,7 @@ with open(report, "w") as f:
     else:
         print("All states have more than one representative.\n", file=f)
 
-    unbalanced = app.unbalanced_states()
+    unbalanced: list = app.unbalanced_states()
     if len(unbalanced) > 0:
         print(
             "Some states are still disproportional more than one seat: {}\n".format(

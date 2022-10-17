@@ -8,7 +8,7 @@ HELPERS
 import os
 from csv import DictReader, DictWriter
 import pickle
-from typing import Any
+from typing import Any, Optional
 
 
 def read_typed_csv(rel_path, field_types) -> list:
@@ -97,7 +97,7 @@ def write_pickle(rel_path, obj) -> bool:
         return False
 
 
-def read_pickle(rel_path) -> bytes | bool:
+def read_pickle(rel_path) -> Optional[bytes]:
     """
     TODO: Is 'bytes' the right return type?
     """
@@ -109,4 +109,4 @@ def read_pickle(rel_path) -> bytes | bool:
             return pickle.load(handle)
     except Exception as e:
         print("Exception unpickling: ", e)
-        return False
+        return None
