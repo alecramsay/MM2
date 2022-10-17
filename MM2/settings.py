@@ -3,9 +3,7 @@
 # SETTINGS
 #
 
-MAX_STATE_SEATS: int = (
-    100  # Choose this value, so CA doesn't run out of priority values.
-)
+MAX_STATE_SEATS: int = 100  # Use this value, so CA doesn't run out of priority values.
 
 NOMINAL_SEATS: int = 435  # The number of seats to apportion using the census data.
 LIST_SEATS: int = 50  # The number of list seats, if fixed (Strategy 5).
