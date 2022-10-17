@@ -9,8 +9,6 @@ import os
 from csv import DictReader, DictWriter
 import pickle
 
-# import json
-
 
 def read_typed_csv(rel_path, field_types):
     """
@@ -72,7 +70,7 @@ def cast(t, v_str):
 
 
 class FileSpec:
-    def __init__(self, path, name=None):
+    def __init__(self, path: str, name=None):
         file_name, file_extension = os.path.splitext(path)
 
         self.rel_path = path

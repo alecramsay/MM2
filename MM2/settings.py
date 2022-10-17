@@ -3,13 +3,15 @@
 # SETTINGS
 #
 
-MAX_STATE_SEATS = 100  # Choose this value, so CA doesn't run out of priority values.
+MAX_STATE_SEATS: int = (
+    100  # Choose this value, so CA doesn't run out of priority values.
+)
 
-NOMINAL_SEATS = 435  # The number of seats to apportion using the census data.
-LIST_SEATS = 50  # The number of list seats, if fixed (Strategy 5).
-TOTAL_SEATS = 600  # Total number of seats to apportion, if fixed (Strategy 6).
+NOMINAL_SEATS: int = 435  # The number of seats to apportion using the census data.
+LIST_SEATS: int = 50  # The number of list seats, if fixed (Strategy 5).
+TOTAL_SEATS: int = 600  # Total number of seats to apportion, if fixed (Strategy 6).
 
-STATES = [
+STATES: list[str] = [
     "AL",
     "AK",
     "AZ",
@@ -62,4 +64,4 @@ STATES = [
     "WY",
 ]
 
-EPSILON = 1 / (10**6)
+EPSILON: float = 1 / (10**6)
