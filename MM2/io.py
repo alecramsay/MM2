@@ -97,11 +97,8 @@ def write_pickle(rel_path, obj) -> bool:
         return False
 
 
+# TODO: Is 'bytes' the right return type?
 def read_pickle(rel_path) -> Optional[bytes]:
-    """
-    TODO: Is 'bytes' the right return type?
-    """
-
     abs_path: str = FileSpec(rel_path).abs_path
 
     try:

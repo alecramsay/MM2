@@ -62,8 +62,13 @@ class HH_Apportioner:
             print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
         for i in range(51, N + 1):
-            # TODO: How do I resolve this type error?
-            hs, pv, xx, ss = self.assign_next()
+            # NOTE - The types of this returned tuple don't deconstruct properly.
+            # hs, pv, xx, ss = self.assign_next()
+            t: tuple[int, int, str, int] = self.assign_next()
+            hs: int = t[0]
+            pv: int = t[1]
+            xx: str = t[2]
+            ss: int = t[3]
 
             if self._verbose:
                 print("{},{},{},{}".format(hs, pv, xx, ss))
