@@ -7,11 +7,11 @@ from MM2 import *
 
 
 class TestAnalytics:
-    def test_pr_seats(self):
-        N = 10
+    def test_pr_seats(self) -> None:
+        N: int = 10
 
-        Vf = 0.4
-        PR = pr_seats(N, Vf)
+        Vf: float = 0.4
+        PR: int = pr_seats(N, Vf)
         assert PR == 4
 
         Vf = 0.5
@@ -30,11 +30,11 @@ class TestAnalytics:
         PR = pr_seats(N, Vf)
         assert PR == 6
 
-    def test_ue_seats(self):
-        PR = 5
+    def test_ue_seats(self) -> None:
+        PR: int = 5
 
-        S = 3
-        ue = ue_seats(PR, S)
+        S: int = 3
+        ue: int = ue_seats(PR, S)
         assert ue == 2
 
         S = 4
@@ -53,13 +53,13 @@ class TestAnalytics:
         ue = ue_seats(PR, S)
         assert ue == -2
 
-    def test_number_for_control(self):
+    def test_number_for_control(self) -> None:
         assert reps_for_control(435) == 218
         assert reps_for_control(434) == 218
         assert reps_for_control(433) == 217
         assert reps_for_control(600) == 301
 
-    def test_slack_formula(self):
+    def test_slack_formula(self) -> None:
         assert slack_formula(215, 435) == 2
         assert slack_formula(216, 435) == 1
         assert slack_formula(217, 435) == 0
