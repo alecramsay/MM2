@@ -62,6 +62,7 @@ class HH_Apportioner:
             print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
         for i in range(51, N + 1):
+            # TODO: How do I resolve this type error?
             hs, pv, xx, ss = self.assign_next()
 
             if self._verbose:

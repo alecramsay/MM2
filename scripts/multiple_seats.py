@@ -47,7 +47,7 @@ print()
 print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
 while single_seats:
-    # TODO
+    # TODO: How do I resolve this type error?
     hs, pv, xx, ss = app.assign_next()
     print("{},{},{},{}".format(hs, pv, xx, ss))
 

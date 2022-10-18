@@ -5,6 +5,7 @@
 
 
 from pytest import approx
+from typing import Literal
 
 from .apportion import HH_Apportioner
 from .analytics import *
@@ -12,20 +13,20 @@ from .settings import *
 
 
 class MM2_Apportioner:
-    def __init__(self, census, elections, verbose=False):
+    def __init__(self, census, elections, verbose=False) -> None:
         self._census = census
         self._elections = elections
-        self._verbose = verbose
+        self._verbose: bool = verbose
 
         # Apportion the first 435 seats, using census data
 
-        self._base_app = HH_Apportioner(census, verbose=verbose)
+        self._base_app: HH_Apportioner = HH_Apportioner(census, verbose=verbose)
         self._base_app.assign_first_N(NOMINAL_SEATS)
 
         # Initialize MM2 report structures
 
-        self.byPriority = []
-        self.byState = {}
+        self.byPriority: list = list()
+        self.byState: dict = dict()
 
         # Consolidate census & election data by state
 
@@ -273,28 +274,29 @@ class MM2_Apportioner:
 ### STRATEGIES ###
 
 
-def minimize_state_skew(d_skew, r_skew):
+def minimize_state_skew(d_skew, r_skew) -> Literal["REP", "DEM"]:
     """
     Pick the party that minimizes *prospective* skew.
     """
 
-    party = "REP" if r_skew < d_skew else "DEM"
+    party: Literal["REP", "DEM"] = "REP" if r_skew < d_skew else "DEM"
 
     return party
 
 
-def minimize_state_skew_retro(Vf, Sf):
+def minimize_state_skew_retro(Vf, Sf) -> Literal["REP", "DEM"]:
     """
     Pick the party that results in the *least* disproportionality (retrospective).
     """
 
-    party = "REP" if Sf > Vf else "DEM"
+    party: Literal["REP", "DEM"] = "REP" if Sf > Vf else "DEM"
 
     return party
 
 
+# TODO: How do I resolve this type error?
 def make_reducer_fn(V, T):
-    def reduce_national_gap(gap):
+    def reduce_national_gap(gap: int) -> Literal["DEM", "REP"]:
         """
         Reduce the national gap by one seat.
 
@@ -311,6 +313,7 @@ def make_reducer_fn(V, T):
     return reduce_national_gap
 
 
+# TODO: How do I resolve this type error?
 def make_balancer_fn(reducer_fn):
     def balance_state_and_national(
         d_skew, r_skew, threshold, gap, gap_eliminated=False
@@ -335,33 +338,33 @@ def make_balancer_fn(reducer_fn):
 ### HELPERS ###
 
 
-def gap_seats(V, T, S, N):
+def gap_seats(V, T, S, N) -> int:
     """
     The *whole* # of seats different from proportional.
     Positive values indicate excess R seats, negative execess D seats.
     """
-    PR = pr_seats(N, V / T)
-    gap = ue_seats(PR, S)
+    PR: int = pr_seats(N, V / T)
+    gap: int = ue_seats(PR, S)
 
     return gap
 
 
-def skew_pct(V, T, S, N, r=1):
+def skew_pct(V: int, T: int, S: int, N: int, r: int = 1) -> float:
     """
     This is a generalized definition of skew, using an ideal responsiveness, 'r'.
     It expresses the absolute % deviation of vote share from the ideal seat share,
     given 'r'. The simple version where r=1 captures deviation from proportionality.
     When r=2, skew measures the efficiency gap (EG).
     """
-    Vf = V / T
-    Sf = S / N
+    Vf: float = V / T
+    Sf: float = S / N
 
-    skew = abs((r * (Vf - 0.5)) - (Sf - 0.5))
+    skew: float = abs((r * (Vf - 0.5)) - (Sf - 0.5))
 
     return skew
 
 
-def skew_threshold(pct, N):
+def skew_threshold(pct: float, N: int) -> float:
     """
     A state skew (disproportionality) threshold that is 'good enough'
     after which point the national gap can be reduced instead.
@@ -370,23 +373,23 @@ def skew_threshold(pct, N):
     return max(pct, 1 / N)
 
 
-def lt_threshold(x, threshold):
+def lt_threshold(x, threshold) -> bool:
     """
     (x < threshold) handling floating point imprecision
     """
     return (abs(x) < threshold) and not abs(x) == approx(threshold)
 
 
-def expected_slack(V, T, S, N):
+def expected_slack(V: int, T: int, S: int, N: int) -> int:
     """
     The # of seats of *expected* slack for the majority vote-winning party (+:R, -:D).
     """
-    D = pr_seats(N, V / T)
+    D: int = pr_seats(N, V / T)
 
     return slack_formula(D, N)
 
 
-def actual_slack(V, T, S, N):
+def actual_slack(V: int, T: int, S: int, N: int) -> int:
     """
     The # of seats of *actual* slack for the majority seat-winning party (+:R, -:D).
     """
