@@ -68,7 +68,7 @@ def write_csv(rel_path, rows, cols) -> None:
         raise Exception("Exception writing CSV.")
 
 
-def cast(t, v_str) -> Any:
+def cast(t, v_str) -> str | int | float:
     return t(v_str)
 
 

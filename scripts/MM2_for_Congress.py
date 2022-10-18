@@ -17,7 +17,6 @@ $ scripts/add_reps.py -h
 
 """
 
-from typing import LiteralString
 import argparse
 from argparse import ArgumentParser, Namespace
 
@@ -50,14 +49,14 @@ print("{}({})|{}".format(args.election, args.strategy, args.cycle))
 
 ### LOAD THE CENSUS ###
 
-csv_data: LiteralString = "data/census/{}_census.csv".format(args.cycle)
+csv_data = "data/census/{}_census.csv".format(args.cycle)
 types: list = [str, str, int]
 census: list = read_typed_csv(csv_data, types)
 
 
 ### LOAD THE ELECTION RESULTS ###
 
-csv_data = (
+csv_data: str = (
     "data/elections/Congressional Elections ({}).csv".format(args.election)
     if args.raw == False
     else "data/elections/not_imputed/Congressional Elections ({}).csv".format(
@@ -78,7 +77,7 @@ app.eliminate_gap(strategy=args.strategy)
 
 ### WRITE THE RESULTS ###
 
-raw_label: LiteralString = "|RAW" if args.raw == True else ""
+raw_label: str = "|RAW" if args.raw == True else ""
 reps_by_state: str = "results/{}_reps_by_state({}{}).csv".format(
     args.election, args.strategy, raw_label
 )
@@ -104,7 +103,7 @@ write_csv(
     ["XX", "n", "v/t", "s", "SKEW", "POWER", "n'", "s'", "SKEW'", "POWER'"],
 )
 
-reps_by_priority: LiteralString = "results/{}_reps_by_priority({}{}).csv".format(
+reps_by_priority: str = "results/{}_reps_by_priority({}{}).csv".format(
     args.election, args.strategy, raw_label
 )
 write_csv(
@@ -129,7 +128,7 @@ write_csv(
 
 ### REPORT SOME BASIC INFO ###
 
-report: LiteralString = "results/{}_report({}{}).txt".format(
+report: str = "results/{}_report({}{}).txt".format(
     args.election, args.strategy, raw_label
 )
 with open(report, "w") as f:
