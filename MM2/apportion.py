@@ -44,10 +44,13 @@ class HH_Apportioner:
         pv: int = self._queue[n]["PV"]
 
         self.reps[xx] += 1
-        nassigned: int = self.reps[xx]
         self.N += 1
 
-        return (self.N, pv, xx, nassigned)
+        # HACK - To ensure that all the values of the tuple are explicitly typed.
+        N: int = self.N
+        nassigned: int = self.reps[xx]
+
+        return (N, pv, xx, nassigned)
 
     def assign_first_N(self, N) -> None:
         """
