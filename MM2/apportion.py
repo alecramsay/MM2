@@ -22,11 +22,11 @@ class HH_Apportioner:
 
     def __init__(self, census, verbose=False) -> None:
         self._census = census
-        self._queue: list = []
+        self._queue: list = list()
         self._verbose: bool = verbose
 
         self.N: int = 0
-        self.reps = {}
+        self.reps: dict = dict()
 
     def assign_next(self) -> tuple[int, int, str, int]:
         """
