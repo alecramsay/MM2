@@ -105,8 +105,7 @@ class TestCongress:
         assert minimize_state_skew(0.05, 0.05) == "DEM"
 
     def test_reduce_national_gap(self) -> None:
-        # TODO: How do I resolve this type error?
-        fn = make_reducer_fn(0.51, 1.0)
+        fn: Callable[[int], Literal["DEM", "REP"]] = make_reducer_fn(0.51, 1.0)
         assert fn(1) == "DEM"
         assert fn(-1) == "REP"
         assert fn(0) == "DEM"
@@ -114,8 +113,9 @@ class TestCongress:
         assert fn(0) == "REP"
 
     def test_balance_state_and_national(self) -> None:
-        # TODO: How do I resolve this type error?
-        fn = make_balancer_fn(make_reducer_fn(0.51, 1.0))
+        fn: Callable[
+            [float, float, float, int, bool], Literal["REP", "DEM"]
+        ] = make_balancer_fn(make_reducer_fn(0.51, 1.0))
         assert fn(0.05, 0.06, 0.10, 10) == "DEM"
         assert fn(0.06, 0.05, 0.10, 10) == "DEM"
         assert fn(0.15, 0.16, 0.10, 10) == "DEM"

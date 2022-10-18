@@ -5,7 +5,7 @@
 
 
 from pytest import approx
-from typing import Literal
+from typing import Literal, Callable
 
 from .apportion import HH_Apportioner
 from .analytics import *
@@ -294,8 +294,7 @@ def minimize_state_skew_retro(Vf, Sf) -> Literal["REP", "DEM"]:
     return party
 
 
-# TODO: How do I resolve this type error?
-def make_reducer_fn(V, T):
+def make_reducer_fn(V, T) -> Callable[[int], Literal["DEM", "REP"]]:
     def reduce_national_gap(gap: int) -> Literal["DEM", "REP"]:
         """
         Reduce the national gap by one seat.
@@ -313,11 +312,12 @@ def make_reducer_fn(V, T):
     return reduce_national_gap
 
 
-# TODO: How do I resolve this type error?
-def make_balancer_fn(reducer_fn):
+def make_balancer_fn(
+    reducer_fn,
+) -> Callable[[float, float, float, int, bool], Literal["REP", "DEM"]]:
     def balance_state_and_national(
         d_skew, r_skew, threshold, gap, gap_eliminated=False
-    ):
+    ) -> Literal["REP", "DEM"]:
         """
         Balance state skew (pct) and national gap (seats) until the gap has been eliminated.
         Then just minimize the national gap.
@@ -326,9 +326,9 @@ def make_balancer_fn(reducer_fn):
         if (
             lt_threshold(d_skew, threshold) and lt_threshold(r_skew, threshold)
         ) or gap_eliminated:
-            party = reducer_fn(gap)
+            party: Literal["REP", "DEM"] = reducer_fn(gap)
         else:
-            party = minimize_state_skew(d_skew, r_skew)
+            party: Literal["REP", "DEM"] = minimize_state_skew(d_skew, r_skew)
 
         return party
 
