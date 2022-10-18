@@ -36,8 +36,14 @@ class MM2_Apportioner:
 
         self._sum_national_totals()
 
-    def _sum_national_totals(self):
-        totals = {"REP_V": 0, "DEM_V": 0, "REP_S": 0, "DEM_S": 0, "OTH_S": 0}
+    def _sum_national_totals(self) -> None:
+        totals: dict[str, int] = {
+            "REP_V": 0,
+            "DEM_V": 0,
+            "REP_S": 0,
+            "DEM_S": 0,
+            "OTH_S": 0,
+        }
 
         for state in self._elections:
             totals["REP_V"] += state["REP_V"]
@@ -47,27 +53,27 @@ class MM2_Apportioner:
             totals["OTH_S"] += state["OTH_S"]
 
         # - The D vote and two-party vote totals (these are fixed)
-        self.V = totals["DEM_V"]
-        self.T = totals["REP_V"] + totals["DEM_V"]  # NOTE: Removes "other" votes.
+        self.V: int = totals["DEM_V"]
+        self.T: int = totals["REP_V"] + totals["DEM_V"]  # NOTE: Removes "other" votes.
 
         # - The D seats and two-party seats (these grow w/ list seats)
-        self.S = totals["DEM_S"]
-        self.N = totals["REP_S"] + totals["DEM_S"]  # NOTE: Removes "other" seats.
+        self.S: int = totals["DEM_S"]
+        self.N: int = totals["REP_S"] + totals["DEM_S"]  # NOTE: Removes "other" seats.
 
         # - The initial values for nominal seats
-        self.S0 = self.S
-        self.N0 = self.N
+        self.S0: int = self.S
+        self.N0: int = self.N
 
         # - The initial gap & slack (these change)
-        self.gap = gap_seats(self.V, self.T, self.S, self.N)
-        self.slack = actual_slack(self.V, self.T, self.S, self.N)
+        self.gap: int = gap_seats(self.V, self.T, self.S, self.N)
+        self.slack: int = actual_slack(self.V, self.T, self.S, self.N)
 
         # Characterize the base apportionment
-        self.baseline = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap & slack of {:+2} and {:+2} seats, respectively.".format(
+        self.baseline: str = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap & slack of {:+2} and {:+2} seats, respectively.".format(
             self.V / self.T, self.S, self.N, self.gap, self.slack
         )
 
-    def _abstract_byState_data(self):
+    def _abstract_byState_data(self) -> None:
         for xx in STATES:
             self.byState[xx] = {}
 
@@ -77,7 +83,7 @@ class MM2_Apportioner:
 
         # Add select election data
         for state in self._elections:
-            xx = state["XX"]
+            xx: str = state["XX"]
 
             self.byState[xx]["v"] = state["DEM_V"]
             self.byState[xx]["t"] = state["REP_V"] + state["DEM_V"]
@@ -92,28 +98,33 @@ class MM2_Apportioner:
             self.byState[xx]["s'"] = self.byState[xx]["s"]
             self.byState[xx]["n'"] = self.byState[xx]["n"]
 
-    def assignment_rule(self):
+    def assignment_rule(self) -> None:
         # Assign the next seat to the *state* with the highest priority value
 
-        hs, pv, xx, _ = self._base_app.assign_next()
+        # NOTE - The types of this returned tuple don't deconstruct properly.
+        # hs, pv, xx, _ = self._base_app.assign_next()
+        t: tuple[int, int, str, int] = self._base_app.assign_next()
+        hs: int = t[0]
+        pv: int = t[1]
+        xx: str = t[2]
 
         # Assign it to the *party* based on the chosen strategy
 
-        v_i = self.byState[xx]["v"]
-        t_i = self.byState[xx]["t"]
-        s_i = self.byState[xx]["s'"]
-        n_i = self.byState[xx]["n'"]
+        v_i: int = self.byState[xx]["v"]
+        t_i: int = self.byState[xx]["t"]
+        s_i: int = self.byState[xx]["s'"]
+        n_i: int = self.byState[xx]["n'"]
 
-        Vf = v_i / t_i
-        Sf = s_i / n_i
-        d_skew = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
-        r_skew = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
-        threshold = skew_threshold(0.1, n_i)
-        gap = self.gap  # old gap
+        Vf: float = v_i / t_i
+        Sf: float = s_i / n_i
+        d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
+        r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
+        threshold: float = skew_threshold(0.1, n_i)
+        gap: int = self.gap  # old gap
 
         match self._strategy:
             case 0:
-                party = minimize_state_skew_retro(Vf, Sf)
+                party: Literal["REP", "DEM"] = minimize_state_skew_retro(Vf, Sf)
             case 1:
                 # Minimize the prospective skew for the state, until gap is zero
                 party = minimize_state_skew(d_skew, r_skew)
@@ -155,14 +166,14 @@ class MM2_Apportioner:
 
         self.N += 1
         self.byState[xx]["n'"] += 1
-        ss = self.byState[xx]["n'"]
+        ss: int = self.byState[xx]["n'"]
 
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
         self.slack = actual_slack(self.V, self.T, self.S, self.N)
 
         # Gap has been zeroed (might subsequently go + or -)
-        self._gap_eliminated = self._gap_eliminated or self.gap == 0
+        self._gap_eliminated: bool = self._gap_eliminated or self.gap == 0
 
         # Log the assignment for reporting
 
@@ -183,7 +194,7 @@ class MM2_Apportioner:
             }
         )
 
-    def termination_rule(self):
+    def termination_rule(self) -> bool:
         if self._strategy in [1, 2, 3, 4]:
             # Stop when the gap is zero
             return self.gap != 0
@@ -196,7 +207,7 @@ class MM2_Apportioner:
         else:
             raise ValueError("Invalid strategy")
 
-    def eliminate_gap(self, strategy=1):
+    def eliminate_gap(self, strategy=1) -> None:
         # Pre-processing
         self._setup_strategy(strategy)
 
@@ -206,15 +217,19 @@ class MM2_Apportioner:
         # Post-processing for reports
         self._calc_analytics()
 
-    def _setup_strategy(self, strategy):
-        self._strategy = strategy
-        self._r = 2 if strategy in [4, 6] else 1
+    def _setup_strategy(self, strategy) -> None:
+        self._strategy: int = strategy
+        self._r: int = 2 if strategy in [4, 6] else 1
         self._gap_eliminated = True if self.gap == 0 else False
 
-        self._reducer_fn = make_reducer_fn(self.V, self.T)
-        self._balancer_fn = make_balancer_fn(self._reducer_fn)
+        self._reducer_fn: Callable[[int], Literal["DEM", "REP"]] = make_reducer_fn(
+            self.V, self.T
+        )
+        self._balancer_fn: Callable[
+            [float, float, float, int, bool], Literal["REP", "DEM"]
+        ] = make_balancer_fn(self._reducer_fn)
 
-    def _calc_analytics(self):
+    def _calc_analytics(self) -> None:
         # Compute the SKEW & POWER for the nominal seats
         for k, v in self.byState.items():
             self.byState[k]["SKEW"] = skew_pct(
@@ -233,18 +248,18 @@ class MM2_Apportioner:
             )
             self.byState[k]["POWER'"] = v["POP"] / v["n'"]
 
-    def queue_is_ok(self):
+    def queue_is_ok(self) -> bool:
         """
         All states still have priority values in the queue.
         """
         return self._base_app.queue_is_ok()
 
-    def one_rep_states(self):
+    def one_rep_states(self) -> list:
         """
         Return a list of states with one representative.
         """
 
-        ones = []
+        ones = list()
 
         for xx in STATES:
             if self.byState[xx]["n'"] == 1:
@@ -252,18 +267,18 @@ class MM2_Apportioner:
 
         return ones
 
-    def unbalanced_states(self):
+    def unbalanced_states(self) -> list:
         """
         Return a list of states where (Sf - Vf) * N > 1 seat.
         """
 
-        unbalanced = []
+        unbalanced: list = list()
 
         for xx in STATES:
-            v_i = self.byState[xx]["v"]
-            t_i = self.byState[xx]["t"]
-            s_i = self.byState[xx]["s'"]
-            n_i = self.byState[xx]["n'"]
+            v_i: int = self.byState[xx]["v"]
+            t_i: int = self.byState[xx]["t"]
+            s_i: int = self.byState[xx]["s'"]
+            n_i: int = self.byState[xx]["n'"]
 
             if (((s_i / n_i) - (v_i / t_i)) * n_i) > 1:
                 unbalanced.append(xx)
