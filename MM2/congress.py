@@ -5,7 +5,7 @@
 
 
 from pytest import approx
-from typing import Literal, Callable
+from typing import Literal, Callable, Tuple
 
 from .apportion import HH_Apportioner
 from .analytics import *
@@ -101,9 +101,9 @@ class MM2_Apportioner:
     def assignment_rule(self) -> None:
         # Assign the next seat to the *state* with the highest priority value
 
-        # NOTE - The types of this returned tuple don't deconstruct properly.
+        # HACK - The types of this returned tuple don't deconstruct properly.
         # hs, pv, xx, _ = self._base_app.assign_next()
-        t: tuple[int, int, str, int] = self._base_app.assign_next()
+        t: Tuple[int, int, str, int] = self._base_app.assign_next()
         hs: int = t[0]
         pv: int = t[1]
         xx: str = t[2]

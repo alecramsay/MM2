@@ -18,6 +18,8 @@ $ scripts/mutiple_seats.py
 
 """
 
+from typing import Tuple
+
 from MM2 import *
 
 
@@ -47,9 +49,9 @@ print()
 print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
 while single_seats:
-    # NOTE - The types of this returned tuple don't deconstruct properly.
+    # HACK - The types of this returned tuple don't deconstruct properly.
     # hs, pv, xx, ss = self.assign_next()
-    t: tuple[int, int, str, int] = app.assign_next()
+    t: Tuple[int, int, str, int] = app.assign_next()
     hs: int = t[0]
     pv: int = t[1]
     xx: str = t[2]

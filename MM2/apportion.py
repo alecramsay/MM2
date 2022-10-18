@@ -4,6 +4,8 @@
 #
 
 import math
+from typing import Tuple
+
 from .settings import *
 
 
@@ -28,7 +30,7 @@ class HH_Apportioner:
         self.N: int = 0
         self.reps: dict = dict()
 
-    def assign_next(self) -> tuple[int, int, str, int]:
+    def assign_next(self) -> Tuple[int, int, str, int]:
         """
         Assign the next seat to the state with the highest priority value.
 
@@ -62,9 +64,9 @@ class HH_Apportioner:
             print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
         for i in range(51, N + 1):
-            # NOTE - The types of this returned tuple don't deconstruct properly.
+            # HACK - The types of this returned tuple don't deconstruct properly.
             # hs, pv, xx, ss = self.assign_next()
-            t: tuple[int, int, str, int] = self.assign_next()
+            t: Tuple[int, int, str, int] = self.assign_next()
             hs: int = t[0]
             pv: int = t[1]
             xx: str = t[2]
