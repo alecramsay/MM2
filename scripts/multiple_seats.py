@@ -49,13 +49,12 @@ print()
 print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
 while single_seats:
-    # HACK - The types of this returned tuple don't deconstruct properly.
-    # hs, pv, xx, ss = self.assign_next()
-    t: Tuple[int, int, str, int] = app.assign_next()
-    hs: int = t[0]
-    pv: int = t[1]
-    xx: str = t[2]
-    ss: int = t[3]
+    hs: int
+    pv: int
+    xx: str
+    ss: int
+    hs, pv, xx, ss = app.assign_next()
+
     print("{},{},{},{}".format(hs, pv, xx, ss))
 
     single_seats.discard(xx)

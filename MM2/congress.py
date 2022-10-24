@@ -101,12 +101,10 @@ class MM2_Apportioner:
     def assignment_rule(self) -> None:
         # Assign the next seat to the *state* with the highest priority value
 
-        # HACK - The types of this returned tuple don't deconstruct properly.
-        # hs, pv, xx, _ = self._base_app.assign_next()
-        t: Tuple[int, int, str, int] = self._base_app.assign_next()
-        hs: int = t[0]
-        pv: int = t[1]
-        xx: str = t[2]
+        hs: int
+        pv: int
+        xx: str
+        hs, pv, xx, _ = self._base_app.assign_next()
 
         # Assign it to the *party* based on the chosen strategy
 

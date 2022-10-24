@@ -74,10 +74,9 @@ def cast(t, v_str) -> str | int | float:
 
 class FileSpec:
     def __init__(self, path: str, name=None) -> None:
-        # HACK - To make type hints work
-        tmp: tuple[str, str] = os.path.splitext(path)
-        file_name: str = tmp[0]
-        file_extension: str = tmp[1]
+        file_name: str
+        file_extension: str
+        file_name, file_extension = os.path.splitext(path)
 
         self.rel_path: str = path
         self.abs_path: str = os.path.abspath(path)
