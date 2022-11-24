@@ -4,6 +4,8 @@
 #
 
 import math
+from typing import Tuple
+
 from .settings import *
 
 
@@ -20,15 +22,15 @@ class HH_Apportioner:
 
     """
 
-    def __init__(self, census, verbose=False):
+    def __init__(self, census, verbose=False) -> None:
         self._census = census
-        self._queue = []
-        self._verbose = verbose
+        self._queue: list = list()
+        self._verbose: bool = verbose
 
-        self.N = 0
-        self.reps = {}
+        self.N: int = 0
+        self.reps: dict = dict()
 
-    def assign_next(self):
+    def assign_next(self) -> Tuple[int, int, str, int]:
         """
         Assign the next seat to the state with the highest priority value.
 
@@ -37,16 +39,20 @@ class HH_Apportioner:
 
         assert self.N >= 50
 
-        n = self.N - 50
-        xx = self._queue[n]["XX"]
-        pv = self._queue[n]["PV"]
+        n: int = self.N - 50
+        xx: str = self._queue[n]["XX"]
+        pv: int = self._queue[n]["PV"]
 
         self.reps[xx] += 1
         self.N += 1
 
-        return (self.N, pv, xx, self.reps[xx])
+        # HACK - To ensure that all the values of the tuple are explicitly typed.
+        N: int = self.N
+        nassigned: int = self.reps[xx]
 
-    def assign_first_N(self, N):
+        return (N, pv, xx, nassigned)
+
+    def assign_first_N(self, N) -> None:
         """
         Assign seats 1–N (N > 50).
         """
@@ -61,18 +67,22 @@ class HH_Apportioner:
             print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
         for i in range(51, N + 1):
+            hs: int
+            pv: int
+            xx: str
+            ss: int
             hs, pv, xx, ss = self.assign_next()
 
             if self._verbose:
                 print("{},{},{},{}".format(hs, pv, xx, ss))
 
-    def queue_is_ok(self):
+    def queue_is_ok(self) -> bool:
         """
         All states still have priority values in the queue.
         """
 
-        remaining_pvs = set()
-        n = self.N - 50
+        remaining_pvs: set = set()
+        n: int = self.N - 50
         for row in self._queue[n:]:
             remaining_pvs.add(row["XX"])
 
@@ -80,22 +90,22 @@ class HH_Apportioner:
 
     ### HELPERS ###
 
-    def _priority_value(self, pop, nSeat):
-        pv = pop / math.sqrt(nSeat * (nSeat - 1))
+    def _priority_value(self, pop, nSeat) -> int:
+        pv: int = round(pop / math.sqrt(nSeat * (nSeat - 1)))
 
         # NOTE: By inspection, it appears that rounding is the way that floats are
         # converted to integer priority values.
 
-        return round(pv)
+        return pv
 
-    def _make_priority_queue(self):
+    def _make_priority_queue(self) -> None:
         """
         Make a sorted queue of priority values for each state.
         """
 
         for state in self._census:
             for i in range(2, MAX_STATE_SEATS + 1):
-                pv = self._priority_value(state["Population"], i)
+                pv: int = self._priority_value(state["Population"], i)
                 self._queue.append({"XX": state["XX"], "PV": pv})
 
         self._queue = sorted(self._queue, key=lambda x: x["PV"], reverse=True)
