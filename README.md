@@ -30,7 +30,7 @@ app = MM2_Apportioner(census, elections)
 app.eliminate_gap(strategy=strategy)
 ```
 
-There are 7 strategies for eliminating the gap:
+There are 8 strategies for eliminating the gap:
 1. Minimize the prospective skew for the state
 2. Reduce the national gap 
 3. Balance the two -- when the prospective skews would both be below a threshold, eliminate the national gap; otherwise minimize the state skew
