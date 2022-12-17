@@ -3,7 +3,6 @@
 # TEST ANALYTICS
 #
 
-import pytest
 from MM2 import *
 
 
