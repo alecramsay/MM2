@@ -3,8 +3,8 @@
 # TEST APPORTIONMENT
 #
 
-from MM2 import *
 import pytest
+from MM2 import *
 
 
 class TestHH_Apportioner:

@@ -3,6 +3,7 @@
 # TEST MM2 FOR CONGRESS
 #
 
+import pytest
 from pytest import approx
 
 from MM2 import *
