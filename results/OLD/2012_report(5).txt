@@ -1,0 +1,10 @@
+D's got 50.85% of the vote and won 201 of 435 seats yielding a gap of +20 seats.
+
+50 list seats (46 Democratic) were added for a total of 485.
+
+All states have remaining priority values.
+
+Some states still have only one representative: AK, DE, ND, SD, VT, WY
+
+Some states are still disproportional more than one seat: AZ, CA, CT, IL, MD, MA, NY, OR
+
