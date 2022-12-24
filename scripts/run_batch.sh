@@ -13,5 +13,5 @@ scripts/MM2_for_Congress_LOCAL.py 2020 2022 -s 3
 scripts/MM2_for_Congress_LOCAL.py 2020 2022 -s 4
 scripts/MM2_for_Congress_LOCAL.py 2020 2022 -s 5
 scripts/MM2_for_Congress_LOCAL.py 2020 2022 -s 6
-# scripts/MM2_for_Congress_LOCAL.py 2020 2022 -s 7
+scripts/MM2_for_Congress_LOCAL.py 2020 2022 -s 7
 scripts/MM2_for_Congress_LOCAL.py 2020 2022 -s 8

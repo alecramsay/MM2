@@ -1,6 +1,6 @@
-D's got 53.33% of the vote and won 235 of 434 seats yielding a gap of -4 seats.
+D's got 53.54% of the vote and won 235 of 434 seats yielding a gap & slack of -3 and -17 seats, respectively.
 
-19 list seats (7 Democratic) were added for a total of 454.
+14 list seats (5 Democratic) were added for a total of 449.
 
 All states have remaining priority values.
 

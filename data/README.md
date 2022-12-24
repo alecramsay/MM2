@@ -11,4 +11,5 @@ These came from:
 
 ## Election Results
 
-These came from the [US House repository](https://github.com/alecramsay/ushouse).
+These came from the [US House](https://github.com/alecramsay/ushouse) and
+incorporate imputed results for uncontested elections.
