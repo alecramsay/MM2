@@ -14,7 +14,7 @@ A. For the 2020 census, all states have multiple seats after 811 seats.
 
 For example:
 
-$ scripts/mutiple_seats.py
+$ scripts/multiple_seats.py | grep After
 
 """
 
