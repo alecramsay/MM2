@@ -2,11 +2,15 @@
 #
 
 """
-Analyze the # of seats per state by the total # of seats allocated.
+Find # seats per state at:
+
+- 435 seats 
+- 600 seats, and 
+- when each state gets 1 more seat after 600
 
 For example:
 
-$ scripts/multiple_seats.py 2020 | grep After
+$ scripts/multiple_seats.py --cycle 2020
 
 For documentation, type:
 
@@ -49,18 +53,31 @@ def main() -> None:
     types: list = [str, str, int]
     census: list = read_typed_csv(csv_data, types)
 
+    ### TRACK RESULTS BY STATE ###
+
+    by_state: dict = dict()
+    for row in census:
+        by_state[row["XX"]] = {
+            "XX": row["XX"],
+            "NAME": row["STATE"],
+            "S_435": 0,
+            "S_600": 0,
+            "S_NEXT": None,
+        }
+
     ### APPORTION NOMINAL SEATS UNTIL EVERY STATE HAS MORE THAN 1 ###
 
     app: HH_Apportioner = HH_Apportioner(census)
 
     for xx in STATES:
         app.reps[xx] = 1
+        by_state[xx]["S_435"] += 1
+        by_state[xx]["S_600"] += 1
+
     app.N = 50
     single_seats: set[str] = set(STATES)
 
     app._make_priority_queue()
-
-    print()
 
     while single_seats:
         hs: int
@@ -69,37 +86,46 @@ def main() -> None:
         ss: int
         hs, pv, xx, ss = app.assign_next()
 
-        single_seats.discard(xx)
-
-        if app.N < 435:
-            continue
+        if app.N <= 435:
+            by_state[xx]["S_435"] += 1
 
         if app.N == 435:
             n_single_seats: int = len(single_seats)
-            print(
-                "After {} seats, {} states have multiple seats: {}".format(
-                    app.N, len(single_seats), single_seats
-                )
-            )
-            continue
 
-        if len(single_seats) < n_single_seats:
-            n_single_seats = len(single_seats)
-            if n_single_seats > 0:
-                print(
-                    "After {} seats, {} states have multiple seats: {}".format(
-                        app.N, len(single_seats), single_seats
-                    )
-                )
+        if app.N <= 600:
+            by_state[xx]["S_600"] += 1
 
-    print(
-        "For the {} census, all states have multiple seats after {} seats.".format(
-            cycle, app.N
-        )
+        single_seats.discard(xx)
+
+        if app.N > 600 and by_state[xx]["S_NEXT"] is None:
+            by_state[xx]["S_NEXT"] = app.N
+
+    ### WRITE THE RESULTS ###
+
+    output: list = list()
+    for xx, row in by_state.items():
+        output.append(row)
+
+    reps_by_census: str = "results/reps_by_census({}).csv".format(cycle)
+
+    write_csv(
+        reps_by_census,
+        [
+            {
+                "XX": row["XX"],
+                "NAME": row["NAME"],
+                "S_435": row["S_435"],
+                "S_600": row["S_600"],
+                "S_NEXT": row["S_NEXT"],
+            }
+            for row in output
+        ],
+        # rows,
+        ["XX", "NAME", "S_435", "S_600", "S_NEXT"],
     )
+
+    pass
 
 
 if __name__ == "__main__":
     main()
-
-pass
