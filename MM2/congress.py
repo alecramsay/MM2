@@ -265,6 +265,69 @@ class MM2_Apportioner:
             }
         )
 
+    def strategy8_final_assignment_rule(self, xx: str) -> None:
+        """
+        Assign the final seats to the states that still have just one seat.
+        """
+
+        # Explicitly assign a seat to a state
+
+        hs: int
+        pv: int
+        xx: str
+        foo: int
+        hs, pv, xx, foo = self._base_app.assign_named(xx)
+
+        # Assign it to the *party* based on the chosen strategy
+
+        v_i: int = self.byState[xx]["v"]
+        t_i: int = self.byState[xx]["t"]
+        s_i: int = self.byState[xx]["s'"]
+        n_i: int = self.byState[xx]["n'"]
+
+        Vf: float = v_i / t_i
+        Sf: float = s_i / n_i
+        d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
+        r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
+        threshold: float = skew_threshold(0.1, n_i)
+        gap: int = self.gap  # old gap
+
+        # Minimize the prospective skew for the state (r=1), until 165 list seats are assigned
+        party: Literal["REP", "DEM"] = minimize_state_skew(d_skew, r_skew)
+
+        # Update counters
+
+        if party == "DEM":
+            self.byState[xx]["s'"] += 1
+            self.S += 1
+
+        self.N += 1
+        self.byState[xx]["n'"] += 1
+        ss: int = self.byState[xx]["n'"]
+
+        # New gap & slack w/o  "other" seats
+        self.gap = gap_seats(self.V, self.T, self.S, self.N)
+        self.slack = actual_slack(self.V, self.T, self.S, self.N)
+
+        # Log the assignment for reporting
+
+        self.byPriority.append(
+            {
+                "HOUSE SEAT": hs,
+                "PRIORITY VALUE": pv,
+                "STATE": xx,
+                "STATE SEAT": ss,
+                "Vf": Vf,
+                "Sf": Sf,
+                "SKEW|D": d_skew,
+                "SKEW|R": r_skew,
+                "THRESHOLD": threshold,
+                "PARTY": party,
+                "GAP": self.gap,
+                "SLACK": self.slack,
+            }
+        )
+
     def termination_rule(self) -> bool:
         if self._strategy in [1, 2, 3, 4]:
             # Stop when the gap is zero

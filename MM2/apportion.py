@@ -53,6 +53,27 @@ class HH_Apportioner:
 
         return (N, pv, xx, nassigned)
 
+    def assign_named(self, xx: str) -> Tuple[int, int, str, int]:
+        """
+        Assign a seat to the given state, i.e., *not* based on priority value.
+        """
+
+        assert self.N >= 50 * self._min_seats
+
+        # n: int = self.N - (50 * self._min_seats)
+        # xx: str = self._queue[n]["XX"]
+        # pv: int = self._queue[n]["PV"]
+        pv: int = 0  # HACK - So the data structure is consistent.
+
+        self.reps[xx] += 1
+        self.N += 1
+
+        # HACK - To ensure that all the values of the tuple are explicitly typed.
+        N: int = self.N
+        nassigned: int = self.reps[xx]
+
+        return (N, pv, xx, nassigned)
+
     def assign_first_N(self, N) -> None:
         """
         Assign seats 1–N (N > 50).

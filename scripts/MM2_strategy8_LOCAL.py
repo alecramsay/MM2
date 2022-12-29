@@ -51,9 +51,8 @@ def parse_args() -> Namespace:
         help="The election year (e.g., 2022)",
         type=int,
     )
-    # TODO - Reset default to 'a'
     parser.add_argument(
-        "-o", "--option", default="b", help="The option: a, b, or c}", type=str
+        "-o", "--option", default="a", help="The option: a, b, or c}", type=str
     )
     parser.add_argument(
         "-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode"
@@ -87,17 +86,36 @@ def main() -> None:
     ### APPORTION SEATS PER STRATEGY 8 VARIATIONS ###
 
     # Assign the first 435 seats
+    # For option 'b', start with 2 seats per state
     min_seats: int = 2 if option == "b" else 1
     app: MM2_Apportioner = MM2_Apportioner(
         census, elections, min_seats=min_seats, verbose=args.verbose
     )
     app._r: int = 1
 
+    # For option 'c', keep track of states with only 1 seat
+    if option == "c":
+        single_seats: set[str] = set()
+        for xx, data in app.byState.items():
+            if data["n"] == 1:
+                single_seats.add(xx)
+
     # Assign 436–600 seats
     while app.N < 600:
         app.strategy8_assignment_rule()
 
-        # TODO - Add option 'c'
+        if option == "c":
+            xx: str = app.byPriority[-1]["STATE"]
+            single_seats.discard(xx)
+
+            if (600 - app.N) == len(single_seats):
+                # Assign the remaining seats to states with only 1 seat
+                break
+
+    if option == "c":
+        # Assign the remaining seats to states with only 1 seat
+        for xx in single_seats:
+            app.strategy8_final_assignment_rule(xx)
 
     # Post-process the results for reports
     app._calc_analytics()
