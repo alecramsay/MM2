@@ -4,15 +4,15 @@
 """
 Add list seats to base congressional apportionment for an election.
 
-THIS IS A COPY OF MM2_for_Congress.py, WITH THE PATHS TO DATA FILES NOT IN THE REPO
+THIS IS A COPY OF MM2_strategies.py, WITH THE PATHS TO DATA FILES NOT IN THE REPO
 
 For example:
 
-$ scripts/MM2_for_Congress_LOCAL.py 2020 2022 -s 7
+$ scripts/MM2_strategies_LOCAL.py 2020 2022 -s 7
 
 For documentation, type:
 
-$ scripts/MM2_for_Congress_LOCAL.py -h
+$ scripts/MM2_strategies_LOCAL.py -h
 
 """
 
@@ -176,3 +176,5 @@ with open(report, "w") as f:
         )
     else:
         print("All states are within one seat of proportional.\n", file=f)
+
+### END ###

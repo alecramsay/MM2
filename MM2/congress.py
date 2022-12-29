@@ -104,7 +104,8 @@ class MM2_Apportioner:
         hs: int
         pv: int
         xx: str
-        hs, pv, xx, _ = self._base_app.assign_next()
+        foo: int
+        hs, pv, xx, foo = self._base_app.assign_next()
 
         # Assign it to the *party* based on the chosen strategy
 
@@ -192,6 +193,69 @@ class MM2_Apportioner:
             }
         )
 
+    def strategy8_assignment_rule(self) -> None:
+        """
+        Hard-coded strategy 8 assignment rule vs. multi-strategy assignment rule above
+        """
+
+        # Assign the next seat to the *state* with the highest priority value
+
+        hs: int
+        pv: int
+        xx: str
+        foo: int
+        hs, pv, xx, foo = self._base_app.assign_next()
+
+        # Assign it to the *party* based on the chosen strategy
+
+        v_i: int = self.byState[xx]["v"]
+        t_i: int = self.byState[xx]["t"]
+        s_i: int = self.byState[xx]["s'"]
+        n_i: int = self.byState[xx]["n'"]
+
+        Vf: float = v_i / t_i
+        Sf: float = s_i / n_i
+        d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
+        r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
+        threshold: float = skew_threshold(0.1, n_i)
+        gap: int = self.gap  # old gap
+
+        # Minimize the prospective skew for the state (r=1), until 165 list seats are assigned
+        party: Literal["REP", "DEM"] = minimize_state_skew(d_skew, r_skew)
+
+        # Update counters
+
+        if party == "DEM":
+            self.byState[xx]["s'"] += 1
+            self.S += 1
+
+        self.N += 1
+        self.byState[xx]["n'"] += 1
+        ss: int = self.byState[xx]["n'"]
+
+        # New gap & slack w/o  "other" seats
+        self.gap = gap_seats(self.V, self.T, self.S, self.N)
+        self.slack = actual_slack(self.V, self.T, self.S, self.N)
+
+        # Log the assignment for reporting
+
+        self.byPriority.append(
+            {
+                "HOUSE SEAT": hs,
+                "PRIORITY VALUE": pv,
+                "STATE": xx,
+                "STATE SEAT": ss,
+                "Vf": Vf,
+                "Sf": Sf,
+                "SKEW|D": d_skew,
+                "SKEW|R": r_skew,
+                "THRESHOLD": threshold,
+                "PARTY": party,
+                "GAP": self.gap,
+                "SLACK": self.slack,
+            }
+        )
+
     def termination_rule(self) -> bool:
         if self._strategy in [1, 2, 3, 4]:
             # Stop when the gap is zero
@@ -257,7 +321,7 @@ class MM2_Apportioner:
         Return a list of states with one representative.
         """
 
-        ones = list()
+        ones: list = list()
 
         for xx in STATES:
             if self.byState[xx]["n'"] == 1:

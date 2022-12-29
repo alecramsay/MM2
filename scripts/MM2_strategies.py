@@ -6,14 +6,14 @@ Add list seats to base congressional apportionment for an election.
 
 For example:
 
-$ scripts/MM2_for_Congress.py 2010 2012
-$ scripts/MM2_for_Congress.py 2010 2012 -s 7
-$ scripts/MM2_for_Congress.py 2010 2012 -s 7 -r
-$ scripts/MM2_for_Congress.py 2000 2006
+$ scripts/MM2_strategies.py 2010 2012
+$ scripts/MM2_strategies.py 2010 2012 -s 7
+$ scripts/MM2_strategies.py 2010 2012 -s 7 -r
+$ scripts/MM2_strategies.py 2000 2006
 
 For documentation, type:
 
-$ scripts/MM2_for_Congress.py -h
+$ scripts/MM2_strategies.py -h
 
 """
 
