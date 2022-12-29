@@ -91,8 +91,14 @@ class MM2_Apportioner:
             self.byState[xx]["v"] = state["DEM_V"]
             self.byState[xx]["t"] = state["REP_V"] + state["DEM_V"]
             self.byState[xx]["s"] = state["DEM_S"]
+
+            # NOTE - The assumption in this is that adding list seats *starts* from
+            # the current apportionment (method) reflected in the election data, as
+            # opposed to any modification, e.g. give each state 2 seats to start.
             # NOTE - The apportioned # of seats including "other" seats.
-            self.byState[xx]["n"] = state["REP_S"] + state["DEM_S"] + state["OTH_S"]
+            # self.byState[xx]["n"] = state["REP_S"] + state["DEM_S"] + state["OTH_S"]
+            # TODO - Use this instead
+            self.byState[xx]["n"] = self._base_app.reps[xx]
 
             self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
 

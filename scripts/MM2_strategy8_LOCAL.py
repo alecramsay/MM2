@@ -9,7 +9,10 @@ Run variations of Strategy 8 against LOCAL election data:
 
 For example:
 
-$ scripts/MM2_strategy8_LOCAL.py --cycle 2022 --option a
+$ scripts/MM2_strategy8_LOCAL.py --c 2020 -e 2022 -o a
+$ scripts/MM2_strategy8_LOCAL.py --c 2020 -e 2022 -o b
+$ scripts/MM2_strategy8_LOCAL.py --c 2020 -e 2022 -o c
+
 
 For documentation, type:
 
@@ -48,8 +51,9 @@ def parse_args() -> Namespace:
         help="The election year (e.g., 2022)",
         type=int,
     )
+    # TODO - Reset default to 'a'
     parser.add_argument(
-        "-o", "--option", default="a", help="The option: a, b, or c}", type=str
+        "-o", "--option", default="b", help="The option: a, b, or c}", type=str
     )
     parser.add_argument(
         "-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode"
@@ -83,15 +87,17 @@ def main() -> None:
     ### APPORTION SEATS PER STRATEGY 8 VARIATIONS ###
 
     # Assign the first 435 seats
-    # TODO - Modify to enable 2 seats per state initially
-    app: MM2_Apportioner = MM2_Apportioner(census, elections, args.verbose)
+    min_seats: int = 2 if option == "b" else 1
+    app: MM2_Apportioner = MM2_Apportioner(
+        census, elections, min_seats=min_seats, verbose=args.verbose
+    )
     app._r: int = 1
 
     # Assign 436–600 seats
     while app.N < 600:
         app.strategy8_assignment_rule()
 
-        # TODO - Add options
+        # TODO - Add option 'c'
 
     # Post-process the results for reports
     app._calc_analytics()

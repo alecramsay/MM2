@@ -35,12 +35,12 @@ class HH_Apportioner:
         """
         Assign the next seat to the state with the highest priority value.
 
-        Note: The first 50 seats must already be assigned, by calling assign_first_N().
+        Note: The first 50 * min_seats # of seats must already be assigned, by calling assign_first_N().
         """
 
         assert self.N >= 50 * self._min_seats
 
-        n: int = self.N - 50
+        n: int = self.N - (50 * self._min_seats)
         xx: str = self._queue[n]["XX"]
         pv: int = self._queue[n]["PV"]
 
@@ -84,7 +84,7 @@ class HH_Apportioner:
         """
 
         remaining_pvs: set = set()
-        n: int = self.N - 50
+        n: int = self.N - (50 * self._min_seats)
         for row in self._queue[n:]:
             remaining_pvs.add(row["XX"])
 
