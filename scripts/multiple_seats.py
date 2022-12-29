@@ -2,84 +2,130 @@
 #
 
 """
-Q. How big does the House have to be for every state to have multiple seats?
-A. For the 2020 census, all states have multiple seats after 811 seats.
+Find # seats per state at:
 
-   After 435 seats, 6 states have multiple seats: {'AK', 'DE', 'SD', 'ND', 'VT', 'WY'}
-   After 473 seats, 5 states have multiple seats: {'AK', 'SD', 'ND', 'VT', 'WY'}        <= 'DE'
-   After 526 seats, 4 states have multiple seats: {'AK', 'ND', 'VT', 'WY'}              <= 'SD'
-   After 601 seats, 3 states have multiple seats: {'AK', 'VT', 'WY'}                    <= 'ND'
-   After 641 seats, 2 states have multiple seats: {'VT', 'WY'}                          <= 'AK'
-   After 728 seats, 1 states have multiple seats: {'WY'}                                <= 'VT'
-   For the 2020 census, all states have multiple seats after 811 seats.                 <= 'WY'
+- 435 seats 
+- 600 seats, and 
+- when each state gets 1 more seat after 600
 
 For example:
 
-$ scripts/multiple_seats.py | grep After
+$ scripts/multiple_seats.py --cycle 2020
+
+For documentation, type:
+
+$ scripts/multiple_seats.py -h
 
 """
 
+import argparse
+from argparse import ArgumentParser, Namespace
 from typing import Tuple
 
 from MM2 import *
 
-
-cycle: int = 2020
-# verbose = True
+### PARSE ARGUMENTS ###
 
 
-### LOAD THE CENSUS ###
-
-csv_data: str = "data/census/{}_census.csv".format(cycle)
-types: list = [str, str, int]
-census: list = read_typed_csv(csv_data, types)
-
-
-### APPORTION NOMINAL SEATS UNTIL EVERY STATE HAS MORE THAN 1 ###
-
-app: HH_Apportioner = HH_Apportioner(census)
-
-for xx in STATES:
-    app.reps[xx] = 1
-app.N = 50
-single_seats: set[str] = set(STATES)
-
-app._make_priority_queue()
-
-print()
-
-while single_seats:
-    hs: int
-    pv: int
-    xx: str
-    ss: int
-    hs, pv, xx, ss = app.assign_next()
-
-    single_seats.discard(xx)
-
-    if app.N < 435:
-        continue
-
-    if app.N == 435:
-        n_single_seats: int = len(single_seats)
-        print(
-            "After {} seats, {} states have multiple seats: {}".format(
-                app.N, len(single_seats), single_seats
-            )
-        )
-        continue
-
-    if len(single_seats) < n_single_seats:
-        n_single_seats = len(single_seats)
-        if n_single_seats > 0:
-            print(
-                "After {} seats, {} states have multiple seats: {}".format(
-                    app.N, len(single_seats), single_seats
-                )
-            )
-
-print(
-    "For the {} census, all states have multiple seats after {} seats.".format(
-        cycle, app.N
+def parse_args() -> Namespace:
+    parser: ArgumentParser = argparse.ArgumentParser(
+        description="Analyze # of seats per state for a census."
     )
-)
+
+    parser.add_argument(
+        "-c", "--cycle", default=2020, help="The census cycle (e.g., 2020)", type=int
+    )
+    parser.add_argument(
+        "-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode"
+    )
+
+    args: Namespace = parser.parse_args()
+    return args
+
+
+def main() -> None:
+    args: Namespace = parse_args()
+    cycle: int = args.cycle
+
+    ### LOAD THE CENSUS ###
+
+    csv_data: str = "data/census/{}_census.csv".format(cycle)
+    types: list = [str, str, int]
+    census: list = read_typed_csv(csv_data, types)
+
+    ### TRACK RESULTS BY STATE ###
+
+    by_state: dict = dict()
+    for row in census:
+        by_state[row["XX"]] = {
+            "XX": row["XX"],
+            "NAME": row["STATE"],
+            "S_435": 0,
+            "S_600": 0,
+            "S_NEXT": None,
+        }
+
+    ### APPORTION NOMINAL SEATS UNTIL EVERY STATE HAS MORE THAN 1 ###
+
+    app: HH_Apportioner = HH_Apportioner(census)
+
+    for xx in STATES:
+        app.reps[xx] = 1
+        by_state[xx]["S_435"] += 1
+        by_state[xx]["S_600"] += 1
+
+    app.N = 50
+    single_seats: set[str] = set(STATES)
+
+    app._make_priority_queue()
+
+    while single_seats:
+        hs: int
+        pv: int
+        xx: str
+        ss: int
+        hs, pv, xx, ss = app.assign_next()
+
+        if app.N <= 435:
+            by_state[xx]["S_435"] += 1
+
+        if app.N == 435:
+            n_single_seats: int = len(single_seats)
+
+        if app.N <= 600:
+            by_state[xx]["S_600"] += 1
+
+        single_seats.discard(xx)
+
+        if app.N > 600 and by_state[xx]["S_NEXT"] is None:
+            by_state[xx]["S_NEXT"] = app.N
+
+    ### WRITE THE RESULTS ###
+
+    output: list = list()
+    for xx, row in by_state.items():
+        output.append(row)
+
+    reps_by_census: str = "results/reps_by_census({}).csv".format(cycle)
+
+    write_csv(
+        reps_by_census,
+        [
+            {
+                "XX": row["XX"],
+                "NAME": row["NAME"],
+                "S_435": row["S_435"],
+                "S_600": row["S_600"],
+                "S_NEXT": row["S_NEXT"],
+            }
+            for row in output
+        ],
+        # rows,
+        ["XX", "NAME", "S_435", "S_600", "S_NEXT"],
+    )
+
+    pass
+
+
+if __name__ == "__main__":
+    main()
