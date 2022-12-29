@@ -13,14 +13,17 @@ from .settings import *
 
 
 class MM2_Apportioner:
-    def __init__(self, census, elections, verbose=False) -> None:
+    def __init__(self, census, elections, min_seats: int = 1, verbose=False) -> None:
         self._census = census
         self._elections = elections
+        self._min_seats: int = min_seats
         self._verbose: bool = verbose
 
         # Apportion the first 435 seats, using census data
 
-        self._base_app: HH_Apportioner = HH_Apportioner(census, verbose=verbose)
+        self._base_app: HH_Apportioner = HH_Apportioner(
+            census, min_seats=self._min_seats, verbose=verbose
+        )
         self._base_app.assign_first_N(NOMINAL_SEATS)
 
         # Initialize MM2 report structures

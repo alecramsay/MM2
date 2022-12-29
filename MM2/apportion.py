@@ -22,8 +22,9 @@ class HH_Apportioner:
 
     """
 
-    def __init__(self, census, verbose=False) -> None:
+    def __init__(self, census, min_seats: int = 1, verbose=False) -> None:
         self._census = census
+        self._min_seats: int = min_seats
         self._queue: list = list()
         self._verbose: bool = verbose
 
@@ -37,7 +38,7 @@ class HH_Apportioner:
         Note: The first 50 seats must already be assigned, by calling assign_first_N().
         """
 
-        assert self.N >= 50
+        assert self.N >= 50 * self._min_seats
 
         n: int = self.N - 50
         xx: str = self._queue[n]["XX"]
@@ -58,15 +59,16 @@ class HH_Apportioner:
         """
 
         for xx in STATES:
-            self.reps[xx] = 1
-        self.N = 50
+            self.reps[xx] = self._min_seats
+        preassigned: int = 50 * self._min_seats
+        self.N = preassigned
 
         self._make_priority_queue()
 
         if self._verbose:
             print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
-        for i in range(51, N + 1):
+        for i in range(preassigned + 1, N + 1):
             hs: int
             pv: int
             xx: str
@@ -109,3 +111,6 @@ class HH_Apportioner:
                 self._queue.append({"XX": state["XX"], "PV": pv})
 
         self._queue = sorted(self._queue, key=lambda x: x["PV"], reverse=True)
+
+
+### END ###
