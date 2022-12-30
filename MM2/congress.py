@@ -98,6 +98,8 @@ class MM2_Apportioner:
             self.byState[xx]["s'"] = self.byState[xx]["s"]
             self.byState[xx]["n'"] = self.byState[xx]["n"]
 
+    ### Machinery to facilitate exploring alternate strategies ###
+
     def assignment_rule(self) -> None:
         # Assign the next seat to the *state* with the highest priority value
 
@@ -227,6 +229,8 @@ class MM2_Apportioner:
             [float, float, float, int, bool], Literal["REP", "DEM"]
         ] = make_balancer_fn(self._reducer_fn)
 
+    ### End ###
+
     def _calc_analytics(self) -> None:
         # Compute the SKEW & POWER for the nominal seats
         for k, v in self.byState.items():
@@ -284,7 +288,7 @@ class MM2_Apportioner:
         return unbalanced
 
 
-### STRATEGIES ###
+### LIST SEAT ASSIGNMENT STRATEGIES ###
 
 
 def minimize_state_skew(d_skew, r_skew) -> Literal["REP", "DEM"]:
@@ -408,3 +412,6 @@ def actual_slack(V: int, T: int, S: int, N: int) -> int:
     """
 
     return slack_formula(S, N)
+
+
+### END ###
