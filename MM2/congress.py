@@ -13,9 +13,23 @@ from .settings import *
 
 
 class MM2_Apportioner:
-    def __init__(self, census, elections, verbose=False) -> None:
-        self._census = census
-        self._elections = elections
+    def __init__(
+        self,
+        census: list,
+        elections: list,
+        # NOTE - This is implied, because each state gets one nominal seat up front.
+        # min_nominal: int = 1,
+        list_min: int = 0,
+        total_seats: int = 600,
+        verbose: bool = False,
+    ) -> None:
+        self._census: list = census
+        self._elections: list = elections
+
+        # self._min_nominal: int = min_nominal
+        self._list_min: int = list_min
+        self._total_seats: int = total_seats
+
         self._verbose: bool = verbose
 
         # Apportion the first 435 seats, using census data
@@ -99,6 +113,47 @@ class MM2_Apportioner:
             self.byState[xx]["n'"] = self.byState[xx]["n"]
 
     ### Strategy 8 ###
+
+    def strategy8(self, *, size: int = 600, option: str = "a") -> None:
+        """
+        Strategy 8:
+        * Assign the first 435 seats using the current approach
+          - Give each state 1 representative,
+          - Then assign the remaining seats using the queue of priority values
+        * Then assign list seats
+        * There are two degress of freedom still:
+          - The total size of the House (or the number of list seats), and
+          - Whether states are guaranteed at least one list seat ('a' = No, 'e' = Yes).
+            To guarantee list seats if necessary, they are assigned with the last
+            few seats.
+        """
+
+        # For option 'e', keep track of states with no list seats
+        if option == "e":
+            no_list_seats: set[str] = set()
+            for xx in STATES:
+                no_list_seats.add(xx)
+
+        # Assign 436 – the total size including list seats, e.g., 600, 650, etc.
+        while self.N < size:
+            self.strategy8_assignment_rule()
+
+            if option == "e":
+                xx: str = self.byPriority[-1]["STATE"]
+                no_list_seats.discard(xx)
+
+                if (size - self.N) == len(no_list_seats):
+                    # TODO - Account for *race* condition (e.g., 'ME')
+                    # Assign the remaining seats to states with no list seats
+                    break
+
+        if option == "e":
+            # Assign the remaining seats to states with no list seats
+            for xx in no_list_seats:
+                self.strategy8_final_assignment_rule(xx)
+
+        # Post-process the results for reports
+        self._calc_analytics()
 
     def strategy8_assignment_rule(self) -> None:
         """
@@ -330,10 +385,12 @@ class MM2_Apportioner:
             return self.gap != 0
         elif self._strategy in [5]:
             # Stop when all list seats are assigned
+            # The number of list seats, for Strategy 5 is 50.
+            LIST_SEATS: int = 50
             return (self.N - self.N0) < LIST_SEATS
         elif self._strategy in [6, 7, 8]:
             # Stop when total seats are assigned (including "other" seats)
-            return (self.N - self.N0) < (TOTAL_SEATS - NOMINAL_SEATS)
+            return (self.N - self.N0) < (self._total_seats - NOMINAL_SEATS)
         else:
             raise ValueError("Invalid strategy")
 

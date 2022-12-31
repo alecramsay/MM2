@@ -2,17 +2,20 @@
 #
 
 """
-Add list seats to base congressional apportionment for an election.
+Add list seats to the base congressional apportionment for an election.
 
-THIS IS A COPY OF MM2_for_Congress.py, WITH THE PATHS TO DATA FILES NOT IN THE REPO
+NOTE - This script allows us to explore various alternative strategies.
 
 For example:
 
-$ scripts/MM2_for_Congress_LOCAL.py 2020 2022 -s 7
+$ scripts/MM2_Strategies.py 2010 2012
+$ scripts/MM2_Strategies.py 2010 2012 -s 7
+$ scripts/MM2_Strategies.py 2010 2012 -s 7 -r
+$ scripts/MM2_Strategies.py 2000 2006
 
 For documentation, type:
 
-$ scripts/MM2_for_Congress_LOCAL.py -h
+$ scripts/MM2_Strategies.py -h
 
 """
 
@@ -20,11 +23,6 @@ import argparse
 from argparse import ArgumentParser, Namespace
 
 from MM2 import *
-
-### MODS FOR LOCAL USE ###
-
-census_root: str = "data/census"
-elections_root: str = "/Users/alecramsay/Downloads"
 
 
 ### PARSE ARGUMENTS ###
@@ -53,7 +51,7 @@ print("{}({})|{}".format(args.election, args.strategy, args.cycle))
 
 ### LOAD THE CENSUS ###
 
-csv_data = "{}/{}_census.csv".format(census_root, args.cycle)
+csv_data = "data/census/{}_census.csv".format(args.cycle)
 types: list = [str, str, int]
 census: list = read_typed_csv(csv_data, types)
 
@@ -61,10 +59,10 @@ census: list = read_typed_csv(csv_data, types)
 ### LOAD THE ELECTION RESULTS ###
 
 csv_data: str = (
-    "{}/Congressional Elections ({}).csv".format(elections_root, args.election)
+    "data/elections/Congressional Elections ({}).csv".format(args.election)
     if args.raw == False
-    else "{}/not_imputed/Congressional Elections ({}).csv".format(
-        elections_root, args.election
+    else "data/elections/not_imputed/Congressional Elections ({}).csv".format(
+        args.election
     )
 )
 types = [str] * 3 + [int] * 8
