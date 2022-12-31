@@ -9,16 +9,9 @@
 
 echo "Running batch script"
 
-echo "Seats per state for 1990 census"
-scripts/multiple_seats.py --cycle 1990
-
-echo "Seats per state for 2000 census"
-scripts/multiple_seats.py --cycle 2000
-
-echo "Seats per state for 2010 census"
-scripts/multiple_seats.py --cycle 2010
-
-echo "Seats per state for 2020 census"
-scripts/multiple_seats.py --cycle 2020
+scripts/MM2_4Congress_LOCAL.py -c 2020 -e 2022 -s 600 -o a
+scripts/MM2_4Congress_LOCAL.py -c 2020 -e 2022 -s 600 -o e
+scripts/MM2_4Congress_LOCAL.py -c 2020 -e 2022 -s 650 -o a
+scripts/MM2_4Congress_LOCAL.py -c 2020 -e 2022 -s 650 -o e
 
 echo "Done"
