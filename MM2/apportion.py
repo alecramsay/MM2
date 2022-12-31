@@ -79,7 +79,7 @@ class HH_Apportioner:
             self.reps[xx] = 1
         self.N = 50
 
-        self._make_priority_queue()
+        self._make_make_priority_queue()
 
         if self._verbose:
             print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
@@ -116,7 +116,7 @@ class HH_Apportioner:
 
         return pv
 
-    def _make_priority_queue(self) -> None:
+    def _make_make_priority_queue(self) -> None:
         """
         Make a sorted queue of priority values for each state.
         """

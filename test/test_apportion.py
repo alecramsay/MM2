@@ -35,3 +35,6 @@ class TestHH_Apportioner:
         for state in reps_list:
             xx: str = state["XX"]
             assert app.reps[xx] == state["REPS"]
+
+
+### END ###

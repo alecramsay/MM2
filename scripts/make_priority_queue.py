@@ -13,11 +13,11 @@ For the 2020 census and 600 reps:
 
 For example:
 
-$ scripts/priority_queue.py --cycle 2020
+$ scripts/make_priority_queue.py --cycle 2020
 
 For documentation, type:
 
-$ scripts/priority_queue.py -h
+$ scripts/make_priority_queue.py -h
 
 """
 
@@ -60,7 +60,7 @@ def main() -> None:
 
     app: HH_Apportioner = HH_Apportioner(census)
 
-    app._make_priority_queue()
+    app._make_make_priority_queue()
     pv_queue: list = app._queue
 
     ### FIND SEATS BY STATE ###

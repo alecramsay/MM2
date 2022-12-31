@@ -6,15 +6,15 @@ Add list seats to the base congressional apportionment for an election.
 
 NOTE - This script allows us to explore various alternative strategies.
 
-NOTE - This is a COPY of MM2_Strategies.py, with the paths to data files NOT in the repo.
+NOTE - This is a COPY of do_MM2_strategy_N.py, with the paths to data files NOT in the repo.
 
 For example:
 
-$ scripts/MM2_Strategies_LOCAL.py 2020 2022 -s 7
+$ scripts/do_MM2_strategy_N_LOCAL.py 2020 2022 -s 7
 
 For documentation, type:
 
-$ scripts/MM2_Strategies_LOCAL.py -h
+$ scripts/do_MM2_strategy_N_LOCAL.py -h
 
 """
 

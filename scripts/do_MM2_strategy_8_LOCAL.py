@@ -6,7 +6,7 @@ Add list seats to the base congressional apportionment for an election.
 
 This script reflect the final design decisions (Strategy 8) of the many we explored.
 
-NOTE - This is a COPY of MM2_Strategies.py, with the paths to data files NOT in the repo.
+NOTE - This is a COPY of do_MM2_strategy_N.py, with the paths to data files NOT in the repo.
 
 Run variations of Strategy 8 against LOCAL election data:
 - 'a' = allocate 1 seat per state, and then up to 600 (or 650) <<< no list seat guarantee
@@ -14,13 +14,13 @@ Run variations of Strategy 8 against LOCAL election data:
 
 For example:
 
-$ scripts/MM2_4Congress_LOCAL.py -c 2020 -e 2022 -s 600 -o a
-$ scripts/MM2_4Congress_LOCAL.py -c 2020 -e 2022 -s 600 -o e
+$ scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o a
+$ scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o e
 
 
 For documentation, type:
 
-$ scripts/MM2_4Congress_LOCAL.py -h
+$ scripts/do_MM2_strategy_8_LOCAL.py -h
 
 """
 

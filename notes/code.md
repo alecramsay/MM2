@@ -1,6 +1,6 @@
 # Implementation Notes
 
-Implementing the priority_queue.py script highlighted that the total # of seats apportioned 
+Implementing the make_priority_queue.py script highlighted that the total # of seats apportioned 
 to each state is stable for a redistricting cycle: it only depends on the census which is
 the same for the decade. Each election can change the D/R mix of the list seats assigned to
 the state though.

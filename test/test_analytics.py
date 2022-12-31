@@ -66,3 +66,6 @@ class TestAnalytics:
         assert slack_formula(218, 435) == 0
         assert slack_formula(219, 435) == -1
         assert slack_formula(220, 435) == -2
+
+
+### END ###

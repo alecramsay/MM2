@@ -8,14 +8,14 @@ NOTE - This script allows us to explore various alternative strategies.
 
 For example:
 
-$ scripts/MM2_Strategies.py 2010 2012
-$ scripts/MM2_Strategies.py 2010 2012 -s 7
-$ scripts/MM2_Strategies.py 2010 2012 -s 7 -r
-$ scripts/MM2_Strategies.py 2000 2006
+$ scripts/do_MM2_strategy_N.py 2010 2012
+$ scripts/do_MM2_strategy_N.py 2010 2012 -s 7
+$ scripts/do_MM2_strategy_N.py 2010 2012 -s 7 -r
+$ scripts/do_MM2_strategy_N.py 2000 2006
 
 For documentation, type:
 
-$ scripts/MM2_Strategies.py -h
+$ scripts/do_MM2_strategy_N.py -h
 
 """
 

@@ -10,11 +10,11 @@ Find # seats per state at:
 
 For example:
 
-$ scripts/multiple_seats.py --cycle 2020
+$ scripts/do_seats_per_state.py --cycle 2020
 
 For documentation, type:
 
-$ scripts/multiple_seats.py -h
+$ scripts/do_seats_per_state.py -h
 
 """
 
@@ -77,7 +77,7 @@ def main() -> None:
     app.N = 50
     single_seats: set[str] = set(STATES)
 
-    app._make_priority_queue()
+    app._make_make_priority_queue()
 
     while single_seats:
         hs: int
