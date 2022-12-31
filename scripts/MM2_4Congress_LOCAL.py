@@ -107,8 +107,8 @@ def main() -> None:
 
     ### WRITE THE RESULTS ###
 
-    reps_by_state: str = "results/{}_reps_by_state({}{}).csv".format(
-        args.election, strategy, option
+    reps_by_state: str = "results/{}_reps_by_state({}{},{}).csv".format(
+        args.election, strategy, option, size
     )
 
     write_csv(
@@ -132,8 +132,8 @@ def main() -> None:
         ["XX", "n", "v/t", "s", "SKEW", "POWER", "n'", "s'", "SKEW'", "POWER'"],
     )
 
-    reps_by_priority: str = "results/{}_reps_by_priority({}{}).csv".format(
-        args.election, strategy, option
+    reps_by_priority: str = "results/{}_reps_by_priority({}{},{}).csv".format(
+        args.election, strategy, option, size
     )
     write_csv(
         reps_by_priority,
@@ -156,7 +156,9 @@ def main() -> None:
 
     ### REPORT SOME BASIC INFO ###
 
-    report: str = "results/{}_report({}{}).txt".format(args.election, strategy, option)
+    report: str = "results/{}_report({}{},{}).txt".format(
+        args.election, strategy, option, size
+    )
     with open(report, "w") as f:
         print("{}\n".format(app.baseline), file=f)
 
