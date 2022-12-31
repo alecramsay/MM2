@@ -73,7 +73,7 @@ elections: list = read_typed_csv(csv_data, types)
 
 ### APPORTION THE 435 NOMINAL SEATS & ADD LIST SEATS FOR PR ###
 
-app: MM2_Apportioner = MM2_Apportioner(census, elections, args.verbose)
+app: MM2_Sandbox = MM2_Sandbox(census, elections, args.verbose)
 app.eliminate_gap(strategy=args.strategy)
 
 

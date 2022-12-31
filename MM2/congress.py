@@ -14,6 +14,40 @@ from .settings import *
 
 
 class MM2_Apportioner:
+    """
+    The proposed MM2 apportionment algorithm for Congress.
+    """
+
+    def __init__(
+        self,
+        census: list,
+        elections: list,
+        list_min: int = 0,
+        total_seats: int = 600,
+        verbose: bool = False,
+    ) -> None:
+
+        self._census: list = census
+        self._elections: list = elections
+
+        # self._min_nominal: int = min_nominal
+        self._list_min: int = list_min
+        self._total_seats: int = total_seats
+
+        self._verbose: bool = verbose
+
+        pass  # TODO
+
+    # TODO - Initialize apportioner
+    # TODO - Apportion nominal & list seats based on census
+    # TODO - Assign list seats to parties based on election results
+
+
+class MM2_Sandbox:
+    """
+    A sandbox for exploring various strategies for assigning list seats to seats & parties.
+    """
+
     def __init__(
         self,
         census: list,
@@ -651,7 +685,7 @@ def save_reps_by_priority(byPriority: list, rel_path: str) -> None:
     )
 
 
-def save_report(app: MM2_Apportioner, rel_path: str) -> None:
+def save_report(app: MM2_Sandbox, rel_path: str) -> None:
     """Write report.txt"""
     with open(rel_path, "w") as f:
         print("{}\n".format(app.baseline), file=f)

@@ -98,7 +98,7 @@ def main() -> None:
 
     # Assign the first 435 seats as they are today
 
-    app: MM2_Apportioner = MM2_Apportioner(
+    app: MM2_Sandbox = MM2_Sandbox(
         census, elections, list_min=list_min, total_seats=size, verbose=args.verbose
     )
     app._r: int = 1
