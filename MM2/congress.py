@@ -83,6 +83,10 @@ class MM2ApportionerBase:
         # - The D seats and two-party seats (these grow w/ list seats)
         self.S: int = totals["DEM_S"]
         self.N: int = totals["REP_S"] + totals["DEM_S"]  # NOTE: Removes "other" seats.
+        # NOTE - This is how self.N is initialized for the sandbox.
+        # It "works" because the termination check is a delta from the initial value.
+        # Stop when total seats are assigned (including "other" seats)
+        # return (self.N - self.N0) < (self._total_seats - NOMINAL_SEATS)
 
         # - The initial values for nominal seats
         self.S0: int = self.S
