@@ -14,7 +14,7 @@ cycle: int = 2010
 election: int = 2012
 size: int = 600
 list_min: int = 1
-verbose: bool = True
+verbose: bool = False
 
 ### MODS FOR LOCAL USE ###
 
@@ -38,9 +38,7 @@ def main() -> None:
     types = [str] * 3 + [int] * 8 + [float] * 2
     elections: list = read_typed_csv(csv_data, types)
 
-    ### APPORTION SEATS PER STRATEGY 8 VARIATIONS ###
-
-    # Assign the first 435 seats as they are today
+    ### APPORTION NOMINAL & LIST SEATS ###
 
     app: MM2Apportioner = MM2Apportioner(
         census, None, list_min=list_min, total_seats=size, verbose=verbose

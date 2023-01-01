@@ -54,6 +54,7 @@ def main() -> None:
     cycle: int = args.cycle
     list_min: int = args.listmin
     size: int = args.reps
+    verbose: bool = args.verbose
 
     ### LOAD THE CENSUS ###
 
@@ -63,42 +64,49 @@ def main() -> None:
 
     ### APPORTION NOMINAL & LIST SEATS TO STATES ###
 
-    app: HH_Apportioner = HH_Apportioner(census)
+    app: MM2Apportioner = MM2Apportioner(
+        census, None, list_min=list_min, total_seats=size, verbose=verbose
+    )
+    app.apportion_seats()
 
-    app._make_make_priority_queue()
-    pv_queue: list = app._queue
+    # TODO - DELETE
+    # app: HH_Apportioner = HH_Apportioner(census)
 
-    ### FIND SEATS BY STATE ###
+    # app._make_make_priority_queue()
+    # pv_queue: list = app._queue
 
-    by_state: dict = dict()
-    for xx in STATES:
-        by_state[xx] = {"nominal": 1, "list": 0}
-    N: int = 50
+    # ### FIND SEATS BY STATE ###
 
-    no_list_seats: set[str] = set()
-    for xx in STATES:
-        no_list_seats.add(xx)
+    # by_state: dict = dict()
+    # for xx in STATES:
+    #     by_state[xx] = {"nominal": 1, "list": 0}
+    # N: int = 50
 
-    for i, row in enumerate(pv_queue[: size - 50]):
-        N += 1
-        xx: str = row["XX"]
+    # no_list_seats: set[str] = set()
+    # for xx in STATES:
+    #     no_list_seats.add(xx)
 
-        if i < 435:
-            by_state[xx]["nominal"] += 1
-        else:
-            by_state[xx]["list"] += 1
-            no_list_seats.discard(xx)
+    # for i, row in enumerate(pv_queue[: size - 50]):
+    #     N += 1
+    #     xx: str = row["XX"]
 
-            if (size - N) == len(no_list_seats):
-                # Assign the remaining seats to states with no list seats
-                break
+    #     if i < 435:
+    #         by_state[xx]["nominal"] += 1
+    #     else:
+    #         by_state[xx]["list"] += 1
+    #         no_list_seats.discard(xx)
 
-    # Assign the remaining seats to states with no list seats
-    for xx in no_list_seats:
-        by_state[xx]["list"] += 1
+    #         if (size - N) == len(no_list_seats):
+    #             # Assign the remaining seats to states with no list seats
+    #             break
+
+    # # Assign the remaining seats to states with no list seats
+    # for xx in no_list_seats:
+    #     by_state[xx]["list"] += 1
 
     ### WRITE THE RESULTS ###
 
+    # TODO - HERE
     output: list = list()
     for k, v in by_state.items():
         row_out: dict = dict()
