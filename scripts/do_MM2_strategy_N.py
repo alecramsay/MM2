@@ -8,7 +8,7 @@ NOTE - This script allows us to explore various alternative strategies.
 
 For example:
 
-$ scripts/do_MM2_strategy_N.py 2010 2012
+$ scripts/do_MM2_strategy_N.py 2010 2020
 $ scripts/do_MM2_strategy_N.py 2010 2012 -s 7
 $ scripts/do_MM2_strategy_N.py 2010 2012 -s 7 -r
 $ scripts/do_MM2_strategy_N.py 2000 2006
@@ -73,7 +73,7 @@ elections: list = read_typed_csv(csv_data, types)
 
 ### APPORTION THE 435 NOMINAL SEATS & ADD LIST SEATS FOR PR ###
 
-app: MM2_Sandbox = MM2_Sandbox(census, elections, args.verbose)
+app: MM2ApportionerSandbox = MM2ApportionerSandbox(census, elections, args.verbose)
 app.eliminate_gap(strategy=args.strategy)
 
 

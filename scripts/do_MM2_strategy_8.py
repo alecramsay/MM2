@@ -14,8 +14,8 @@ Run variations of Strategy 8 against LOCAL election data:
 
 For example:
 
-$ scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o a
-$ scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o e
+$ scripts/do_MM2_strategy_8.py -c 2010 -e 2020 -s 600 -o a
+$ scripts/do_MM2_strategy_8.py -c 2010 -e 2020 -s 600 -o e
 
 
 For documentation, type:
@@ -98,9 +98,9 @@ def main() -> None:
 
     # Assign the first 435 seats as they are today
 
-    app: MM2_Sandbox = MM2_Sandbox(
-        census, elections, list_min=list_min, total_seats=size, verbose=args.verbose
-    )
+    app: MM2ApportionerSandbox = MM2ApportionerSandbox(census, elections, args.verbose)
+    app.list_min = list_min
+    app.total_seats = size
     app._r: int = 1
 
     app.strategy8(size=size, option=option)

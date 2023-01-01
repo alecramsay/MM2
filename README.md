@@ -20,13 +20,13 @@ the # of the House seat, the priority value, the state that gets the seat, and t
 
 ## MM2 for Congress
 
-The MM2_Sandbox class wraps the HH_Apportioner class and adds MM2 for Congress functionality.
+The MM2ApportionerSandbox class wraps the HH_Apportioner class and adds MM2 for Congress functionality.
 In addition to the census data, this takes election data in a similar form: a list of dicts read from a CSV by DictReader.
 Examples are in the data/election/ directory.
 To assign list seats to states based on the election data, call the eliminate_gap() method with a strategy.
 
 ```python
-app = MM2_Sandbox(census, elections)
+app = MM2ApportionerSandbox(census, elections)
 app.eliminate_gap(strategy=strategy)
 ```
 

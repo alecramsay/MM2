@@ -10,7 +10,7 @@ NOTE - This is a COPY of do_MM2_strategy_N.py, with the paths to data files NOT 
 
 For example:
 
-$ scripts/do_MM2_strategy_N_LOCAL.py 2020 2022 -s 7
+$ scripts/do_MM2_strategy_N_LOCAL.py 2020 2022
 
 For documentation, type:
 
@@ -77,7 +77,7 @@ elections: list = read_typed_csv(csv_data, types)
 
 ### APPORTION THE 435 NOMINAL SEATS & ADD LIST SEATS FOR PR ###
 
-app: MM2_Sandbox = MM2_Sandbox(census, elections, args.verbose)
+app: MM2ApportionerSandbox = MM2ApportionerSandbox(census, elections, args.verbose)
 app.eliminate_gap(strategy=args.strategy)
 
 
