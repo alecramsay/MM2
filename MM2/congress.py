@@ -205,7 +205,11 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
     ) -> None:
 
         super().__init__(
-            census, elections, list_min=0, total_seats=600, verbose=verbose
+            census,
+            elections,
+            list_min=0,  # STUB - Not used
+            total_seats=600,  # STUB - Not used
+            verbose=verbose,
         )
         self.apportion_nominal_seats()
 

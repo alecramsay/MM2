@@ -84,12 +84,12 @@ app.eliminate_gap(strategy=args.strategy)
 ### WRITE THE RESULTS ###
 
 raw_label: str = "|RAW" if args.raw == True else ""
-reps_by_state: str = "results/{}_reps_by_state({}{}).csv".format(
+reps_by_state: str = "results/explorations/{}_reps_by_state({}{}).csv".format(
     args.election, args.strategy, raw_label
 )
 save_reps_by_state(app.byState, reps_by_state)
 
-reps_by_priority: str = "results/{}_reps_by_priority({}{}).csv".format(
+reps_by_priority: str = "results/explorations/{}_reps_by_priority({}{}).csv".format(
     args.election, args.strategy, raw_label
 )
 save_reps_by_priority(app.byPriority, reps_by_priority)
@@ -97,7 +97,7 @@ save_reps_by_priority(app.byPriority, reps_by_priority)
 
 ### REPORT SOME BASIC INFO ###
 
-report: str = "results/{}_report({}{}).txt".format(
+report: str = "results/explorations/{}_report({}{}).txt".format(
     args.election, args.strategy, raw_label
 )
 save_report(app, report)
