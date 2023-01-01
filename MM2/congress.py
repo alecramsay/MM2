@@ -165,7 +165,7 @@ class MM2ApportionerBase:
         return unbalanced
 
 
-class MM2Apportioner:
+class MM2Apportioner(MM2ApportionerBase):
     """
     The proposed MM2 apportionment algorithm for Congress.
     """
@@ -179,18 +179,15 @@ class MM2Apportioner:
         verbose: bool = False,
     ) -> None:
 
-        self._census: list = census
-        self._elections: list = elections
+        super().__init__(
+            census,
+            elections,
+            list_min=list_min,
+            total_seats=total_seats,
+            verbose=verbose,
+        )
+        # self.apportion_nominal_seats()
 
-        # self._min_nominal: int = min_nominal
-        self._list_min: int = list_min
-        self._total_seats: int = total_seats
-
-        self._verbose: bool = verbose
-
-        pass  # TODO
-
-    # TODO - Initialize apportioner
     # TODO - Apportion nominal & list seats based on census
     # TODO - Assign list seats to parties based on election results
 
@@ -226,6 +223,9 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
           - Whether states are guaranteed at least one list seat ('a' = No, 'e' = Yes).
             To guarantee list seats if necessary, they are assigned with the last
             few seats.
+
+        NOTE - This HACK uses a direct size argument, as opposed to one passed when
+        the apportioner is instantiated.
         """
 
         # For option 'e', keep track of states with no list seats
@@ -243,7 +243,6 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
                 no_list_seats.discard(xx)
 
                 if (size - self.N) == len(no_list_seats):
-                    # TODO - Account for *race* condition (e.g., 'ME')
                     # Assign the remaining seats to states with no list seats
                     break
 

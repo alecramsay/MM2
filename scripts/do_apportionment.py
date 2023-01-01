@@ -2,22 +2,18 @@
 #
 
 """
-Generate a priority queue for the HH apportionment algorithm, and
-a specific census.
-
-For the 2020 census and 600 reps:
-- Two states still have 1 rep -- VT & WY; and
-- These are the last two assignments, based on priority:
-  599 NY  39
-  600 CA  77
+Apportion nominal & list seats to states based on a census.
 
 For example:
 
-$ scripts/make_priority_queue.py --cycle 2020
+$ scripts/do_apportionment.py --cycle 1990
+$ scripts/do_apportionment.py --cycle 2000
+$ scripts/do_apportionment.py --cycle 2000
+$ scripts/do_apportionment.py --cycle 2020
 
 For documentation, type:
 
-$ scripts/make_priority_queue.py -h
+$ scripts/do_apportionment.py -h
 
 """
 
@@ -32,12 +28,19 @@ from MM2 import *
 
 def parse_args() -> Namespace:
     parser: ArgumentParser = argparse.ArgumentParser(
-        description="Generate a priority queue for a census."
+        description="Apportion nominal & list seats to states based on a census."
     )
     parser.add_argument(
         "-c", "--cycle", default=2020, help="The census cycle (e.g., 2020)", type=int
     )
     parser.add_argument("-r", "--reps", default=600, help="The # of reps", type=int)
+    parser.add_argument(
+        "-l",
+        "--listmin",
+        default=1,
+        help="The minimum # of list reps / state",
+        type=int,
+    )
     parser.add_argument(
         "-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode"
     )
@@ -49,6 +52,8 @@ def parse_args() -> Namespace:
 def main() -> None:
     args: Namespace = parse_args()
     cycle: int = args.cycle
+    list_min: int = args.listmin
+    size: int = args.reps
 
     ### LOAD THE CENSUS ###
 
@@ -56,7 +61,7 @@ def main() -> None:
     types: list = [str, str, int]
     census: list = read_typed_csv(csv_data, types)
 
-    ### CREATE THE QUEUE ###
+    ### APPORTION NOMINAL & LIST SEATS TO STATES ###
 
     app: HH_Apportioner = HH_Apportioner(census)
 
@@ -67,17 +72,30 @@ def main() -> None:
 
     by_state: dict = dict()
     for xx in STATES:
-        by_state[xx] = 0
+        by_state[xx] = {"nominal": 1, "list": 0}
+    N: int = 50
 
-    for i, row in enumerate(pv_queue[: args.reps]):
+    no_list_seats: set[str] = set()
+    for xx in STATES:
+        no_list_seats.add(xx)
+
+    for i, row in enumerate(pv_queue[: size - 50]):
+        N += 1
         xx: str = row["XX"]
 
-        by_state[xx] += 1
+        if i < 435:
+            by_state[xx]["nominal"] += 1
+        else:
+            by_state[xx]["list"] += 1
+            no_list_seats.discard(xx)
 
-        if i > (args.reps - 1) - 2:
-            print(f"{i+1:3d} {xx} {by_state[xx]:3d}")
+            if (size - N) == len(no_list_seats):
+                # Assign the remaining seats to states with no list seats
+                break
 
-    pass
+    # Assign the remaining seats to states with no list seats
+    for xx in no_list_seats:
+        by_state[xx]["list"] += 1
 
     ### WRITE THE RESULTS ###
 
@@ -85,7 +103,8 @@ def main() -> None:
     for k, v in by_state.items():
         row_out: dict = dict()
         row_out["XX"] = k
-        row_out["N'"] = v
+        row_out["NOMINAL"] = v["nominal"]
+        row_out["LIST"] = v["list"]
         output.append(row_out)
 
     reps_by_state: str = "results/{}_census_reps_by_state({}).csv".format(
@@ -97,12 +116,13 @@ def main() -> None:
         [
             {
                 "XX": row["XX"],
-                "N'": row["N'"],
+                "NOMINAL": row["NOMINAL"],
+                "LIST": row["LIST"],
             }
             for row in output
         ],
         # rows,
-        ["XX", "N'"],
+        ["XX", "NOMINAL", "LIST"],
     )
 
     pass
@@ -110,3 +130,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+### END ###
