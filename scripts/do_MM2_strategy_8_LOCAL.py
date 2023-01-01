@@ -107,21 +107,19 @@ def main() -> None:
 
     ### WRITE THE RESULTS ###
 
-    reps_by_state: str = "results/explorations/{}_reps_by_state({}{},{}).csv".format(
+    reps_by_state: str = "results/{}_reps_by_state({}{},{}).csv".format(
         args.election, strategy, option, size
     )
     save_reps_by_state(app.byState, reps_by_state)
 
-    reps_by_priority: str = (
-        "results/explorations/{}_reps_by_priority({}{},{}).csv".format(
-            args.election, strategy, option, size
-        )
+    reps_by_priority: str = "results/{}_reps_by_priority({}{},{}).csv".format(
+        args.election, strategy, option, size
     )
     save_reps_by_priority(app.byPriority, reps_by_priority)
 
     ### REPORT SOME BASIC INFO ###
 
-    report: str = "results/explorations/{}_report({}{},{}).txt".format(
+    report: str = "results/{}_report({}{},{}).txt".format(
         args.election, strategy, option, size
     )
     save_report(app, report)

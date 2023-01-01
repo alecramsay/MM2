@@ -40,6 +40,15 @@ class MM2ApportionerBase:
         self._base_app: HH_Apportioner = HH_Apportioner(census, verbose=verbose)
         self.byPriority: list = list()
         self.byState: dict = dict()
+
+        if elections:
+            self.set_election(elections)
+            # TODO - DELETE
+            # self._abstract_byState_data()
+            # self._sum_national_totals()
+
+    def set_election(self, elections: list) -> None:
+        self._elections = elections
         self._abstract_byState_data()
         self._sum_national_totals()
 
@@ -186,10 +195,22 @@ class MM2Apportioner(MM2ApportionerBase):
             total_seats=total_seats,
             verbose=verbose,
         )
-        # self.apportion_nominal_seats()
 
-    # TODO - Apportion nominal & list seats based on census
-    # TODO - Assign list seats to parties based on election results
+    def apportion_seats(self) -> None:
+        """Apportion nominal & list seats based on a census"""
+        self.apportion_nominal_seats()
+
+        # TODO - Apportion list seats
+
+        pass  # TODO
+
+    def assign_party_mix(self, elections: list) -> None:
+        """Assign list seats to parties based on election results"""
+        self.set_election(elections)
+
+        # TODO - Assign list seats to parties
+
+        pass  # TODO
 
 
 class MM2ApportionerSandbox(MM2ApportionerBase):

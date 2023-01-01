@@ -106,7 +106,7 @@ def main() -> None:
     for xx, row in by_state.items():
         output.append(row)
 
-    reps_by_census: str = "results/explorations/reps_by_census({}).csv".format(cycle)
+    reps_by_census: str = "results/reps_by_census({}).csv".format(cycle)
 
     write_csv(
         reps_by_census,
