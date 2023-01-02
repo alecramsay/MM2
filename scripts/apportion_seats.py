@@ -74,7 +74,7 @@ def main() -> None:
     reps_by_state: str = "results/{}_census_reps_by_state({}).csv".format(
         args.cycle, args.reps
     )
-    save_reps_by_state(app.byState, reps_by_state, subset=True)
+    save_reps_by_state(app.byState, reps_by_state, election_data=False)
 
 
 if __name__ == "__main__":

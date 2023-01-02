@@ -764,12 +764,14 @@ def actual_slack(V: int, T: int, S: int, N: int) -> int:
 ### OUTPUT HELPERS ###
 
 
-def save_reps_by_state(byState: dict, rel_path: str, subset: bool = False) -> None:
+def save_reps_by_state(
+    byState: dict, rel_path: str, election_data: bool = True
+) -> None:
     """Write reps_by_state CSV"""
 
     headings: list[str] = (
         ["XX", "n", "POWER", "n'", "POWER'"]
-        if subset
+        if not election_data
         else ["XX", "n", "v/t", "s", "SKEW", "POWER", "n'", "s'", "SKEW'", "POWER'"]
     )
     rows: list[dict] = list()
@@ -778,7 +780,7 @@ def save_reps_by_state(byState: dict, rel_path: str, subset: bool = False) -> No
     for k, v in byState.items():
         row: dict = dict()
         row["XX"] = k
-        if subset:
+        if not election_data:
             row["n"] = v["n"]
             row["POWER"] = v["POWER"]
             row["n'"] = v["n'"]
