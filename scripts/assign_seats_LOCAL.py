@@ -5,18 +5,18 @@
 Assign list seats to parties, based on a LOCAL election.
 
 Options:
-- 'a' = no list seat guarantee
-- 'e' = each state guaranteed at least one list seat (from final seats)
+- 's' is the total size of the House (600 [default] or 650 or whatever)
+- 'l' is the # of guaranteed list seats per state (0 or 1 [default])
 
 For example:
 
-$ scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 600 -l 1
-$ scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 650 -o 0
+scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 600 -l 1
+scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 650 -l 0
 
 
 For documentation, type:
 
-$ scripts/assign_seats_LOCAL.py -h
+scripts/assign_seats_LOCAL.py -h
 
 """
 

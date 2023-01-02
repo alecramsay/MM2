@@ -142,7 +142,7 @@ class MM2ApportionerBase:
 
             self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
 
-            # TODO - Conditionalize this on exploration or not?
+            # NOTE - These are for the incremental exploratory approach in the sandbox
             # Initialize the total # of D seats including list seats (s'),
             # and the total # of seats including list seats (n')
             self.byState[xx]["s'"] = self.byState[xx]["s"]
@@ -792,14 +792,15 @@ def save_reps_by_state(
 ) -> None:
     """Write reps_by_state CSV"""
 
+    census_section: list[str] = ["n", "POWER", "n'", "POWER'"]
+    election_section: list[str] = ["v/t", "s", "SKEW", "s'", "SKEW'"]
     headings: list[str] = (
-        ["XX", "n", "POWER", "n'", "POWER'"]
+        ["XX"] + census_section
         if not election_data
-        else ["XX", "n", "v/t", "s", "SKEW", "POWER", "n'", "s'", "SKEW'", "POWER'"]
+        else ["XX"] + census_section + election_section
     )
     rows: list[dict] = list()
 
-    # TODO - Reorganize the columns (state vs. party)
     for k, v in byState.items():
         row: dict = dict()
         row["XX"] = k
@@ -809,15 +810,17 @@ def save_reps_by_state(
             row["n'"] = v["n'"]
             row["POWER'"] = v["POWER'"]
         else:
+            # Census section
             row["n"] = v["n"]
+            row["POWER"] = v["POWER"]
+            row["n'"] = v["n'"]
+            row["POWER'"] = v["POWER'"]
+            # Election section
             row["v/t"] = v["v/t"]
             row["s"] = v["s"]
             row["SKEW"] = v["SKEW"]
-            row["POWER"] = v["POWER"]
-            row["n'"] = v["n'"]
             row["s'"] = v["s'"]
             row["SKEW'"] = v["SKEW'"]
-            row["POWER'"] = v["POWER'"]
         rows.append(row)
 
     write_csv(rel_path, rows, headings)

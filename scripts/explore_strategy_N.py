@@ -8,14 +8,14 @@ NOTE - This script allows us to explore various alternative strategies.
 
 For example:
 
-$ scripts/explore_strategy_N.py 2010 2020
-$ scripts/explore_strategy_N.py 2010 2012 -s 7
-$ scripts/explore_strategy_N.py 2010 2012 -s 7 -r
-$ scripts/explore_strategy_N.py 2000 2006
+scripts/explore_strategy_N.py 2010 2020
+scripts/explore_strategy_N.py 2010 2012 -s 7
+scripts/explore_strategy_N.py 2010 2012 -s 7 -r
+scripts/explore_strategy_N.py 2000 2006
 
 For documentation, type:
 
-$ scripts/explore_strategy_N.py -h
+scripts/explore_strategy_N.py -h
 
 """
 

@@ -14,13 +14,13 @@ Run variations of Strategy 8 against LOCAL election data:
 
 For example:
 
-$ scripts/explore_strategy_8.py -c 2010 -e 2020 -s 600 -o a
-$ scripts/explore_strategy_8.py -c 2010 -e 2020 -s 600 -o e
+scripts/explore_strategy_8.py -c 2010 -e 2020 -s 600 -o a
+scripts/explore_strategy_8.py -c 2010 -e 2020 -s 600 -o e
 
 
 For documentation, type:
 
-$ scripts/explore_strategy_8_LOCAL.py -h
+scripts/explore_strategy_8_LOCAL.py -h
 
 """
 

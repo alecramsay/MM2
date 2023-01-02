@@ -10,11 +10,11 @@ NOTE - This is a COPY of do_explore_strategy_N.py, with the paths to data files 
 
 For example:
 
-$ scripts/explore_strategy_N_LOCAL.py 2020 2022
+scripts/explore_strategy_N_LOCAL.py 2020 2022
 
 For documentation, type:
 
-$ scripts/explore_strategy_N_LOCAL.py -h
+scripts/explore_strategy_N_LOCAL.py -h
 
 """
 

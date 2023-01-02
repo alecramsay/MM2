@@ -10,11 +10,11 @@ Find # seats per state at:
 
 For example:
 
-$ scripts/find_seat_breaks.py --cycle 2020
+scripts/find_seat_breaks.py --cycle 2020
 
 For documentation, type:
 
-$ scripts/find_seat_breaks.py -h
+scripts/find_seat_breaks.py -h
 
 """
 
