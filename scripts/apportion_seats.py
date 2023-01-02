@@ -6,10 +6,15 @@ Apportion nominal & list seats to states based on a census.
 
 For example:
 
-$ scripts/apportion_seats.py --cycle 1990
-$ scripts/apportion_seats.py --cycle 2000
-$ scripts/apportion_seats.py --cycle 2000
-$ scripts/apportion_seats.py --cycle 2020
+$ scripts/apportion_seats.py --cycle 1990 -l 1
+$ scripts/apportion_seats.py --cycle 2000 -l 1
+$ scripts/apportion_seats.py --cycle 2000 -l 1
+$ scripts/apportion_seats.py --cycle 2020 -l 1
+
+$ scripts/apportion_seats.py --cycle 1990 -l 0
+$ scripts/apportion_seats.py --cycle 2000 -l 0
+$ scripts/apportion_seats.py --cycle 2000 -l 0
+$ scripts/apportion_seats.py --cycle 2020 -l 0
 
 For documentation, type:
 
@@ -71,8 +76,8 @@ def main() -> None:
 
     ### WRITE THE RESULTS ###
 
-    reps_by_state: str = "results/{}_census_reps_by_state({}).csv".format(
-        args.cycle, args.reps
+    reps_by_state: str = "results/{}_census_reps_by_state({},{}).csv".format(
+        args.cycle, args.reps, args.listmin
     )
     save_reps_by_state(app.byState, reps_by_state, election_data=False)
 
