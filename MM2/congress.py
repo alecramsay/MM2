@@ -764,28 +764,38 @@ def actual_slack(V: int, T: int, S: int, N: int) -> int:
 ### OUTPUT HELPERS ###
 
 
-def save_reps_by_state(byState: dict, rel_path: str) -> None:
+def save_reps_by_state(byState: dict, rel_path: str, subset: bool = False) -> None:
     """Write reps_by_state CSV"""
-    write_csv(
-        rel_path,
-        [
-            {
-                "XX": k,
-                "n": v["n"],
-                "v/t": v["v/t"],
-                "s": v["s"],
-                "SKEW": v["SKEW"],
-                "POWER": v["POWER"],
-                "n'": v["n'"],
-                "s'": v["s'"],
-                "SKEW'": v["SKEW'"],
-                "POWER'": v["POWER'"],
-            }
-            for k, v in byState.items()
-        ],
-        # rows,
-        ["XX", "n", "v/t", "s", "SKEW", "POWER", "n'", "s'", "SKEW'", "POWER'"],
+
+    headings: list[str] = (
+        ["XX", "n", "POWER", "n'", "POWER'"]
+        if subset
+        else ["XX", "n", "v/t", "s", "SKEW", "POWER", "n'", "s'", "SKEW'", "POWER'"]
     )
+    rows: list[dict] = list()
+
+    # TODO - Reorganize the columns (state vs. party)
+    for k, v in byState.items():
+        row: dict = dict()
+        row["XX"] = k
+        if subset:
+            row["n"] = v["n"]
+            row["POWER"] = v["POWER"]
+            row["n'"] = v["n'"]
+            row["POWER'"] = v["POWER'"]
+        else:
+            row["n"] = v["n"]
+            row["v/t"] = v["v/t"]
+            row["s"] = v["s"]
+            row["SKEW"] = v["SKEW"]
+            row["POWER"] = v["POWER"]
+            row["n'"] = v["n'"]
+            row["s'"] = v["s'"]
+            row["SKEW'"] = v["SKEW'"]
+            row["POWER'"] = v["POWER'"]
+        rows.append(row)
+
+    write_csv(rel_path, rows, headings)
 
 
 def save_reps_by_priority(byPriority: list, rel_path: str) -> None:

@@ -69,34 +69,12 @@ def main() -> None:
     )
     app.apportion_seats()
 
-    output: list = list()
-    for k, v in app.byState.items():
-        row_out: dict = dict()
-        row_out["XX"] = k
-        row_out["NOMINAL"] = v["n"]
-        row_out["LIST"] = v["n'"] - v["n"]
-        output.append(row_out)
+    ### WRITE THE RESULTS ###
 
     reps_by_state: str = "results/{}_census_reps_by_state({}).csv".format(
         args.cycle, args.reps
     )
-
-    write_csv(
-        reps_by_state,
-        [
-            {
-                "XX": row["XX"],
-                # TODO
-                "NOMINAL": row["NOMINAL"],
-                "LIST": row["LIST"],
-            }
-            for row in output
-        ],
-        # rows,
-        ["XX", "NOMINAL", "LIST"],
-    )
-
-    pass
+    save_reps_by_state(app.byState, reps_by_state, subset=True)
 
 
 if __name__ == "__main__":
