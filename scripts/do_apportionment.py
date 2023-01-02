@@ -69,43 +69,6 @@ def main() -> None:
     )
     app.apportion_seats()
 
-    # TODO - DELETE
-    # app: HH_Apportioner = HH_Apportioner(census)
-
-    # app._make_make_priority_queue()
-    # pv_queue: list = app._queue
-
-    # ### FIND SEATS BY STATE ###
-
-    # by_state: dict = dict()
-    # for xx in STATES:
-    #     by_state[xx] = {"nominal": 1, "list": 0}
-    # N: int = 50
-
-    # no_list_seats: set[str] = set()
-    # for xx in STATES:
-    #     no_list_seats.add(xx)
-
-    # for i, row in enumerate(pv_queue[: size - 50]):
-    #     N += 1
-    #     xx: str = row["XX"]
-
-    #     if i < 435:
-    #         by_state[xx]["nominal"] += 1
-    #     else:
-    #         by_state[xx]["list"] += 1
-    #         no_list_seats.discard(xx)
-
-    #         if (size - N) == len(no_list_seats):
-    #             # Assign the remaining seats to states with no list seats
-    #             break
-
-    # # Assign the remaining seats to states with no list seats
-    # for xx in no_list_seats:
-    #     by_state[xx]["list"] += 1
-
-    ### WRITE THE RESULTS ###
-
     # TODO - HERE
     output: list = list()
     for k, v in by_state.items():

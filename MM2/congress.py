@@ -249,10 +249,6 @@ class MM2Apportioner(MM2ApportionerBase):
         # Apportion list seats, keeping track of the states with no list seats
 
         no_list_seats: set[str] = {xx for xx in STATES}
-        # TODO - DELETE
-        # no_list_seats: set[str] = set()
-        # for xx in STATES:
-        #     no_list_seats.add(xx)
 
         # Assign list seats
         while self.N < self._total_seats:
@@ -418,8 +414,6 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
 
         self.N += 1
         self.byState[xx]["n'"] += 1
-        # TODO - DELETE
-        # ss: int = self.byState[xx]["n'"]
 
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
@@ -483,8 +477,6 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
 
         self.N += 1
         self.byState[xx]["n'"] += 1
-        # TODO - DELETE
-        # ss: int = self.byState[xx]["n'"]
 
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
@@ -578,8 +570,6 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
 
         self.N += 1
         self.byState[xx]["n'"] += 1
-        # TODO - DELETE
-        # ss: int = self.byState[xx]["n'"]
 
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
