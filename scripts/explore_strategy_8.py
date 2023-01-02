@@ -6,7 +6,7 @@ Add list seats to the base congressional apportionment for an election.
 
 This script reflect the final design decisions (Strategy 8) of the many we explored.
 
-NOTE - This is a COPY of do_MM2_strategy_N.py, with the paths to data files NOT in the repo.
+NOTE - This is a COPY of do_explore_strategy_N.py, with the paths to data files NOT in the repo.
 
 Run variations of Strategy 8 against LOCAL election data:
 - 'a' = allocate 1 seat per state, and then up to 600 (or 650) <<< no list seat guarantee
@@ -14,13 +14,13 @@ Run variations of Strategy 8 against LOCAL election data:
 
 For example:
 
-$ scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o a
-$ scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o e
+$ scripts/explore_strategy_8.py -c 2010 -e 2020 -s 600 -o a
+$ scripts/explore_strategy_8.py -c 2010 -e 2020 -s 600 -o e
 
 
 For documentation, type:
 
-$ scripts/do_MM2_strategy_8_LOCAL.py -h
+$ scripts/explore_strategy_8_LOCAL.py -h
 
 """
 
@@ -34,7 +34,7 @@ from MM2 import *
 ### MODS FOR LOCAL USE ###
 
 census_root: str = "data/census"
-elections_root: str = "/Users/alecramsay/Downloads"
+elections_root: str = "data/elections"
 
 
 ### PARSE ARGUMENTS ###
@@ -99,8 +99,8 @@ def main() -> None:
     # Assign the first 435 seats as they are today
 
     app: MM2ApportionerSandbox = MM2ApportionerSandbox(census, elections, args.verbose)
-    app.list_min: int = list_min
-    app.total_seats: int = size
+    app.list_min = list_min
+    app.total_seats = size
     app._r: int = 1
 
     app.strategy8(size=size, option=option)
