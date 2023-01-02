@@ -11,7 +11,7 @@ To apportion representatives to states based on a census, call the assign_first_
 
 ```python
 app = HH_Apportioner(census)
-app.assign_first_N(NOMINAL_SEATS)
+app.assign_first_N(435)
 ```
 
 The class generates a queue of priority values sorted in descending order, initially 100 entries per state.
@@ -20,13 +20,13 @@ the # of the House seat, the priority value, the state that gets the seat, and t
 
 ## MM2 for Congress
 
-The MM2_Apportioner class wraps the HH_Apportioner class and adds MM2 for Congress functionality.
+The MM2ApportionerSandbox class wraps the HH_Apportioner class and adds MM2 for Congress functionality.
 In addition to the census data, this takes election data in a similar form: a list of dicts read from a CSV by DictReader.
 Examples are in the data/election/ directory.
 To assign list seats to states based on the election data, call the eliminate_gap() method with a strategy.
 
 ```python
-app = MM2_Apportioner(census, elections)
+app = MM2ApportionerSandbox(census, elections)
 app.eliminate_gap(strategy=strategy)
 ```
 
@@ -40,11 +40,11 @@ There are 8 strategies for eliminating the gap:
 7. Assign 165 list seats (600 total), balancing the two with skew(r=1) until gap is zero and then just minimize the national gap
 8. Assign 165 list seats (600 total), always minimizing the prospective skew for the state
 
-The do_MM2_strategy_N.py script in the scripts/ directory takes a census decade, an election year, and a strategy, 
+The do_explore_strategy_N.py script in the scripts/ directory takes a census decade, an election year, and a strategy, 
 loads the census and election data, eliminates the national gap assigning list seats to states using the specified strategy:
 
 ```shell
-scripts/do_MM2_strategy_N.py 2010 2012 -s 3
+scripts/explore_strategy_N.py 2010 2012 -s 3
 ```
 
 The default strategy is 8.

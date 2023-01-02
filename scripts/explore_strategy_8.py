@@ -6,7 +6,7 @@ Add list seats to the base congressional apportionment for an election.
 
 This script reflect the final design decisions (Strategy 8) of the many we explored.
 
-NOTE - This is a COPY of do_MM2_strategy_N.py, with the paths to data files NOT in the repo.
+NOTE - This is a COPY of do_explore_strategy_N.py, with the paths to data files NOT in the repo.
 
 Run variations of Strategy 8 against LOCAL election data:
 - 'a' = allocate 1 seat per state, and then up to 600 (or 650) <<< no list seat guarantee
@@ -14,13 +14,13 @@ Run variations of Strategy 8 against LOCAL election data:
 
 For example:
 
-$ scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o a
-$ scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o e
+scripts/explore_strategy_8.py -c 2010 -e 2020 -s 600 -o a
+scripts/explore_strategy_8.py -c 2010 -e 2020 -s 600 -o e
 
 
 For documentation, type:
 
-$ scripts/do_MM2_strategy_8_LOCAL.py -h
+scripts/explore_strategy_8_LOCAL.py -h
 
 """
 
@@ -98,9 +98,9 @@ def main() -> None:
 
     # Assign the first 435 seats as they are today
 
-    app: MM2_Apportioner = MM2_Apportioner(
-        census, elections, list_min=list_min, total_seats=size, verbose=args.verbose
-    )
+    app: MM2ApportionerSandbox = MM2ApportionerSandbox(census, elections, args.verbose)
+    app.list_min = list_min
+    app.total_seats = size
     app._r: int = 1
 
     app.strategy8(size=size, option=option)
@@ -110,96 +110,19 @@ def main() -> None:
     reps_by_state: str = "results/{}_reps_by_state({}{},{}).csv".format(
         args.election, strategy, option, size
     )
-
-    write_csv(
-        reps_by_state,
-        [
-            {
-                "XX": k,
-                "n": v["n"],
-                "v/t": v["v/t"],
-                "s": v["s"],
-                "SKEW": v["SKEW"],
-                "POWER": v["POWER"],
-                "n'": v["n'"],
-                "s'": v["s'"],
-                "SKEW'": v["SKEW'"],
-                "POWER'": v["POWER'"],
-            }
-            for k, v in app.byState.items()
-        ],
-        # rows,
-        ["XX", "n", "v/t", "s", "SKEW", "POWER", "n'", "s'", "SKEW'", "POWER'"],
-    )
+    save_reps_by_state(app.byState, reps_by_state)
 
     reps_by_priority: str = "results/{}_reps_by_priority({}{},{}).csv".format(
         args.election, strategy, option, size
     )
-    write_csv(
-        reps_by_priority,
-        app.byPriority,
-        [
-            "HOUSE SEAT",
-            "PRIORITY VALUE",
-            "STATE",
-            "STATE SEAT",
-            "Vf",
-            "Sf",
-            "SKEW|D",
-            "SKEW|R",
-            "THRESHOLD",
-            "PARTY",
-            "GAP",
-            "SLACK",
-        ],
-    )
+    save_reps_by_priority(app.byPriority, reps_by_priority)
 
     ### REPORT SOME BASIC INFO ###
 
     report: str = "results/{}_report({}{},{}).txt".format(
         args.election, strategy, option, size
     )
-    with open(report, "w") as f:
-        print("{}\n".format(app.baseline), file=f)
-
-        print(
-            "{} list seats ({} Democratic) were added for a total of {}.\n".format(
-                app.N - app.N0,
-                app.S - app.S0,
-                app._base_app.N,  # Reports the total seats, including "other."
-            ),
-            file=f,
-        )
-
-        if not app.queue_is_ok():
-            print(
-                "Warning: One or more states have no remaining priority values! Increase MAX_STATE_SEATS & re-run.\n",
-                file=f,
-            )
-        else:
-            print("All states have remaining priority values.\n", file=f)
-
-        ones: list = app.one_rep_states()
-        if len(ones) > 0:
-            print(
-                "Some states still have only one representative: {}\n".format(
-                    ", ".join(ones)
-                ),
-                file=f,
-            )
-        else:
-            print("All states have more than one representative.\n", file=f)
-
-        unbalanced: list = app.unbalanced_states()
-        if len(unbalanced) > 0:
-            print(
-                "Some states are still disproportional more than one seat: {}\n".format(
-                    ", ".join(unbalanced)
-                ),
-                file=f,
-            )
-        else:
-            print("All states are within one seat of proportional.\n", file=f)
+    save_report(app, report)
 
 
 if __name__ == "__main__":

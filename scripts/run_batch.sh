@@ -7,11 +7,25 @@
 # scripts/run_batch.sh
 #
 
-echo "Running batch script"
+echo "Running batch script ..."
 
-scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o a
-scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o e
-scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 650 -o a
-scripts/do_MM2_strategy_8_LOCAL.py -c 2020 -e 2022 -s 650 -o e
+scripts/assign_seats.py -c 1990 -e 2000 -s 600 -l 1
 
-echo "Done"
+scripts/assign_seats.py -c 2000 -e 2002 -s 600 -l 1
+scripts/assign_seats.py -c 2000 -e 2004 -s 600 -l 1
+scripts/assign_seats.py -c 2000 -e 2006 -s 600 -l 1
+scripts/assign_seats.py -c 2000 -e 2008 -s 600 -l 1
+scripts/assign_seats.py -c 2000 -e 2010 -s 600 -l 1
+
+scripts/assign_seats.py -c 2010 -e 2012 -s 600 -l 1
+scripts/assign_seats.py -c 2010 -e 2014 -s 600 -l 1
+scripts/assign_seats.py -c 2010 -e 2016 -s 600 -l 1
+scripts/assign_seats.py -c 2010 -e 2018 -s 600 -l 1
+scripts/assign_seats.py -c 2010 -e 2020 -s 600 -l 1
+
+scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 600 -l 0
+scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 600 -l 1
+scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 650 -l 0
+scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 650 -l 1
+
+echo "... done"

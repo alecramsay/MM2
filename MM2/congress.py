@@ -9,46 +9,56 @@ from typing import Literal, Callable, Tuple
 
 from .apportion import HH_Apportioner
 from .analytics import *
+from .readwrite import *
 from .settings import *
 
 
-class MM2_Apportioner:
+class MM2ApportionerBase:
+    """
+    Basic support for assigning nominal & list seats to seats & parties.
+    """
+
     def __init__(
         self,
         census: list,
         elections: list,
-        # NOTE - This is implied, because each state gets one nominal seat up front.
-        # min_nominal: int = 1,
         list_min: int = 0,
         total_seats: int = 600,
         verbose: bool = False,
     ) -> None:
+
+        # Capture arguments
+
         self._census: list = census
         self._elections: list = elections
-
-        # self._min_nominal: int = min_nominal
         self._list_min: int = list_min
         self._total_seats: int = total_seats
-
         self._verbose: bool = verbose
 
-        # Apportion the first 435 seats, using census data
+        # Initialize data structures
 
         self._base_app: HH_Apportioner = HH_Apportioner(census, verbose=verbose)
-        self._base_app.assign_first_N(NOMINAL_SEATS)
-
-        # Initialize MM2 report structures
-
         self.byPriority: list = list()
         self.byState: dict = dict()
+        for xx in STATES:
+            self.byState[xx] = {}
 
-        # Consolidate census & election data by state
+        if elections:
+            self.set_election(elections)
 
+    def apportion_nominal_seats(self, n: int = 435) -> None:
+        self._abstract_census_data()
+        self._base_app.assign_first_N(n)
+        for k, v in self._base_app.reps.items():
+            self.byState[k]["n"] = v
+            self.byState[k]["n'"] = v
+
+    def set_election(self, elections: list) -> None:
+        self._elections = elections
         self._abstract_byState_data()
-
-        # Aggregate national election totals
-
         self._sum_national_totals()
+
+    ### HOUSEKEEPING HELPERS ###
 
     def _sum_national_totals(self) -> None:
         totals: dict[str, int] = {
@@ -73,6 +83,10 @@ class MM2_Apportioner:
         # - The D seats and two-party seats (these grow w/ list seats)
         self.S: int = totals["DEM_S"]
         self.N: int = totals["REP_S"] + totals["DEM_S"]  # NOTE: Removes "other" seats.
+        # NOTE - This is how self.N is initialized for the sandbox.
+        # It "works" because the termination check is a delta from the initial value.
+        # Stop when total seats are assigned (including "other" seats)
+        # return (self.N - self.N0) < (self._total_seats - 435)
 
         # - The initial values for nominal seats
         self.S0: int = self.S
@@ -88,9 +102,7 @@ class MM2_Apportioner:
         )
 
     def _abstract_byState_data(self) -> None:
-        for xx in STATES:
-            self.byState[xx] = {}
-
+        """Legacy combo"""
         # Include the census population (POP)
         for state in self._census:
             self.byState[state["XX"]]["POP"] = state["Population"]
@@ -112,6 +124,234 @@ class MM2_Apportioner:
             self.byState[xx]["s'"] = self.byState[xx]["s"]
             self.byState[xx]["n'"] = self.byState[xx]["n"]
 
+    def _abstract_census_data(self) -> None:
+        # Include the census population (POP)
+        for state in self._census:
+            self.byState[state["XX"]]["POP"] = state["Population"]
+
+        # NOTE - Add "n" and "n'" to byState when apportioning seats to states
+
+    def _abstract_election_data(self) -> None:
+        # Add select election data
+        for state in self._elections:
+            xx: str = state["XX"]
+
+            self.byState[xx]["v"] = state["DEM_V"]
+            self.byState[xx]["t"] = state["REP_V"] + state["DEM_V"]
+            self.byState[xx]["s"] = state["DEM_S"]
+
+            self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
+
+            # NOTE - These are for the incremental exploratory approach in the sandbox
+            # Initialize the total # of D seats including list seats (s'),
+            # and the total # of seats including list seats (n')
+            self.byState[xx]["s'"] = self.byState[xx]["s"]
+            self.byState[xx]["n'"] = self.byState[xx]["n"]
+
+    def _calc_analytics(self) -> None:
+        """Legacy combination"""
+        self._calc_power()
+        self._calc_skew()
+
+    def _calc_power(self) -> None:
+        # Compute the POWER for the nominal seats
+        for k, v in self.byState.items():
+            self.byState[k]["POWER"] = v["POP"] / v["n"]
+
+        # Compute the new POWER including list seats
+        for k, v in self.byState.items():
+            self.byState[k]["POWER'"] = v["POP"] / v["n'"]
+
+    def _calc_skew(self) -> None:
+        # Compute the SKEW for the nominal seats
+        for k, v in self.byState.items():
+            self.byState[k]["SKEW"] = skew_pct(
+                v["v"],
+                v["t"],
+                v["s"],
+                v["n"],
+                self._r,
+            )
+
+        # Compute the new SKEW including list seats
+        for k, v in self.byState.items():
+            self.byState[k]["SKEW'"] = skew_pct(
+                v["v"], v["t"], v["s'"], v["n'"], self._r
+            )
+
+    ### OUTPUT HELPERS ###
+
+    def queue_is_ok(self) -> bool:
+        """
+        All states still have priority values in the queue.
+        """
+        return self._base_app.queue_is_ok()
+
+    def one_rep_states(self) -> list:
+        """
+        Return a list of states with one representative.
+        """
+
+        ones = list()
+
+        for xx in STATES:
+            if self.byState[xx]["n'"] == 1:
+                ones.append(xx)
+
+        return ones
+
+    def unbalanced_states(self) -> list:
+        """
+        Return a list of states where (Sf - Vf) * N > 1 seat.
+        """
+
+        unbalanced: list = list()
+
+        for xx in STATES:
+            v_i: int = self.byState[xx]["v"]
+            t_i: int = self.byState[xx]["t"]
+            s_i: int = self.byState[xx]["s'"]
+            n_i: int = self.byState[xx]["n'"]
+
+            if (((s_i / n_i) - (v_i / t_i)) * n_i) > 1:
+                unbalanced.append(xx)
+
+        return unbalanced
+
+
+class MM2Apportioner(MM2ApportionerBase):
+    """
+    The proposed MM2 apportionment algorithm for Congress.
+    """
+
+    def __init__(
+        self,
+        census: list,
+        elections: list,
+        list_min: int = 0,
+        total_seats: int = 600,
+        verbose: bool = False,
+    ) -> None:
+
+        super().__init__(
+            census,
+            elections,
+            list_min=list_min,
+            total_seats=total_seats,
+            verbose=verbose,
+        )
+        self._r: int = 1
+
+    def apportion_and_assign_seats(self) -> None:
+        """Apportion seats and assign party mix (requires election data)"""
+        self._abstract_election_data()
+
+        self.apportion_seats()
+        self.assign_party_mix()
+
+    def apportion_seats(self) -> None:
+        """Apportion nominal & list seats based on a census"""
+
+        assert self._list_min == 0 or self._list_min == 1
+
+        self.apportion_nominal_seats()
+        self.N: int = 435
+
+        # Apportion list seats, keeping track of the states with no list seats
+
+        no_list_seats: set[str] = {xx for xx in STATES}
+
+        # Assign list seats
+        while self.N < self._total_seats:
+            # Based on priority values
+            self.N += 1
+            self._assign_priority_seat()
+
+            no_list_seats.discard(self.assigned_to)
+
+            # Until the remaining seats are needed to ensure every state gets at least one list seat
+            if self._list_min == 1 and (self._total_seats - self.N) == len(
+                no_list_seats
+            ):
+                break
+
+        # Assign the remaining seats to states with no list seats, if guaranteed
+        if self._list_min == 1:
+            for xx in no_list_seats:
+                self.N += 1
+                self._assign_named_seat(xx)
+
+        # Post-process the results for reports
+        self._calc_power()
+
+    def _assign_priority_seat(self) -> None:
+        """Assign the next seat to the *state* with the highest priority value"""
+
+        hs: int
+        pv: int
+        xx: str
+        ss: int
+        hs, pv, xx, ss = self._base_app.assign_next()
+
+        # self.N += 1  # Do this in the caller for greater transparency
+        self.byState[xx]["n'"] += 1
+        self.assigned_to: str = xx
+
+    def _assign_named_seat(self, xx: str) -> None:
+        """Assign a seat to a specified state"""
+
+        hs: int
+        pv: int
+        xx: str
+        ss: int
+        hs, pv, xx, ss = self._base_app.assign_named(xx)
+
+        # self.N += 1  # Do this in the caller for greater transparency
+        self.byState[xx]["n'"] += 1
+        self.assigned_to: str = xx
+
+    def assign_party_mix(self) -> None:
+        """
+        Assign list seats to parties based on election results
+        """
+
+        for k, v in self.byState.items():
+            nominal_seats: int = v["n"]
+            list_seats: int = v["n'"] - v["n"]
+            vote_share: float = v["v"] / v["t"]
+            D_wins: int = v["s"]
+
+            D_list: int
+            R_list: int
+            D_list, R_list = party_split(nominal_seats, list_seats, vote_share, D_wins)
+
+            self.byState[k]["s'"] = D_wins + D_list
+
+        # Post-process the results for reports
+        self._calc_skew()
+
+
+class MM2ApportionerSandbox(MM2ApportionerBase):
+    """
+    A sandbox for exploring various strategies for assigning list seats to seats & parties.
+    """
+
+    def __init__(
+        self,
+        census: list,
+        elections: list,
+        verbose: bool,
+    ) -> None:
+
+        super().__init__(
+            census,
+            elections,
+            list_min=0,  # Backward compatibility; not used
+            total_seats=600,  # Ditto
+            verbose=verbose,
+        )
+        self._base_app.assign_first_N(435)
+
     ### Strategy 8 ###
 
     def strategy8(self, *, size: int = 600, option: str = "a") -> None:
@@ -126,6 +366,9 @@ class MM2_Apportioner:
           - Whether states are guaranteed at least one list seat ('a' = No, 'e' = Yes).
             To guarantee list seats if necessary, they are assigned with the last
             few seats.
+
+        NOTE - This HACK uses a direct size argument, as opposed to one passed when
+        the apportioner is instantiated.
         """
 
         # For option 'e', keep track of states with no list seats
@@ -134,7 +377,7 @@ class MM2_Apportioner:
             for xx in STATES:
                 no_list_seats.add(xx)
 
-        # Assign 436 – the total size including list seats, e.g., 600, 650, etc.
+        # Assign 436 to the the total size including list seats, e.g., 600, 650, etc.
         while self.N < size:
             self.strategy8_assignment_rule()
 
@@ -143,7 +386,6 @@ class MM2_Apportioner:
                 no_list_seats.discard(xx)
 
                 if (size - self.N) == len(no_list_seats):
-                    # TODO - Account for *race* condition (e.g., 'ME')
                     # Assign the remaining seats to states with no list seats
                     break
 
@@ -166,8 +408,8 @@ class MM2_Apportioner:
         hs: int
         pv: int
         xx: str
-        foo: int
-        hs, pv, xx, foo = self._base_app.assign_next()
+        ss: int
+        hs, pv, xx, ss = self._base_app.assign_next()
 
         # Assign it to the *party* based on the chosen strategy
 
@@ -194,7 +436,6 @@ class MM2_Apportioner:
 
         self.N += 1
         self.byState[xx]["n'"] += 1
-        ss: int = self.byState[xx]["n'"]
 
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
@@ -230,8 +471,8 @@ class MM2_Apportioner:
         hs: int
         pv: int
         xx: str
-        foo: int
-        hs, pv, xx, foo = self._base_app.assign_named(xx)
+        ss: int
+        hs, pv, xx, ss = self._base_app.assign_named(xx)
 
         # Assign it to the *party* based on the chosen strategy
 
@@ -258,7 +499,6 @@ class MM2_Apportioner:
 
         self.N += 1
         self.byState[xx]["n'"] += 1
-        ss: int = self.byState[xx]["n'"]
 
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
@@ -291,7 +531,8 @@ class MM2_Apportioner:
         hs: int
         pv: int
         xx: str
-        hs, pv, xx, _ = self._base_app.assign_next()
+        ss: int
+        hs, pv, xx, ss = self._base_app.assign_next()
 
         # Assign it to the *party* based on the chosen strategy
 
@@ -351,7 +592,6 @@ class MM2_Apportioner:
 
         self.N += 1
         self.byState[xx]["n'"] += 1
-        ss: int = self.byState[xx]["n'"]
 
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
@@ -390,7 +630,7 @@ class MM2_Apportioner:
             return (self.N - self.N0) < LIST_SEATS
         elif self._strategy in [6, 7, 8]:
             # Stop when total seats are assigned (including "other" seats)
-            return (self.N - self.N0) < (self._total_seats - NOMINAL_SEATS)
+            return (self.N - self.N0) < (self._total_seats - 435)
         else:
             raise ValueError("Invalid strategy")
 
@@ -415,64 +655,6 @@ class MM2_Apportioner:
         self._balancer_fn: Callable[
             [float, float, float, int, bool], Literal["REP", "DEM"]
         ] = make_balancer_fn(self._reducer_fn)
-
-    ### End ###
-
-    def _calc_analytics(self) -> None:
-        # Compute the SKEW & POWER for the nominal seats
-        for k, v in self.byState.items():
-            self.byState[k]["SKEW"] = skew_pct(
-                v["v"],
-                v["t"],
-                v["s"],
-                v["n"],
-                self._r,
-            )
-            self.byState[k]["POWER"] = v["POP"] / v["n"]
-
-        # Compute the new SKEW & POWER including list seats
-        for k, v in self.byState.items():
-            self.byState[k]["SKEW'"] = skew_pct(
-                v["v"], v["t"], v["s'"], v["n'"], self._r
-            )
-            self.byState[k]["POWER'"] = v["POP"] / v["n'"]
-
-    def queue_is_ok(self) -> bool:
-        """
-        All states still have priority values in the queue.
-        """
-        return self._base_app.queue_is_ok()
-
-    def one_rep_states(self) -> list:
-        """
-        Return a list of states with one representative.
-        """
-
-        ones = list()
-
-        for xx in STATES:
-            if self.byState[xx]["n'"] == 1:
-                ones.append(xx)
-
-        return ones
-
-    def unbalanced_states(self) -> list:
-        """
-        Return a list of states where (Sf - Vf) * N > 1 seat.
-        """
-
-        unbalanced: list = list()
-
-        for xx in STATES:
-            v_i: int = self.byState[xx]["v"]
-            t_i: int = self.byState[xx]["t"]
-            s_i: int = self.byState[xx]["s'"]
-            n_i: int = self.byState[xx]["n'"]
-
-            if (((s_i / n_i) - (v_i / t_i)) * n_i) > 1:
-                unbalanced.append(xx)
-
-        return unbalanced
 
 
 ### LIST SEAT ASSIGNMENT STRATEGIES ###
@@ -539,10 +721,34 @@ def make_balancer_fn(
     return balance_state_and_national
 
 
-### HELPERS ###
+### METRIC HELPERS ###
 
 
-def gap_seats(V, T, S, N) -> int:
+def party_split(
+    nominal_seats: int, list_seats: int, vote_share: float, D_wins: int
+) -> tuple[int, int]:
+    """
+    The (D, R) split of list seats
+
+    - D's can't get more list seats than apportioned to the state
+    - D's can't *lose* seats, i.e., minimum D list seats is 0
+    """
+
+    assert list_seats >= 0
+
+    if list_seats == 0:
+        return (0, 0)
+
+    PR: int = pr_seats(nominal_seats + list_seats, vote_share)
+    gap: int = ue_seats(PR, D_wins)
+
+    D_list: int = min(max(gap, 0), list_seats)
+    R_list: int = list_seats - D_list
+
+    return (D_list, R_list)
+
+
+def gap_seats(V: int, T: int, S: int, N: int) -> int:
     """
     The *whole* # of seats different from proportional.
     Positive values indicate excess R seats, negative execess D seats.
@@ -599,6 +805,115 @@ def actual_slack(V: int, T: int, S: int, N: int) -> int:
     """
 
     return slack_formula(S, N)
+
+
+### OUTPUT HELPERS ###
+
+
+def save_reps_by_state(
+    byState: dict, rel_path: str, election_data: bool = True
+) -> None:
+    """Write reps_by_state CSV"""
+
+    census_section: list[str] = ["n", "POWER", "n'", "POWER'"]
+    election_section: list[str] = ["v/t", "s", "SKEW", "s'", "SKEW'"]
+    headings: list[str] = (
+        ["XX"] + census_section
+        if not election_data
+        else ["XX"] + census_section + election_section
+    )
+    rows: list[dict] = list()
+
+    for k, v in byState.items():
+        row: dict = dict()
+        row["XX"] = k
+        if not election_data:
+            row["n"] = v["n"]
+            row["POWER"] = v["POWER"]
+            row["n'"] = v["n'"]
+            row["POWER'"] = v["POWER'"]
+        else:
+            # Census section
+            row["n"] = v["n"]
+            row["POWER"] = v["POWER"]
+            row["n'"] = v["n'"]
+            row["POWER'"] = v["POWER'"]
+            # Election section
+            row["v/t"] = v["v/t"]
+            row["s"] = v["s"]
+            row["SKEW"] = v["SKEW"]
+            row["s'"] = v["s'"]
+            row["SKEW'"] = v["SKEW'"]
+        rows.append(row)
+
+    write_csv(rel_path, rows, headings)
+
+
+def save_reps_by_priority(byPriority: list, rel_path: str) -> None:
+    """Write reps_by_priority CSV"""
+    write_csv(
+        rel_path,
+        byPriority,
+        [
+            "HOUSE SEAT",
+            "PRIORITY VALUE",
+            "STATE",
+            "STATE SEAT",
+            "Vf",
+            "Sf",
+            "SKEW|D",
+            "SKEW|R",
+            "THRESHOLD",
+            "PARTY",
+            "GAP",
+            "SLACK",
+        ],
+    )
+
+
+def save_report(app: MM2Apportioner, rel_path: str) -> None:
+    """Write report.txt"""
+    with open(rel_path, "w") as f:
+        print("{}\n".format(app.baseline), file=f)
+
+        print(
+            "{} list seats ({} Democratic) were added for a total of {}.\n".format(
+                app.N - app.N0,
+                app.S - app.S0,
+                app._base_app.N,  # Reports the total seats, including "other."
+            ),
+            file=f,
+        )
+
+        if not app.queue_is_ok():
+            print(
+                "Warning: One or more states have no remaining priority values! Increase MAX_STATE_SEATS & re-run.\n",
+                file=f,
+            )
+        else:
+            print("All states have remaining priority values.\n", file=f)
+
+        ones: list = app.one_rep_states()
+        if len(ones) > 0:
+            print(
+                "Some states still have only one representative: {}\n".format(
+                    ", ".join(ones)
+                ),
+                file=f,
+            )
+        else:
+            print("All states have more than one representative.\n", file=f)
+
+        unbalanced: list = app.unbalanced_states()
+        if len(unbalanced) > 0:
+            print(
+                "Some states are still disproportional more than one seat: {}\n".format(
+                    ", ".join(unbalanced)
+                ),
+                file=f,
+            )
+        else:
+            print("All states are within one seat of proportional.\n", file=f)
 
 
 ### END ###

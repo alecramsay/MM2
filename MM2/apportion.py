@@ -127,3 +127,6 @@ class HH_Apportioner:
                 self._queue.append({"XX": state["XX"], "PV": pv})
 
         self._queue = sorted(self._queue, key=lambda x: x["PV"], reverse=True)
+
+
+### END ###
