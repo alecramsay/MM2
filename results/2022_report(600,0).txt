@@ -6,5 +6,5 @@ All states have remaining priority values.
 
 Some states still have only one representative: AK, ND, VT, WY
 
-All states are within one seat of proportional.
+Some states are still disproportional more than one seat: IL
 
