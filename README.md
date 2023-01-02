@@ -11,7 +11,7 @@ To apportion representatives to states based on a census, call the assign_first_
 
 ```python
 app = HH_Apportioner(census)
-app.assign_first_N(NOMINAL_SEATS)
+app.assign_first_N(435)
 ```
 
 The class generates a queue of priority values sorted in descending order, initially 100 entries per state.

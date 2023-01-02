@@ -5,8 +5,6 @@
 
 MAX_STATE_SEATS: int = 100  # Use this value, so CA doesn't run out of priority values.
 
-NOMINAL_SEATS: int = 435  # The number of seats to apportion using the census data.
-
 STATES: list[str] = [
     "AL",
     "AK",
@@ -61,3 +59,5 @@ STATES: list[str] = [
 ]
 
 EPSILON: float = 1 / (10**6)
+
+### END ###

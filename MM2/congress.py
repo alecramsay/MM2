@@ -46,7 +46,7 @@ class MM2ApportionerBase:
         if elections:
             self.set_election(elections)
 
-    def apportion_nominal_seats(self, n: int = NOMINAL_SEATS) -> None:
+    def apportion_nominal_seats(self, n: int = 435) -> None:
         self._abstract_census_data()
         self._base_app.assign_first_N(n)
         for k, v in self._base_app.reps.items():
@@ -86,7 +86,7 @@ class MM2ApportionerBase:
         # NOTE - This is how self.N is initialized for the sandbox.
         # It "works" because the termination check is a delta from the initial value.
         # Stop when total seats are assigned (including "other" seats)
-        # return (self.N - self.N0) < (self._total_seats - NOMINAL_SEATS)
+        # return (self.N - self.N0) < (self._total_seats - 435)
 
         # - The initial values for nominal seats
         self.S0: int = self.S
@@ -243,30 +243,32 @@ class MM2Apportioner(MM2ApportionerBase):
     def apportion_seats(self) -> None:
         """Apportion nominal & list seats based on a census"""
 
-        self.N: int = NOMINAL_SEATS
-        self.apportion_nominal_seats(self.N)
+        self.apportion_nominal_seats()
+        self.N: int = 435
 
-        # Apportion list seats
+        # Apportion list seats, keeping track of the states with no list seats
 
-        # Keep track of the states with no list seats
-        no_list_seats: set[str] = set()
-        for xx in STATES:
-            no_list_seats.add(xx)
+        no_list_seats: set[str] = {xx for xx in STATES}
+        # TODO - DELETE
+        # no_list_seats: set[str] = set()
+        # for xx in STATES:
+        #     no_list_seats.add(xx)
 
         # Assign list seats
         while self.N < self._total_seats:
             # Based on priority values
+            self.N += 1
             self._assign_priority_seat()
 
-            xx: str = self.assigned_to
-            no_list_seats.discard(xx)
+            no_list_seats.discard(self.assigned_to)
 
-            # Until the rest are needed to ensure every state gets at least one list seat
+            # Until the remaining seats are needed to ensure every state gets at least one list seat
             if (self._total_seats - self.N) == len(no_list_seats):
                 break
 
         # Assign the remaining seats to states with no list seats
         for xx in no_list_seats:
+            self.N += 1
             self._assign_named_seat(xx)
 
         # Post-process the results for reports
@@ -281,7 +283,7 @@ class MM2Apportioner(MM2ApportionerBase):
         ss: int
         hs, pv, xx, ss = self._base_app.assign_next()
 
-        self.N += 1
+        # self.N += 1  # Do this in the caller for greater transparency
         self.byState[xx]["n'"] += 1
         self.assigned_to: str = xx
 
@@ -294,7 +296,7 @@ class MM2Apportioner(MM2ApportionerBase):
         ss: int
         hs, pv, xx, ss = self._base_app.assign_named(xx)
 
-        self.N += 1
+        # self.N += 1  # Do this in the caller for greater transparency
         self.byState[xx]["n'"] += 1
         self.assigned_to: str = xx
 
@@ -330,7 +332,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             total_seats=600,  # Ditto
             verbose=verbose,
         )
-        self._base_app.assign_first_N(NOMINAL_SEATS)
+        self._base_app.assign_first_N(435)
 
     ### Strategy 8 ###
 
@@ -616,7 +618,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             return (self.N - self.N0) < LIST_SEATS
         elif self._strategy in [6, 7, 8]:
             # Stop when total seats are assigned (including "other" seats)
-            return (self.N - self.N0) < (self._total_seats - NOMINAL_SEATS)
+            return (self.N - self.N0) < (self._total_seats - 435)
         else:
             raise ValueError("Invalid strategy")
 

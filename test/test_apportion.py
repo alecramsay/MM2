@@ -26,7 +26,7 @@ class TestHH_Apportioner:
         census: list = read_typed_csv(csv_data, types)
 
         app: HH_Apportioner = HH_Apportioner(census)
-        app.assign_first_N(NOMINAL_SEATS)
+        app.assign_first_N(435)
 
         csv_data = "data/census/Reapportionment for {} Census.csv".format(cycle)
         types = [str, str, int]
