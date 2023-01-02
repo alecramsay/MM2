@@ -3,25 +3,21 @@
 
 """
 TODO
-Add list seats to the base congressional apportionment for an election.
+Assign list seats to parties, based on an election.
 
-This script reflect the final design decisions (Strategy 8) of the many we explored.
-
-NOTE - This is a COPY of do_explore_strategy_N.py, with the paths to data files NOT in the repo.
-
-Run variations of Strategy 8 against LOCAL election data:
-- 'a' = allocate 1 seat per state, and then up to 600 (or 650) <<< no list seat guarantee
-- 'e' = same as 'a', except guarantee 1 list seat per state with the last few assignments
+Options:
+- 'a' = no list seat guarantee
+- 'e' = each state guaranteed at least one list seat (from final seats)
 
 For example:
 
-$ scripts/explore_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o a
-$ scripts/explore_strategy_8_LOCAL.py -c 2020 -e 2022 -s 600 -o e
+$ scripts/assign_seats.py -c 2020 -e 2022 -s 600 -o a
+$ scripts/assign_seats.py -c 2020 -e 2022 -s 600 -o e
 
 
 For documentation, type:
 
-$ scripts/explore_strategy_8_LOCAL.py -h
+$ scripts/assign_seats.py -h
 
 """
 

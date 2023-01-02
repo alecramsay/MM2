@@ -59,3 +59,6 @@ def slack_formula(D: int, N: int) -> int:
     C: int = reps_for_control(N)
 
     return (-1 * (D - C)) if (D >= C) else (N - D - C)
+
+
+### END ###

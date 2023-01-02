@@ -239,6 +239,11 @@ class MM2Apportioner(MM2ApportionerBase):
             total_seats=total_seats,
             verbose=verbose,
         )
+        self._r: int = 1
+
+    def apportion_and_assign_seats(self) -> None:
+        self.apportion_seats()
+        self.assign_party_mix()
 
     def apportion_seats(self) -> None:
         """Apportion nominal & list seats based on a census"""
@@ -296,14 +301,17 @@ class MM2Apportioner(MM2ApportionerBase):
         self.byState[xx]["n'"] += 1
         self.assigned_to: str = xx
 
-    def assign_party_mix(self, elections: list) -> None:
-        """Assign list seats to parties based on election results"""
-        self.set_election(elections)
+    def assign_party_mix(self) -> None:
+        """
+        Assign list seats to parties based on election results
+
+        NOTE - self.set_election(elections) must be called before this method.
+        """
         self._abstract_election_data()
 
-        # TODO - Assign list seats to parties
-
-        pass  # TODO
+        for k, v in self.byState.items():
+            pr: int = pr_seats(v["n'"], v["v"] / v["t"])
+            self.byState[k]["s'"] = pr
 
         # Post-process the results for reports
         self._calc_skew()
