@@ -11,8 +11,8 @@ Options:
 
 For example:
 
-$ scripts/assign_seats.py -c 2020 -e 2022 -s 600 -o a
-$ scripts/assign_seats.py -c 2020 -e 2022 -s 600 -o e
+$ scripts/assign_seats.py -c 2020 -e 2022 -s 600 -l 1
+$ scripts/assign_seats.py -c 2020 -e 2022 -s 650 -o 0
 
 
 For documentation, type:
@@ -53,11 +53,20 @@ def parse_args() -> Namespace:
         type=int,
     )
     parser.add_argument(
-        "-s", "--size", default=600, help="The total size of the House", type=int
+        "-s",
+        "--size",
+        default=600,
+        help="The total size of the House (e.g., 600 or 650)",
+        type=int,
     )
     parser.add_argument(
-        "-o", "--option", default="a", help="The option: a, b, or c}", type=str
+        "-l",
+        "--listmin",
+        default=1,
+        help="The minimum list seats per state (e.g., 0 or 1)",
+        type=int,
     )
+
     parser.add_argument(
         "-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode"
     )
@@ -70,12 +79,10 @@ def main() -> None:
     args: Namespace = parse_args()
 
     cycle: int = args.cycle
-    strategy: int = 8  # For file names
+    election: int = args.election
     size: int = args.size
-    option: str = args.option
-    list_min: int = 1 if option == "e" else 0
-
-    assert option in ["a", "e"]
+    list_min: int = args.listmin
+    verbose: bool = args.verbose
 
     ### LOAD THE CENSUS ###
 
@@ -86,43 +93,33 @@ def main() -> None:
     ### LOAD THE ELECTION RESULTS ###
 
     csv_data: str = "{}/Congressional Elections ({}).csv".format(
-        elections_root, args.election
+        elections_root, election
     )
     types = [str] * 3 + [int] * 8 + [float] * 2
     elections: list = read_typed_csv(csv_data, types)
 
-    ### APPORTION SEATS PER STRATEGY 8 VARIATIONS ###
+    ### APPORTION NOMINAL & LIST SEATS TO STATES ###
 
-    # Assign the first 435 seats as they are today
-
-    app: MM2ApportionerSandbox = MM2ApportionerSandbox(
-        census, elections, list_min=list_min, total_seats=size, verbose=args.verbose
+    app: MM2Apportioner = MM2Apportioner(
+        census, elections, list_min=list_min, total_seats=size, verbose=verbose
     )
-    app._r: int = 1
-
-    app.strategy8(size=size, option=option)
+    app.apportion_and_assign_seats()
 
     ### WRITE THE RESULTS ###
 
-    reps_by_state: str = "results/{}_reps_by_state({}{},{}).csv".format(
-        args.election, strategy, option, size
+    reps_by_state: str = "results/{}_reps_by_state({},{}).csv".format(
+        election, size, list_min
     )
     save_reps_by_state(app.byState, reps_by_state)
 
-    reps_by_priority: str = "results/{}_reps_by_priority({}{},{}).csv".format(
-        args.election, strategy, option, size
-    )
-    save_reps_by_priority(app.byPriority, reps_by_priority)
-
     ### REPORT SOME BASIC INFO ###
 
-    report: str = "results/{}_report({}{},{}).txt".format(
-        args.election, strategy, option, size
-    )
+    report: str = "results/{}_report({},{}).txt".format(election, size, list_min)
     save_report(app, report)
 
 
 if __name__ == "__main__":
     main()
+
 
 ### END ###
