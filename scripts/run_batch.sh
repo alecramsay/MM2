@@ -9,9 +9,9 @@
 
 echo "Running batch script"
 
-scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 600 -l 0
-scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 600 -l 1
-scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 650 -l 0
-scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 650 -l 1
+# scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 600 -l 0
+# scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 600 -l 1
+# scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 650 -l 0
+# scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 650 -l 1
 
 echo "Done"

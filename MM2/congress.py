@@ -142,6 +142,7 @@ class MM2ApportionerBase:
 
             self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
 
+            # TODO - Conditionalize this on exploration or not?
             # Initialize the total # of D seats including list seats (s'),
             # and the total # of seats including list seats (n')
             self.byState[xx]["s'"] = self.byState[xx]["s"]
@@ -242,11 +243,16 @@ class MM2Apportioner(MM2ApportionerBase):
         self._r: int = 1
 
     def apportion_and_assign_seats(self) -> None:
+        """Apportion seats and assign party mix (requires election data)"""
+        self._abstract_election_data()
+
         self.apportion_seats()
         self.assign_party_mix()
 
     def apportion_seats(self) -> None:
         """Apportion nominal & list seats based on a census"""
+
+        assert self._list_min == 1 or self._list_min == 1
 
         self.apportion_nominal_seats()
         self.N: int = 435
@@ -264,13 +270,16 @@ class MM2Apportioner(MM2ApportionerBase):
             no_list_seats.discard(self.assigned_to)
 
             # Until the remaining seats are needed to ensure every state gets at least one list seat
-            if (self._total_seats - self.N) == len(no_list_seats):
+            if self._list_min == 1 and (self._total_seats - self.N) == len(
+                no_list_seats
+            ):
                 break
 
-        # Assign the remaining seats to states with no list seats
-        for xx in no_list_seats:
-            self.N += 1
-            self._assign_named_seat(xx)
+        # Assign the remaining seats to states with no list seats, if guaranteed
+        if self._list_min == 1:
+            for xx in no_list_seats:
+                self.N += 1
+                self._assign_named_seat(xx)
 
         # Post-process the results for reports
         self._calc_power()
@@ -304,10 +313,7 @@ class MM2Apportioner(MM2ApportionerBase):
     def assign_party_mix(self) -> None:
         """
         Assign list seats to parties based on election results
-
-        NOTE - self.set_election(elections) must be called before this method.
         """
-        self._abstract_election_data()
 
         for k, v in self.byState.items():
             pr: int = pr_seats(v["n'"], v["v"] / v["t"])

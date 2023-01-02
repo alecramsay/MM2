@@ -92,7 +92,7 @@ def main() -> None:
     ### LOAD THE ELECTION RESULTS ###
 
     csv_data: str = "{}/Congressional Elections ({}).csv".format(
-        elections_root, args.election
+        elections_root, election
     )
     types = [str] * 3 + [int] * 8 + [float] * 2
     elections: list = read_typed_csv(csv_data, types)
@@ -107,13 +107,13 @@ def main() -> None:
     ### WRITE THE RESULTS ###
 
     reps_by_state: str = "results/{}_reps_by_state({},{}).csv".format(
-        args.election, size, list_min
+        election, size, list_min
     )
     save_reps_by_state(app.byState, reps_by_state)
 
     ### REPORT SOME BASIC INFO ###
 
-    report: str = "results/{}_report({},{}).txt".format(args.election, size, list_min)
+    report: str = "results/{}_report({},{}).txt".format(election, size, list_min)
     save_report(app, report)
 
 
