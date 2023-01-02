@@ -313,20 +313,19 @@ class MM2Apportioner(MM2ApportionerBase):
     def assign_party_mix(self) -> None:
         """
         Assign list seats to parties based on election results
-
-        - s is the # of nominal seats D's won
-        - s' is the # of nominal seats D's won + list seats assigned to D's"
-        - s' can't be more than the # of list seats apportioned to the state, and
-        - s' can't be less than the # of nominal seats D's won
         """
 
         for k, v in self.byState.items():
-            pr: int = pr_seats(v["n'"], v["v"] / v["t"])
+            nominal_seats: int = v["n"]
             list_seats: int = v["n'"] - v["n"]
-            deviation: int = pr - v["s"]
-            delta_s: int = max(0, min(list_seats, deviation))
+            vote_share: float = v["v"] / v["t"]
+            D_wins: int = v["s"]
 
-            self.byState[k]["s'"] = v["s"] + delta_s
+            D_list: int
+            R_list: int
+            D_list, R_list = party_split(nominal_seats, list_seats, vote_share, D_wins)
+
+            self.byState[k]["s'"] = D_wins + D_list
 
         # Post-process the results for reports
         self._calc_skew()
@@ -725,7 +724,31 @@ def make_balancer_fn(
 ### METRIC HELPERS ###
 
 
-def gap_seats(V, T, S, N) -> int:
+def party_split(
+    nominal_seats: int, list_seats: int, vote_share: float, D_wins: int
+) -> tuple[int, int]:
+    """
+    The (D, R) split of list seats
+
+    - D's can't get more list seats than apportioned to the state
+    - D's can't *lose* seats, i.e., minimum D list seats is 0
+    """
+
+    assert list_seats >= 0
+
+    if list_seats == 0:
+        return (0, 0)
+
+    PR: int = pr_seats(nominal_seats + list_seats, vote_share)
+    gap: int = ue_seats(PR, D_wins)
+
+    D_list: int = min(max(gap, 0), list_seats)
+    R_list: int = list_seats - D_list
+
+    return (D_list, R_list)
+
+
+def gap_seats(V: int, T: int, S: int, N: int) -> int:
     """
     The *whole* # of seats different from proportional.
     Positive values indicate excess R seats, negative execess D seats.

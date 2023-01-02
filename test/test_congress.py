@@ -148,5 +148,16 @@ class TestCongress:
         assert lt_threshold(0.65 - 0.57, 0.1) == True
         assert lt_threshold(0.57 - 0.65, 0.1) == True
 
+    def test_party_split(self) -> None:
+        assert party_split(8, 2, 0.5000, 0) == (2, 0)
+        assert party_split(8, 2, 0.5000, 1) == (2, 0)
+        assert party_split(8, 2, 0.5000, 2) == (2, 0)
+        assert party_split(8, 2, 0.5000, 3) == (2, 0)
+        assert party_split(8, 2, 0.5000, 4) == (1, 1)
+        assert party_split(8, 2, 0.5000, 5) == (0, 2)
+        assert party_split(8, 2, 0.5000, 6) == (0, 2)
+        assert party_split(8, 2, 0.5000, 7) == (0, 2)
+        assert party_split(8, 2, 0.5000, 8) == (0, 2)
+
 
 ### END ###
