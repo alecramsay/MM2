@@ -252,7 +252,7 @@ class MM2Apportioner(MM2ApportionerBase):
     def apportion_seats(self) -> None:
         """Apportion nominal & list seats based on a census"""
 
-        assert self._list_min == 1 or self._list_min == 1
+        assert self._list_min == 0 or self._list_min == 1
 
         self.apportion_nominal_seats()
         self.N: int = 435
