@@ -9,9 +9,9 @@
 
 echo "Running batch script"
 
-scripts/do_apportionment.py --cycle 1990
-scripts/do_apportionment.py --cycle 2000
-scripts/do_apportionment.py --cycle 2010
-scripts/do_apportionment.py --cycle 2020
+scripts/apportion_seats.py --cycle 1990
+scripts/apportion_seats.py --cycle 2000
+scripts/apportion_seats.py --cycle 2010
+scripts/apportion_seats.py --cycle 2020
 
 echo "Done"

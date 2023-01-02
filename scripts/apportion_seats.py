@@ -6,14 +6,14 @@ Apportion nominal & list seats to states based on a census.
 
 For example:
 
-$ scripts/do_apportionment.py --cycle 1990
-$ scripts/do_apportionment.py --cycle 2000
-$ scripts/do_apportionment.py --cycle 2000
-$ scripts/do_apportionment.py --cycle 2020
+$ scripts/apportion_seats.py --cycle 1990
+$ scripts/apportion_seats.py --cycle 2000
+$ scripts/apportion_seats.py --cycle 2000
+$ scripts/apportion_seats.py --cycle 2020
 
 For documentation, type:
 
-$ scripts/do_apportionment.py -h
+$ scripts/apportion_seats.py -h
 
 """
 
@@ -69,13 +69,12 @@ def main() -> None:
     )
     app.apportion_seats()
 
-    # TODO - HERE
     output: list = list()
-    for k, v in by_state.items():
+    for k, v in app.byState.items():
         row_out: dict = dict()
         row_out["XX"] = k
-        row_out["NOMINAL"] = v["nominal"]
-        row_out["LIST"] = v["list"]
+        row_out["NOMINAL"] = v["n"]
+        row_out["LIST"] = v["n'"] - v["n"]
         output.append(row_out)
 
     reps_by_state: str = "results/{}_census_reps_by_state({}).csv".format(
@@ -87,6 +86,7 @@ def main() -> None:
         [
             {
                 "XX": row["XX"],
+                # TODO
                 "NOMINAL": row["NOMINAL"],
                 "LIST": row["LIST"],
             }
