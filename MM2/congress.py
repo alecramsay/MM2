@@ -313,11 +313,20 @@ class MM2Apportioner(MM2ApportionerBase):
     def assign_party_mix(self) -> None:
         """
         Assign list seats to parties based on election results
+
+        - s is the # of nominal seats D's won
+        - s' is the # of nominal seats D's won + list seats assigned to D's"
+        - s' can't be more than the # of list seats apportioned to the state, and
+        - s' can't be less than the # of nominal seats D's won
         """
 
         for k, v in self.byState.items():
             pr: int = pr_seats(v["n'"], v["v"] / v["t"])
-            self.byState[k]["s'"] = pr
+            list_seats: int = v["n'"] - v["n"]
+            deviation: int = pr - v["s"]
+            delta_s: int = max(0, min(list_seats, deviation))
+
+            self.byState[k]["s'"] = v["s"] + delta_s
 
         # Post-process the results for reports
         self._calc_skew()
