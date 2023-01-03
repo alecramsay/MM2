@@ -39,16 +39,15 @@ def main() -> None:
     types = [str] * 3 + [int] * 8 + [float] * 2
     elections: list = read_typed_csv(csv_data, types)
 
-    ### APPORTION NOMINAL & LIST SEATS ###
+    ### DO SOMETHING ###
 
-    app: MM2ApportionerSandbox = MM2ApportionerSandbox(census, elections, verbose)
-    app.list_min = list_min
-    app.total_seats = size
-    app._r: int = 1
+    baseapp: HH_Apportioner = HH_Apportioner(census)
+    baseapp.log_priority_queue()
 
-    app.strategy8(size=size, option=option)
-
-    ### WRITE THE RESULTS ###
+    # app: MM2Apportioner = MM2Apportioner(
+    #     census, None, list_min=list_min, total_seats=size, verbose=verbose
+    # )
+    # app.apportion_seats()
 
     pass
 

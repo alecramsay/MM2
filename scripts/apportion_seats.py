@@ -8,12 +8,12 @@ For example:
 
 scripts/apportion_seats.py --cycle 1990 -l 1
 scripts/apportion_seats.py --cycle 2000 -l 1
-scripts/apportion_seats.py --cycle 2000 -l 1
+scripts/apportion_seats.py --cycle 2010 -l 1
 scripts/apportion_seats.py --cycle 2020 -l 1
 
 scripts/apportion_seats.py --cycle 1990 -l 0
 scripts/apportion_seats.py --cycle 2000 -l 0
-scripts/apportion_seats.py --cycle 2000 -l 0
+scripts/apportion_seats.py --cycle 2010 -l 0
 scripts/apportion_seats.py --cycle 2020 -l 0
 
 For documentation, type:
@@ -69,12 +69,21 @@ def main() -> None:
 
     ### APPORTION NOMINAL & LIST SEATS TO STATES ###
 
+    max_seats: int = 700
+    baseapp: HH_Apportioner = HH_Apportioner(census)
+    baseapp.log_priority_queue(max_seats)
+
     app: MM2Apportioner = MM2Apportioner(
         census, None, list_min=list_min, total_seats=size, verbose=verbose
     )
     app.apportion_seats()
 
     ### WRITE THE RESULTS ###
+
+    reps_by_priority: str = "results/{}_census_reps_by_priority({}).csv".format(
+        args.cycle, max_seats
+    )
+    save_reps_by_priority(baseapp.byPriority, reps_by_priority)
 
     reps_by_state: str = "results/{}_census_reps_by_state({},{}).csv".format(
         args.cycle, args.reps, args.listmin

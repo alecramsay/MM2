@@ -29,6 +29,7 @@ class HH_Apportioner:
 
         self.N: int = 0
         self.reps: dict = dict()
+        self.byPriority: list = list()
 
     def assign_next(self) -> Tuple[int, int, str, int]:
         """
@@ -49,6 +50,15 @@ class HH_Apportioner:
         # HACK - To ensure that all the values of the tuple are explicitly typed.
         N: int = self.N
         nassigned: int = self.reps[xx]
+
+        self.byPriority.append(
+            {
+                "HOUSE SEAT": N,
+                "PRIORITY VALUE": pv,
+                "STATE": xx,
+                "STATE SEAT": nassigned,
+            }
+        )
 
         return (N, pv, xx, nassigned)
 
@@ -93,6 +103,21 @@ class HH_Apportioner:
 
             if self._verbose:
                 print("{},{},{},{}".format(hs, pv, xx, ss))
+
+    def log_priority_queue(
+        self,
+        total_seats: int = 650 + 50,
+    ) -> None:
+        """Log a pre-defined length of the priority values queue for a census."""
+
+        assert total_seats >= 435
+
+        self.assign_first_N(435)
+
+        for i in range(435 + 1, total_seats + 1):
+            self.assign_next()
+
+        pass
 
     def queue_is_ok(self) -> bool:
         """

@@ -57,6 +57,20 @@ def save_reps_by_priority(byPriority: list, rel_path: str) -> None:
             "PRIORITY VALUE",
             "STATE",
             "STATE SEAT",
+        ],
+    )
+
+
+def save_reps_by_priority_SANDBOX(byPriority: list, rel_path: str) -> None:
+    """Write reps_by_priority CSV -- for explorations in the sandbox"""
+    write_csv(
+        rel_path,
+        byPriority,
+        [
+            "HOUSE SEAT",
+            "PRIORITY VALUE",
+            "STATE",
+            "STATE SEAT",
             "Vf",
             "Sf",
             "SKEW|D",
