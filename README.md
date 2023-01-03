@@ -20,43 +20,39 @@ the # of the House seat, the priority value, the state that gets the seat, and t
 
 ## MM2 for Congress
 
-The MM2ApportionerSandbox class wraps the HH_Apportioner class and adds MM2 for Congress functionality.
-In addition to the census data, this takes election data in a similar form: a list of dicts read from a CSV by DictReader.
-Examples are in the data/election/ directory.
-To assign list seats to states based on the election data, call the eliminate_gap() method with a strategy.
+The MM2Apportioner class wraps the HH_Apportioner class and adds MM2 for Congress functionality.
+This can be used in two modes. To apportion nominal & list seats to states based on a census:
 
 ```python
-app = MM2ApportionerSandbox(census, elections)
-app.eliminate_gap(strategy=strategy)
+app = MM2Apportioner(
+    census, None, list_min=list_min, total_seats=size, verbose=verbose
+)
+app.apportion_seats()
 ```
 
-There are 8 strategies for eliminating the gap:
-1. Minimize the prospective skew for the state
-2. Reduce the national gap 
-3. Balance the two -- when the prospective skews would both be below a threshold, eliminate the national gap; otherwise minimize the state skew
-4. Balance the two but define skew wrto a responsiveness = 2, i.e., efficiency gap = 0
-5. Assign 50 list seats, reducing the national gap
-6. Assign 165 list seats (600 total), balancing the two with skew(r=2) until gap is zero and then just minimize the national gap
-7. Assign 165 list seats (600 total), balancing the two with skew(r=1) until gap is zero and then just minimize the national gap
-8. Assign 165 list seats (600 total), always minimizing the prospective skew for the state
+The apportion_seats.py does this and writes results into a file named "{census year}_census_reps_by_state({size},{list minimum}).csv" into the results/ directory, where:
 
-The do_explore_strategy_N.py script in the scripts/ directory takes a census decade, an election year, and a strategy, 
-loads the census and election data, eliminates the national gap assigning list seats to states using the specified strategy:
+- {census year} is the year of the census data
+- {size} is the total number of seats to apportion (both nominal & list), and
+- {list minimum} is the minimum number of list seats guaranteed for each state (0 or 1)
 
-```shell
-scripts/explore_strategy_N.py 2010 2012 -s 3
+To allocate the list seats apportioned to states to the parties based on election data:
+
+```python
+appr = MM2Apportioner(
+    census, elections, list_min=list_min, total_seats=size, verbose=verbose
+)
+app.apportion_and_assign_seats()
 ```
 
-The default strategy is 8.
+The assign_seats.py scripts does and writes reports into the results/ directory:
 
-It writes the results to three files:
+1. {election year}_report({size},{list minimum}).txt summarizes the run.
+2. {election year}_reps_by_state({size},{list minimum}).csv summarizes nominal & list seats by state.
+[//]: # (3. {election year}_reps_by_priority({strategy}).csv shows the seat-by-seat assignments.)
 
-1. {election year}_report({strategy}).txt summarizes the run.
-2. {election year}_reps_by_priority({strategy}).csv shows the seat-by-seat assignments.
-3. {election year}_reps_by_state({strategy}).csv summarizes nominal & list seats by state.
+where:
+- {election year} is the year of the election data, and
+- the other variables are as above
 
-## TODO
-
-If 3rd-party or independent represenatives win more seats, we may need to revisit the calculations.
-The national targets are two-party vote and seat shares.
-The total # of nominal seats by state ('n') includes all apportioned seats though.
+Our explorations of alternative MM2 apportionment strategies are described in [Explorations](./notes/explorations.md).
