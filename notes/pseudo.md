@@ -9,10 +9,10 @@ To apportion seats based on a decennial census:
 
 To assign a state's list seats to parties based on a congressional election:
 
-- If a state has no list seats (i.e., if states weren't guaranteed one and the state wasn't apportioned one), neither party gets a list seat
-- If a state has one or more list seats, compute the gap between the number nominal seats Democrats won and the number of seats closest to proportional representation for the total number of seats apportioned to the state (i.e., nominal + list), given the two-party Democratic vote share.
-- The number of list seats for Democrats is the maximum of the gap and zero (they can't *lose* seats) and the minimum of that an the number of list seats (they can't get *more* than were apportioned to the state).
-- The number of list seats for Republicans is the total number of list seats minus the number assigned to Democrats.
-- There's no preferential treatment for Democrats: you can reverse the order, if you like.
+- If a state has no list seats, neither party gets a list seat (of course)
+- If a state has one or more list seats, compute the gap between the number nominal seats Democrats won and the number of seats closest to proportional representation for the total number of seats apportioned to the state (i.e., nominal + list), given the two-party Democratic vote share
+- The number of list seats for Democrats is the maximum of the gap and zero (they can't *lose* seats) and the minimum of that an the number of list seats (they can't get *more* than were apportioned to the state)
+- The number of list seats for Republicans is the total number of list seats minus the number assigned to Democrats
+- There's no preferential treatment for Democrats: you can reverse the order, if you like
 
  
