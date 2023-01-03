@@ -58,4 +58,6 @@ where:
 - {election year} is the year of the election data, and
 - the other variables are as above
 
+The logic of these two processes is described in [Pseudo Code](./notes/pseudo.md).
+
 Our explorations of alternative MM2 apportionment strategies are described in [Explorations](./notes/explorations.md).
