@@ -3,6 +3,8 @@
 # Partisan analytics
 #
 
+from pytest import approx
+
 from .settings import *
 
 
