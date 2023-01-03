@@ -1,4 +1,4 @@
-# MM2
+# MM2 for Congress
 
 The [MM2](https://github.com/alecramsay/MM2) repository houses code for exploring Benjamin Plener Cover's 
 [Two-Party Structural Countermandering](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3891735) 
