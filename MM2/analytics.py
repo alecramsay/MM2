@@ -27,6 +27,17 @@ def ue_seats(PR: int, S: int) -> int:
     return UE
 
 
+def gap_seats(V: int, T: int, S: int, N: int) -> int:
+    """
+    The *whole* # of seats different from proportional.
+    Positive values indicate excess R seats, negative execess D seats.
+    """
+    PR: int = pr_seats(N, V / T)
+    gap: int = ue_seats(PR, S)
+
+    return gap
+
+
 def disproportionality(Vf: float, Sf: float) -> float:
     """
     Calculate the *fractional* # of disproportional seats for a two-party D seat share (Sf).
