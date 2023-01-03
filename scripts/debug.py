@@ -41,9 +41,9 @@ def main() -> None:
     ### APPORTION NOMINAL & LIST SEATS ###
 
     app: MM2Apportioner = MM2Apportioner(
-        census, None, list_min=list_min, total_seats=size, verbose=verbose
+        census, elections, list_min=list_min, total_seats=size, verbose=verbose
     )
-    app.apportion_seats()
+    app.apportion_and_assign_seats()
 
     ### WRITE THE RESULTS ###
 
