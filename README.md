@@ -2,9 +2,10 @@
 
 Code for exploring Benjamin Plener Cover's [Two-Party Structural Countermandering](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3891735) (aka "MM2").
 
-## Congressional Apportionment
+## Base Apportionment
 
-The HH_Apportioner class implements the Huntington-Hill method used to apportion the representatives to states for the US Congress.
+The HH_Apportioner class implements the Huntington-Hill method used today to apportion representatives to states 
+for the House based on a decennial census.
 It takes a census data as input: a list of dicts read from a CSV by DictReader (using `read_typed_csv()`).
 Examples are in the data/census/ directory.
 To apportion representatives to states based on a census, call the assign_first_N() method with a 435.
@@ -18,9 +19,11 @@ The class generates a queue of priority values sorted in descending order, initi
 You can continue to allocate seats to states, by calling the `assign_next()` method which returns
 the # of the House seat, the priority value, the state that gets the seat, and the seat # for the state.
 
-## MM2 for Congress
+## Augmented Apportionment
 
-The MM2Apportioner class wraps the HH_Apportioner class and adds MM2 for Congress functionality.
+The MM2Apportioner class wraps the HH_Apportioner class and adds functionality for apportioning addition (party)
+list seats to states, again based on a decennial census, and then allocating the list seats to parties based
+on the results of an election.
 This can be used in two modes. To apportion nominal & list seats to states based on a census:
 
 ```python
