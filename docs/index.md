@@ -1,9 +1,9 @@
 The [MM2](https://github.com/alecramsay/MM2) repository houses code for exploring applying
 Benjamin Plener Cover's [Two-Party Structural Countermandering](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3891735) 
-to Congress (aka "MM2 for Congress" or simply "MM2").
+proposal to Congress (aka "MM2 for Congress" or simply "MM2").
 
 MM2 apportions additional list seats to states based on the census and then distributes them
-to the two major parties (Democrats and Republicans) based on the results of a congressional election,
+to the two major parties (Democrats & Republicans) based on the results of a congressional election,
 to reduce the deviation from proportional representation in the House.
 
 To apportion nominal & list seats based on a decennial census:
