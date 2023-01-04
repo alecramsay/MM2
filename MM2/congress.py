@@ -107,7 +107,7 @@ class MM2ApportionerBase:
             self.byState[xx]["t"] = state["REP_V"] + state["DEM_V"]
             self.byState[xx]["s"] = state["DEM_S"]
 
-            # Track "other" wins, so they can be removed when assigning list seats
+            # Track "other" wins, so they can be removed when assigning list seats & calculating skew
             self.byState[xx]["o"] = state["OTH_S"]
 
             self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
@@ -121,6 +121,7 @@ class MM2ApportionerBase:
         for k, v in self.byState.items():
             self.byState[k]["POWER'"] = v["POP"] / v["n'"]
 
+    # TODO - OTHER: Handle single-seat states w/ "other" party wins
     def _calc_skew(self) -> None:
         """Compute the before & after two-party SKEWs"""
         for k, v in self.byState.items():
@@ -267,6 +268,7 @@ class MM2Apportioner(MM2ApportionerBase):
         self.byState[xx]["n'"] += 1
         self.assigned_to: str = xx
 
+    # TODO - OTHER: Handle single-seat states w/ an "other" party win
     def assign_party_mix(self) -> None:
         """Assign list seats to parties based on election results"""
 

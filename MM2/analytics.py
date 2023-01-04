@@ -74,6 +74,7 @@ def slack_formula(D: int, N: int) -> int:
     return (-1 * (D - C)) if (D >= C) else (N - D - C)
 
 
+# TODO - OTHER: Handle single-seat states w/ "other" party wins
 def skew_pct(V: int, T: int, S: int, N: int, r: int = 1) -> float | None:
     """
     This is a generalized definition of skew, using an ideal responsiveness, 'r'.

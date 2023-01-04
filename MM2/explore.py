@@ -51,7 +51,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             # NOTE - The apportioned # of seats including "other" seats.
             self.byState[xx]["n"] = state["REP_S"] + state["DEM_S"] + state["OTH_S"]
 
-            # Track "other" wins, so they can be removed when assigning list seats
+            # Track "other" wins, so they can be removed when assigning list seats & calculating skew
             self.byState[xx]["o"] = state["OTH_S"]
 
             self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
@@ -135,6 +135,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
 
         Vf: float = v_i / t_i
         Sf: float = s_i / n_i
+        # NOTE - n_i + 1 is always positive; can't be zero
         d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
         r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold: float = skew_threshold(0.1, n_i)
@@ -198,6 +199,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
 
         Vf: float = v_i / t_i
         Sf: float = s_i / n_i
+        # NOTE - n_i + 1 is always positive; can't be zero
         d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
         r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold: float = skew_threshold(0.1, n_i)
@@ -258,6 +260,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
 
         Vf: float = v_i / t_i
         Sf: float = s_i / n_i
+        # NOTE - n_i + 1 is always positive; can't be zero
         d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
         r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold: float = skew_threshold(0.1, n_i)
