@@ -94,6 +94,10 @@ class MM2ApportionerBase:
         for state in self._census:
             self.byState[state["XX"]]["POP"] = state["Population"]
 
+            # NOTE - Add "n" and "n'" accumulator to byState when apportioning seats to states
+
+            continue
+
     def _abstract_election_data(self) -> None:
         """Keep two-party election data by state"""
         for state in self._elections:
