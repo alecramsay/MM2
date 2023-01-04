@@ -11,7 +11,8 @@ from .settings import *
 
 class MM2ApportionerBase:
     """
-    Basic support for assigning nominal & list seats to seats & parties.
+    Base support for assigning nominal & list seats to seats & parties,
+    used by both the sandbox and production subclasses.
     """
 
     def __init__(
@@ -39,9 +40,6 @@ class MM2ApportionerBase:
         for xx in STATES:
             self.byState[xx] = {}
 
-        if elections:
-            self.set_election(elections)
-
     def apportion_nominal_seats(self, n: int = 435) -> None:
         self._abstract_census_data()
         self._base_app.assign_first_N(n)
@@ -49,13 +47,9 @@ class MM2ApportionerBase:
             self.byState[k]["n"] = v
             self.byState[k]["n'"] = v
 
-    def set_election(self, elections: list) -> None:
-        self._elections = elections
-        self._abstract_byState_data()
-        self._sum_national_totals()
-
     ### HOUSEKEEPING HELPERS ###
 
+    # TODO - OTHER
     def _sum_national_totals(self) -> None:
         totals: dict[str, int] = {
             "REP_V": 0,
@@ -97,38 +91,14 @@ class MM2ApportionerBase:
             self.V / self.T, self.S, self.N, self.gap, self.slack
         )
 
-    def _abstract_byState_data(self) -> None:
-        """Legacy combo"""
-        # Include the census population (POP)
-        for state in self._census:
-            self.byState[state["XX"]]["POP"] = state["Population"]
-
-        # Add select election data
-        for state in self._elections:
-            xx: str = state["XX"]
-
-            self.byState[xx]["v"] = state["DEM_V"]
-            self.byState[xx]["t"] = state["REP_V"] + state["DEM_V"]
-            self.byState[xx]["s"] = state["DEM_S"]
-            # NOTE - The apportioned # of seats including "other" seats.
-            self.byState[xx]["n"] = state["REP_S"] + state["DEM_S"] + state["OTH_S"]
-
-            self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
-
-            # Initialize the total # of D seats including list seats (s'),
-            # and the total # of seats including list seats (n')
-            self.byState[xx]["s'"] = self.byState[xx]["s"]
-            self.byState[xx]["n'"] = self.byState[xx]["n"]
-
     def _abstract_census_data(self) -> None:
-        # Include the census population (POP)
+        """Keep census population by state"""
         for state in self._census:
             self.byState[state["XX"]]["POP"] = state["Population"]
 
-        # NOTE - Add "n" and "n'" to byState when apportioning seats to states
-
+    # TODO - OTHER
     def _abstract_election_data(self) -> None:
-        # Add select election data
+        """Keep select election data by state"""
         for state in self._elections:
             xx: str = state["XX"]
 
@@ -138,17 +108,7 @@ class MM2ApportionerBase:
 
             self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
 
-            # NOTE - These are for the incremental exploratory approach in the sandbox
-            # Initialize the total # of D seats including list seats (s'),
-            # and the total # of seats including list seats (n')
-            self.byState[xx]["s'"] = self.byState[xx]["s"]
-            self.byState[xx]["n'"] = self.byState[xx]["n"]
-
-    def _calc_analytics(self) -> None:
-        """Legacy combination"""
-        self._calc_power()
-        self._calc_skew()
-
+    # TODO - OTHER
     def _calc_power(self) -> None:
         # Compute the POWER for the nominal seats
         for k, v in self.byState.items():
@@ -158,6 +118,7 @@ class MM2ApportionerBase:
         for k, v in self.byState.items():
             self.byState[k]["POWER'"] = v["POP"] / v["n'"]
 
+    # TODO - OTHER
     def _calc_skew(self) -> None:
         # Compute the SKEW for the nominal seats
         for k, v in self.byState.items():
@@ -241,6 +202,7 @@ class MM2Apportioner(MM2ApportionerBase):
     def apportion_and_assign_seats(self) -> None:
         """Apportion seats and assign party mix (requires election data)"""
         self._abstract_election_data()
+        self._sum_national_totals()
 
         self.apportion_seats()
         self.assign_party_mix()

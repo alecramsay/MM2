@@ -31,7 +31,38 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             total_seats=600,  # Ditto
             verbose=verbose,
         )
+        self._abstract_byState_data()
+        self._sum_national_totals()
         self._base_app.assign_first_N(435)
+
+    # TODO - OTHER
+    def _abstract_byState_data(self) -> None:
+        """Legacy combo"""
+        # Include the census population (POP)
+        for state in self._census:
+            self.byState[state["XX"]]["POP"] = state["Population"]
+
+        # Add select election data
+        for state in self._elections:
+            xx: str = state["XX"]
+
+            self.byState[xx]["v"] = state["DEM_V"]
+            self.byState[xx]["t"] = state["REP_V"] + state["DEM_V"]
+            self.byState[xx]["s"] = state["DEM_S"]
+            # NOTE - The apportioned # of seats including "other" seats.
+            self.byState[xx]["n"] = state["REP_S"] + state["DEM_S"] + state["OTH_S"]
+
+            self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
+
+            # Initialize the total # of D seats including list seats (s'),
+            # and the total # of seats including list seats (n')
+            self.byState[xx]["s'"] = self.byState[xx]["s"]
+            self.byState[xx]["n'"] = self.byState[xx]["n"]
+
+    def _calc_analytics(self) -> None:
+        """Legacy combo"""
+        self._calc_power()
+        self._calc_skew()
 
     ### Strategy 8 ###
 

@@ -14,8 +14,11 @@ cycle: int = 2010
 election: int = 2012
 size: int = 600
 list_min: int = 1
-option: str = "e"
+
 verbose: bool = False
+
+option: str = "e"
+strategy: int = 8
 
 ### MODS FOR LOCAL USE ###
 
@@ -41,13 +44,35 @@ def main() -> None:
 
     ### DO SOMETHING ###
 
-    baseapp: HH_Apportioner = HH_Apportioner(census)
-    baseapp.log_priority_queue()
+    ## Apportion seats ##
 
+    # max_seats: int = 700
+    # baseapp: HH_Apportioner = HH_Apportioner(census)
+    # baseapp.log_priority_queue(max_seats)
     # app: MM2Apportioner = MM2Apportioner(
     #     census, None, list_min=list_min, total_seats=size, verbose=verbose
     # )
     # app.apportion_seats()
+
+    ## Assign seats ##
+
+    app: MM2Apportioner = MM2Apportioner(
+        census, elections, list_min=list_min, total_seats=size, verbose=verbose
+    )
+    app.apportion_and_assign_seats()
+
+    ## Strategy 8 ##
+
+    # app: MM2ApportionerSandbox = MM2ApportionerSandbox(census, elections, verbose)
+    # app.list_min = list_min
+    # app.total_seats = size
+    # app._r: int = 1
+    # app.strategy8(size=size, option=option)
+
+    ## Strategy N ##
+
+    # app: MM2ApportionerSandbox = MM2ApportionerSandbox(census, elections, verbose)
+    # app.eliminate_gap(strategy=strategy)
 
     pass
 
