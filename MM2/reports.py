@@ -90,8 +90,10 @@ def save_report(app: MM2Apportioner, rel_path: str) -> None:
 
         print(
             "{} list seats ({} Democratic) were added for a total of {}.\n".format(
-                # TODO - OTHER
-                app.N - app.N0,
+                app._total_seats - 435,
+                # NOTE - This works for the sandbox class, but not the final class,
+                # where N includes "other."
+                # app.N - app.N0,
                 app.S - app.S0,
                 app._base_app.N,  # Reports the total seats, including "other."
             ),
