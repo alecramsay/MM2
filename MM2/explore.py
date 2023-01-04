@@ -35,7 +35,6 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         self._sum_national_totals()
         self._base_app.assign_first_N(435)
 
-    # TODO - OTHER
     def _abstract_byState_data(self) -> None:
         """Legacy combo"""
         # Include the census population (POP)
@@ -51,6 +50,9 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             self.byState[xx]["s"] = state["DEM_S"]
             # NOTE - The apportioned # of seats including "other" seats.
             self.byState[xx]["n"] = state["REP_S"] + state["DEM_S"] + state["OTH_S"]
+
+            # Track "other" wins, so they can be removed when assigning list seats
+            self.byState[xx]["o"] = state["OTH_S"]
 
             self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
 
@@ -97,6 +99,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
                 xx: str = self.byPriority[-1]["STATE"]
                 no_list_seats.discard(xx)
 
+                # NOTE - This might have a problem with "other" seats
                 if (size - self.N) == len(no_list_seats):
                     # Assign the remaining seats to states with no list seats
                     break
@@ -341,7 +344,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             LIST_SEATS: int = 50
             return (self.N - self.N0) < LIST_SEATS
         elif self._strategy in [6, 7, 8]:
-            # Stop when total seats are assigned (including "other" seats)
+            # Stop when all list seats are assigned
             return (self.N - self.N0) < (self._total_seats - 435)
         else:
             raise ValueError("Invalid strategy")
