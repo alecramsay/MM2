@@ -10,8 +10,8 @@ from MM2 import *
 
 ### ARGS ###
 
-cycle: int = 2020
-election: int = 2022
+cycle: int = 2000
+election: int = 2004
 size: int = 600
 list_min: int = 1
 
@@ -23,8 +23,8 @@ strategy: int = 8
 ### MODS FOR LOCAL USE ###
 
 census_root: str = "data/census"
-# elections_root: str = "data/elections"
-elections_root: str = "/Users/alecramsay/Downloads"
+elections_root: str = "data/elections"
+# elections_root: str = "/Users/alecramsay/Downloads"
 
 
 def main() -> None:
