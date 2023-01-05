@@ -74,7 +74,6 @@ def slack_formula(D: int, N: int) -> int:
     return (-1 * (D - C)) if (D >= C) else (N - D - C)
 
 
-# TODO - OTHER: Handle single-seat states w/ "other" party wins
 def skew_pct(V: int, T: int, S: int, N: int, r: int = 1) -> float | None:
     """
     This is a generalized definition of skew, using an ideal responsiveness, 'r'.
@@ -82,7 +81,9 @@ def skew_pct(V: int, T: int, S: int, N: int, r: int = 1) -> float | None:
     given 'r'. The simple version where r=1 captures deviation from proportionality.
     When r=2, skew measures the efficiency gap (EG).
     """
-    if N < 1:
+    if N < 1:  # No two-party seats
+        return None
+    if T == 0:  # No two-party votes
         return None
 
     Vf: float = V / T

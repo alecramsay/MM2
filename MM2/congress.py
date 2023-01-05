@@ -268,14 +268,13 @@ class MM2Apportioner(MM2ApportionerBase):
         self.byState[xx]["n'"] += 1
         self.assigned_to: str = xx
 
-    # TODO - OTHER: Handle single-seat states w/ an "other" party win
     def assign_party_mix(self) -> None:
         """Assign list seats to parties based on election results"""
 
         for k, v in self.byState.items():
-            assert v["t"] > 0  # There must be *some* D/R votes
             two_party_seats: int = v["n"] - v["o"]
             list_seats: int = v["n'"] - v["n"]
+            assert v["t"] > 0  # There must be *some* D/R votes
             vote_share: float = v["v"] / v["t"]
             D_wins: int = v["s"]
 
