@@ -13,9 +13,7 @@ from .settings import *
 
 
 class MM2ApportionerSandbox(MM2ApportionerBase):
-    """
-    A sandbox for exploring various strategies for assigning list seats to seats & parties.
-    """
+    """A sandbox for exploring various strategies for assigning list seats to seats & parties."""
 
     def __init__(
         self,
@@ -61,10 +59,10 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             self.byState[xx]["s'"] = self.byState[xx]["s"]
             self.byState[xx]["n'"] = self.byState[xx]["n"]
 
-    def _calc_analytics(self) -> None:
+    def _calc_analytics_by_state(self) -> None:
         """Legacy combo"""
-        self._calc_power()
-        self._calc_skew()
+        self._calc_power_by_state()
+        self._calc_skew_by_state()
 
     ### Strategy 8 ###
 
@@ -110,7 +108,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
                 self.strategy8_final_assignment_rule(xx)
 
         # Post-process the results for reports
-        self._calc_analytics()
+        self._calc_analytics_by_state()
 
     def strategy8_assignment_rule(self) -> None:
         """
@@ -156,6 +154,9 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
         self.slack = actual_slack(self.V, self.T, self.S, self.N)
+        self.skew: float = skew_pct(
+            self.V, self.T, self.S, self.N
+        )  # N is two-party seats here
 
         # Log the assignment for reporting
 
@@ -220,6 +221,9 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
         self.slack = actual_slack(self.V, self.T, self.S, self.N)
+        self.skew: float = skew_pct(
+            self.V, self.T, self.S, self.N
+        )  # N is two-party seats here
 
         # Log the assignment for reporting
 
@@ -314,6 +318,9 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
         self.slack = actual_slack(self.V, self.T, self.S, self.N)
+        self.skew: float = skew_pct(
+            self.V, self.T, self.S, self.N
+        )  # N is two-party seats here
 
         # Gap has been zeroed (might subsequently go + or -)
         self._gap_eliminated: bool = self._gap_eliminated or self.gap == 0
@@ -360,7 +367,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             self.assignment_rule()
 
         # Post-processing for reports
-        self._calc_analytics()
+        self._calc_analytics_by_state()
 
     def _setup_strategy(self, strategy) -> None:
         self._strategy: int = strategy

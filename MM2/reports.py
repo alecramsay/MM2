@@ -89,13 +89,19 @@ def save_report(app: MM2Apportioner, rel_path: str) -> None:
         print("{}\n".format(app.baseline), file=f)
 
         print(
-            "{} list seats ({} Democratic) were added for a total of {}.\n".format(
+            "{} list seats ({} Democratic) were added for a total of {}.".format(
                 app._total_seats - 435,
                 # NOTE - This works for the sandbox class, but not the final class,
                 # where N includes "other."
                 # app.N - app.N0,
                 app.S - app.S0,
                 app._base_app.N,  # Reports the total seats, including "other."
+            ),
+            file=f,
+        )
+        print(
+            "This results in a gap (skew) of {:+2} ({:.2%}) seats (%), respectively.\n".format(
+                app.gap, app.skew
             ),
             file=f,
         )

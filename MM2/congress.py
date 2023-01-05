@@ -78,16 +78,23 @@ class MM2ApportionerBase:
         # The initial values for nominal seats
         self.S0: int = self.S
         self.N0: int = self.N
+        self.O0: int = totals["OTH_S"]
 
         # NOTE - These initial gap & slack values have *implicitly* removed "other" seats (correctly).
         # The initial gap & slack (these change)
         self.gap: int = gap_seats(self.V, self.T, self.S, self.N)
         self.slack: int = actual_slack(self.V, self.T, self.S, self.N)
+        self.skew: float = skew_pct(
+            self.V, self.T, self.S, self.N
+        )  # N is two-party seats here
 
         # Characterize the base apportionment
-        self.baseline: str = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap & slack of {:+2} and {:+2} seats, respectively.".format(
-            self.V / self.T, self.S, self.N, self.gap, self.slack
+        self.baseline: str = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap (skew) of {:+2} ({:.2%}) seats (%), respectively.".format(
+            self.V / self.T, self.S, self.N, self.gap, self.skew
         )
+        # self.baseline: str = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap & slack of {:+2} and {:+2} seats, respectively.".format(
+        #     self.V / self.T, self.S, self.N, self.gap, self.slack
+        # )
 
     def _abstract_census_data(self) -> None:
         """Keep census population by state"""
@@ -112,7 +119,7 @@ class MM2ApportionerBase:
 
             self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
 
-    def _calc_power(self) -> None:
+    def _calc_power_by_state(self) -> None:
         # Compute the POWER for the nominal seats
         for k, v in self.byState.items():
             self.byState[k]["POWER"] = v["POP"] / v["n"]
@@ -121,8 +128,7 @@ class MM2ApportionerBase:
         for k, v in self.byState.items():
             self.byState[k]["POWER'"] = v["POP"] / v["n'"]
 
-    # TODO - OTHER: Handle single-seat states w/ "other" party wins
-    def _calc_skew(self) -> None:
+    def _calc_skew_by_state(self) -> None:
         """Compute the before & after two-party SKEWs"""
         for k, v in self.byState.items():
             self.byState[k]["SKEW"] = skew_pct(
@@ -240,7 +246,7 @@ class MM2Apportioner(MM2ApportionerBase):
                 self._assign_named_seat(xx)
 
         # Post-process the results for reports
-        self._calc_power()
+        self._calc_power_by_state()
 
     def _assign_priority_seat(self) -> None:
         """Assign the next seat to the *state* with the highest priority value"""
@@ -288,7 +294,9 @@ class MM2Apportioner(MM2ApportionerBase):
             self.S += D_list
 
         # Post-process the results for reports
-        self._calc_skew()
+        self._calc_skew_by_state()
+        self.gap: int = gap_seats(self.V, self.T, self.S, self.N - self.O0)
+        self.skew = skew_pct(self.V, self.T, self.S, self.N - self.O0)
 
 
 ### HELPERS ###
