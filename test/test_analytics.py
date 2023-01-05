@@ -67,5 +67,27 @@ class TestAnalytics:
         assert slack_formula(219, 435) == -1
         assert slack_formula(220, 435) == -2
 
+    def test_skew_pct(self) -> None:
+        assert skew_pct(0.5, 1.0, 0.5, 1.0) == approx(0.0)
+        assert skew_pct(0.65, 1.0, 0.55, 1.0) == approx(0.1)
+        assert skew_pct(0.55, 1.0, 0.65, 1.0) == approx(0.1)
+        assert skew_pct(0.53, 1.0, 0.55, 1.0) == approx(0.02)
+
+        # When 'r' = 2
+        assert skew_pct(0.5, 1.0, 0.5, 1.0, r=2) == approx(0.0)
+        assert skew_pct(0.55, 1.0, 0.60, 1.0, r=2) == approx(0.0)
+        assert skew_pct(0.55, 1.0, 0.65, 1.0, r=2) == approx(0.05)
+        assert skew_pct(0.45, 1.0, 0.40, 1.0, r=2) == approx(0.0)
+
+    def test_skew_threshold(self) -> None:
+        assert skew_threshold(0.10, 20) == approx(0.10)
+        assert skew_threshold(0.10, 5) == approx(0.20)
+
+    def test_lt_threshold(self) -> None:
+        assert lt_threshold(0.65 - 0.55, 0.1) == False
+        assert lt_threshold(0.55 - 0.65, 0.1) == False
+        assert lt_threshold(0.65 - 0.57, 0.1) == True
+        assert lt_threshold(0.57 - 0.65, 0.1) == True
+
 
 ### END ###

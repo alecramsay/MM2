@@ -13,9 +13,7 @@ from .settings import *
 
 
 class MM2ApportionerSandbox(MM2ApportionerBase):
-    """
-    A sandbox for exploring various strategies for assigning list seats to seats & parties.
-    """
+    """A sandbox for exploring various strategies for assigning list seats to seats & parties."""
 
     def __init__(
         self,
@@ -31,7 +29,40 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             total_seats=600,  # Ditto
             verbose=verbose,
         )
+        self._abstract_byState_data()
+        self._sum_national_totals()
         self._base_app.assign_first_N(435)
+
+    def _abstract_byState_data(self) -> None:
+        """Legacy combo"""
+        # Include the census population (POP)
+        for state in self._census:
+            self.byState[state["XX"]]["POP"] = state["Population"]
+
+        # Add select election data
+        for state in self._elections:
+            xx: str = state["XX"]
+
+            self.byState[xx]["v"] = state["DEM_V"]
+            self.byState[xx]["t"] = state["REP_V"] + state["DEM_V"]
+            self.byState[xx]["s"] = state["DEM_S"]
+            # NOTE - The apportioned # of seats including "other" seats.
+            self.byState[xx]["n"] = state["REP_S"] + state["DEM_S"] + state["OTH_S"]
+
+            # Track "other" wins, so they can be removed when assigning list seats & calculating skew
+            self.byState[xx]["o"] = state["OTH_S"]
+
+            self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
+
+            # Initialize the total # of D seats including list seats (s'),
+            # and the total # of seats including list seats (n')
+            self.byState[xx]["s'"] = self.byState[xx]["s"]
+            self.byState[xx]["n'"] = self.byState[xx]["n"]
+
+    def _calc_analytics_by_state(self) -> None:
+        """Legacy combo"""
+        self._calc_power_by_state()
+        self._calc_skew_by_state()
 
     ### Strategy 8 ###
 
@@ -66,6 +97,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
                 xx: str = self.byPriority[-1]["STATE"]
                 no_list_seats.discard(xx)
 
+                # NOTE - This might have a problem with "other" seats
                 if (size - self.N) == len(no_list_seats):
                     # Assign the remaining seats to states with no list seats
                     break
@@ -76,7 +108,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
                 self.strategy8_final_assignment_rule(xx)
 
         # Post-process the results for reports
-        self._calc_analytics()
+        self._calc_analytics_by_state()
 
     def strategy8_assignment_rule(self) -> None:
         """
@@ -101,6 +133,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
 
         Vf: float = v_i / t_i
         Sf: float = s_i / n_i
+        # NOTE - n_i + 1 is always positive; can't be zero
         d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
         r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold: float = skew_threshold(0.1, n_i)
@@ -121,6 +154,9 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
         self.slack = actual_slack(self.V, self.T, self.S, self.N)
+        self.skew: float = skew_pct(
+            self.V, self.T, self.S, self.N
+        )  # N is two-party seats here
 
         # Log the assignment for reporting
 
@@ -164,6 +200,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
 
         Vf: float = v_i / t_i
         Sf: float = s_i / n_i
+        # NOTE - n_i + 1 is always positive; can't be zero
         d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
         r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold: float = skew_threshold(0.1, n_i)
@@ -184,6 +221,9 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
         self.slack = actual_slack(self.V, self.T, self.S, self.N)
+        self.skew: float = skew_pct(
+            self.V, self.T, self.S, self.N
+        )  # N is two-party seats here
 
         # Log the assignment for reporting
 
@@ -224,6 +264,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
 
         Vf: float = v_i / t_i
         Sf: float = s_i / n_i
+        # NOTE - n_i + 1 is always positive; can't be zero
         d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
         r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold: float = skew_threshold(0.1, n_i)
@@ -277,6 +318,9 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
         self.slack = actual_slack(self.V, self.T, self.S, self.N)
+        self.skew: float = skew_pct(
+            self.V, self.T, self.S, self.N
+        )  # N is two-party seats here
 
         # Gap has been zeroed (might subsequently go + or -)
         self._gap_eliminated: bool = self._gap_eliminated or self.gap == 0
@@ -310,7 +354,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             LIST_SEATS: int = 50
             return (self.N - self.N0) < LIST_SEATS
         elif self._strategy in [6, 7, 8]:
-            # Stop when total seats are assigned (including "other" seats)
+            # Stop when all list seats are assigned
             return (self.N - self.N0) < (self._total_seats - 435)
         else:
             raise ValueError("Invalid strategy")
@@ -323,7 +367,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             self.assignment_rule()
 
         # Post-processing for reports
-        self._calc_analytics()
+        self._calc_analytics_by_state()
 
     def _setup_strategy(self, strategy) -> None:
         self._strategy: int = strategy

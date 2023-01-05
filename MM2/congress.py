@@ -10,9 +10,7 @@ from .settings import *
 
 
 class MM2ApportionerBase:
-    """
-    Basic support for assigning nominal & list seats to seats & parties.
-    """
+    """Base support for assigning nominal & list seats to seats & parties, used by both the sandbox and final subclasses."""
 
     def __init__(
         self,
@@ -39,24 +37,17 @@ class MM2ApportionerBase:
         for xx in STATES:
             self.byState[xx] = {}
 
-        if elections:
-            self.set_election(elections)
-
     def apportion_nominal_seats(self, n: int = 435) -> None:
         self._abstract_census_data()
         self._base_app.assign_first_N(n)
         for k, v in self._base_app.reps.items():
-            self.byState[k]["n"] = v
-            self.byState[k]["n'"] = v
-
-    def set_election(self, elections: list) -> None:
-        self._elections = elections
-        self._abstract_byState_data()
-        self._sum_national_totals()
+            self.byState[k]["n"] = v  # Total nominal seats vs. two-party seats
+            self.byState[k]["n'"] = v  # Accumulator for additional list seats
 
     ### HOUSEKEEPING HELPERS ###
 
     def _sum_national_totals(self) -> None:
+        """Aggregate national election totals"""
         totals: dict[str, int] = {
             "REP_V": 0,
             "DEM_V": 0,
@@ -72,63 +63,50 @@ class MM2ApportionerBase:
             totals["DEM_S"] += state["DEM_S"]
             totals["OTH_S"] += state["OTH_S"]
 
-        # - The D vote and two-party vote totals (these are fixed)
+        # The D vote and two-party vote totals (these are fixed)
         self.V: int = totals["DEM_V"]
         self.T: int = totals["REP_V"] + totals["DEM_V"]  # NOTE: Removes "other" votes.
 
-        # - The D seats and two-party seats (these grow w/ list seats)
+        # NOTE - This is how self.N is initialized for the sandbo class.
+        # It "works" because this termination check is a *delta* from the initial value.
+        # The D seats and two-party seats (these grow w/ list seats)
         self.S: int = totals["DEM_S"]
         self.N: int = totals["REP_S"] + totals["DEM_S"]  # NOTE: Removes "other" seats.
-        # NOTE - This is how self.N is initialized for the sandbox.
-        # It "works" because the termination check is a delta from the initial value.
-        # Stop when total seats are assigned (including "other" seats)
-        # return (self.N - self.N0) < (self._total_seats - 435)
+        # NOTE - In contrast, the final code (MM2Apportioner) resets this to 435, after apportioning
+        # the nominal seats, i.e., self.N is total seats vs. two-party seats.
 
-        # - The initial values for nominal seats
+        # The initial values for nominal seats
         self.S0: int = self.S
         self.N0: int = self.N
+        self.O0: int = totals["OTH_S"]
 
-        # - The initial gap & slack (these change)
+        # NOTE - These initial gap & slack values have *implicitly* removed "other" seats (correctly).
+        # The initial gap & slack (these change)
         self.gap: int = gap_seats(self.V, self.T, self.S, self.N)
         self.slack: int = actual_slack(self.V, self.T, self.S, self.N)
+        self.skew: float = skew_pct(
+            self.V, self.T, self.S, self.N
+        )  # N is two-party seats here
 
         # Characterize the base apportionment
-        self.baseline: str = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap & slack of {:+2} and {:+2} seats, respectively.".format(
-            self.V / self.T, self.S, self.N, self.gap, self.slack
+        self.baseline: str = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap (skew) of {:+2} ({:.2%}) seats (%), respectively.".format(
+            self.V / self.T, self.S, self.N, self.gap, self.skew
         )
-
-    def _abstract_byState_data(self) -> None:
-        """Legacy combo"""
-        # Include the census population (POP)
-        for state in self._census:
-            self.byState[state["XX"]]["POP"] = state["Population"]
-
-        # Add select election data
-        for state in self._elections:
-            xx: str = state["XX"]
-
-            self.byState[xx]["v"] = state["DEM_V"]
-            self.byState[xx]["t"] = state["REP_V"] + state["DEM_V"]
-            self.byState[xx]["s"] = state["DEM_S"]
-            # NOTE - The apportioned # of seats including "other" seats.
-            self.byState[xx]["n"] = state["REP_S"] + state["DEM_S"] + state["OTH_S"]
-
-            self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
-
-            # Initialize the total # of D seats including list seats (s'),
-            # and the total # of seats including list seats (n')
-            self.byState[xx]["s'"] = self.byState[xx]["s"]
-            self.byState[xx]["n'"] = self.byState[xx]["n"]
+        # self.baseline: str = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap & slack of {:+2} and {:+2} seats, respectively.".format(
+        #     self.V / self.T, self.S, self.N, self.gap, self.slack
+        # )
 
     def _abstract_census_data(self) -> None:
-        # Include the census population (POP)
+        """Keep census population by state"""
         for state in self._census:
             self.byState[state["XX"]]["POP"] = state["Population"]
 
-        # NOTE - Add "n" and "n'" to byState when apportioning seats to states
+            # NOTE - Add "n" and "n'" accumulator to byState when apportioning seats to states
+
+            continue
 
     def _abstract_election_data(self) -> None:
-        # Add select election data
+        """Keep two-party election data by state"""
         for state in self._elections:
             xx: str = state["XX"]
 
@@ -136,20 +114,12 @@ class MM2ApportionerBase:
             self.byState[xx]["t"] = state["REP_V"] + state["DEM_V"]
             self.byState[xx]["s"] = state["DEM_S"]
 
+            # Track "other" wins, so they can be removed when assigning list seats & calculating skew
+            self.byState[xx]["o"] = state["OTH_S"]
+
             self.byState[xx]["v/t"] = self.byState[xx]["v"] / self.byState[xx]["t"]
 
-            # NOTE - These are for the incremental exploratory approach in the sandbox
-            # Initialize the total # of D seats including list seats (s'),
-            # and the total # of seats including list seats (n')
-            self.byState[xx]["s'"] = self.byState[xx]["s"]
-            self.byState[xx]["n'"] = self.byState[xx]["n"]
-
-    def _calc_analytics(self) -> None:
-        """Legacy combination"""
-        self._calc_power()
-        self._calc_skew()
-
-    def _calc_power(self) -> None:
+    def _calc_power_by_state(self) -> None:
         # Compute the POWER for the nominal seats
         for k, v in self.byState.items():
             self.byState[k]["POWER"] = v["POP"] / v["n"]
@@ -158,21 +128,20 @@ class MM2ApportionerBase:
         for k, v in self.byState.items():
             self.byState[k]["POWER'"] = v["POP"] / v["n'"]
 
-    def _calc_skew(self) -> None:
-        # Compute the SKEW for the nominal seats
+    def _calc_skew_by_state(self) -> None:
+        """Compute the before & after two-party SKEWs"""
         for k, v in self.byState.items():
             self.byState[k]["SKEW"] = skew_pct(
                 v["v"],
                 v["t"],
                 v["s"],
-                v["n"],
+                v["n"] - v["o"],
                 self._r,
             )
 
-        # Compute the new SKEW including list seats
         for k, v in self.byState.items():
             self.byState[k]["SKEW'"] = skew_pct(
-                v["v"], v["t"], v["s'"], v["n'"], self._r
+                v["v"], v["t"], v["s'"], v["n'"] - v["o"], self._r
             )
 
     ### OUTPUT HELPERS ###
@@ -216,9 +185,7 @@ class MM2ApportionerBase:
 
 
 class MM2Apportioner(MM2ApportionerBase):
-    """
-    The proposed MM2 apportionment algorithm for Congress.
-    """
+    """The proposed MM2 apportionment algorithm for Congress."""
 
     def __init__(
         self,
@@ -241,6 +208,7 @@ class MM2Apportioner(MM2ApportionerBase):
     def apportion_and_assign_seats(self) -> None:
         """Apportion seats and assign party mix (requires election data)"""
         self._abstract_election_data()
+        self._sum_national_totals()
 
         self.apportion_seats()
         self.assign_party_mix()
@@ -278,7 +246,7 @@ class MM2Apportioner(MM2ApportionerBase):
                 self._assign_named_seat(xx)
 
         # Post-process the results for reports
-        self._calc_power()
+        self._calc_power_by_state()
 
     def _assign_priority_seat(self) -> None:
         """Assign the next seat to the *state* with the highest priority value"""
@@ -307,24 +275,28 @@ class MM2Apportioner(MM2ApportionerBase):
         self.assigned_to: str = xx
 
     def assign_party_mix(self) -> None:
-        """
-        Assign list seats to parties based on election results
-        """
+        """Assign list seats to parties based on election results"""
 
         for k, v in self.byState.items():
-            nominal_seats: int = v["n"]
+            two_party_seats: int = v["n"] - v["o"]
             list_seats: int = v["n'"] - v["n"]
+            assert v["t"] > 0  # There must be *some* D/R votes
             vote_share: float = v["v"] / v["t"]
             D_wins: int = v["s"]
 
             D_list: int
             R_list: int
-            D_list, R_list = party_split(nominal_seats, list_seats, vote_share, D_wins)
+            D_list, R_list = party_split(
+                two_party_seats, list_seats, vote_share, D_wins
+            )
 
             self.byState[k]["s'"] = D_wins + D_list
+            self.S += D_list
 
         # Post-process the results for reports
-        self._calc_skew()
+        self._calc_skew_by_state()
+        self.gap: int = gap_seats(self.V, self.T, self.S, self.N - self.O0)
+        self.skew = skew_pct(self.V, self.T, self.S, self.N - self.O0)
 
 
 ### HELPERS ###
@@ -338,6 +310,9 @@ def party_split(
 
     - D's can't get more list seats than apportioned to the state
     - D's can't *lose* seats, i.e., minimum D list seats is 0
+    - Other seats are constant, i.e., removed from the nominal seats
+
+    NOTE - Both nominal_seats and vote_share are *two party* values!
     """
 
     assert list_seats >= 0

@@ -55,7 +55,7 @@ def reps_for_control(assembly_size: int) -> int:
     reps_for_control(435) => 218
     reps_for_control(600) => 301
     """
-    n = round((assembly_size / 2) + EPSILON)
+    n: int = round((assembly_size / 2) + EPSILON)
     if assembly_size % 2 == 0:
         n += 1
 
@@ -74,13 +74,18 @@ def slack_formula(D: int, N: int) -> int:
     return (-1 * (D - C)) if (D >= C) else (N - D - C)
 
 
-def skew_pct(V: int, T: int, S: int, N: int, r: int = 1) -> float:
+def skew_pct(V: int, T: int, S: int, N: int, r: int = 1) -> float | None:
     """
     This is a generalized definition of skew, using an ideal responsiveness, 'r'.
     It expresses the absolute % deviation of vote share from the ideal seat share,
     given 'r'. The simple version where r=1 captures deviation from proportionality.
     When r=2, skew measures the efficiency gap (EG).
     """
+    if N < 1:  # No two-party seats
+        return None
+    if T == 0:  # No two-party votes
+        return None
+
     Vf: float = V / T
     Sf: float = S / N
 

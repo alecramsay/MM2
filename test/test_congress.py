@@ -126,28 +126,6 @@ class TestCongress:
         assert fn(0.15, 0.16, 0.10, -10) == "DEM"
         assert fn(0.16, 0.15, 0.10, -10) == "REP"
 
-    def test_skew_pct(self) -> None:
-        assert skew_pct(0.5, 1.0, 0.5, 1.0) == approx(0.0)
-        assert skew_pct(0.65, 1.0, 0.55, 1.0) == approx(0.1)
-        assert skew_pct(0.55, 1.0, 0.65, 1.0) == approx(0.1)
-        assert skew_pct(0.53, 1.0, 0.55, 1.0) == approx(0.02)
-
-        # When 'r' = 2
-        assert skew_pct(0.5, 1.0, 0.5, 1.0, r=2) == approx(0.0)
-        assert skew_pct(0.55, 1.0, 0.60, 1.0, r=2) == approx(0.0)
-        assert skew_pct(0.55, 1.0, 0.65, 1.0, r=2) == approx(0.05)
-        assert skew_pct(0.45, 1.0, 0.40, 1.0, r=2) == approx(0.0)
-
-    def test_skew_threshold(self) -> None:
-        assert skew_threshold(0.10, 20) == approx(0.10)
-        assert skew_threshold(0.10, 5) == approx(0.20)
-
-    def test_lt_threshold(self) -> None:
-        assert lt_threshold(0.65 - 0.55, 0.1) == False
-        assert lt_threshold(0.55 - 0.65, 0.1) == False
-        assert lt_threshold(0.65 - 0.57, 0.1) == True
-        assert lt_threshold(0.57 - 0.65, 0.1) == True
-
     def test_party_split(self) -> None:
         assert party_split(8, 2, 0.5000, 0) == (2, 0)
         assert party_split(8, 2, 0.5000, 1) == (2, 0)
@@ -158,6 +136,19 @@ class TestCongress:
         assert party_split(8, 2, 0.5000, 6) == (0, 2)
         assert party_split(8, 2, 0.5000, 7) == (0, 2)
         assert party_split(8, 2, 0.5000, 8) == (0, 2)
+
+        # Actual other/independent wins:
+        # YEAR,STATE,XX,REP_V,DEM_V,OTH_V,TOT_V,REP_S,DEM_S,OTH_S,TOT_S
+        # 2000,Vermont,VT,51977,14918,216471,283366,0,0,1,1
+        assert party_split(0, 1, 0.2230, 0) == (0, 1)
+        # 2000,Virginia,VA,1295849,1261158,177947,2734954,6,4,1,11
+        assert party_split(10, 4, 0.4932, 4) == (3, 1)
+        # 2002,Vermont,VT,72813,0,152442,225255,0,0,1,1
+        assert party_split(0, 1, 0.0000, 0) == (0, 1)
+        # 2004,Vermont,VT,74271,21684,209053,305008,0,0,1,1
+        assert party_split(0, 1, 0.2260, 0) == (0, 1)
+        # 2018,Michigan,MI,1944807,2222793,95297,4262897,6,7,1,14
+        assert party_split(13, 5, 0.5334, 7) == (3, 2)
 
 
 ### END ###
