@@ -159,5 +159,18 @@ class TestCongress:
         assert party_split(8, 2, 0.5000, 7) == (0, 2)
         assert party_split(8, 2, 0.5000, 8) == (0, 2)
 
+        # Actual other/independent wins:
+        # YEAR,STATE,XX,REP_V,DEM_V,OTH_V,TOT_V,REP_S,DEM_S,OTH_S,TOT_S
+        # 2000,Vermont,VT,51977,14918,216471,283366,0,0,1,1
+        assert party_split(1, 1, 0.2230, 0) == (0, 1)
+        # 2000,Virginia,VA,1295849,1261158,177947,2734954,6,4,1,11
+        assert party_split(11, 4, 0.4932, 4) == (3, 1)
+        # 2002,Vermont,VT,72813,0,152442,225255,0,0,1,1
+        assert party_split(1, 1, 0.0000, 0) == (0, 1)
+        # 2004,Vermont,VT,74271,21684,209053,305008,0,0,1,1
+        assert party_split(1, 1, 0.2260, 0) == (0, 1)
+        # 2018,Michigan,MI,1944807,2222793,95297,4262897,6,7,1,14
+        assert party_split(14, 5, 0.5334, 7) == (3, 2)
+
 
 ### END ###

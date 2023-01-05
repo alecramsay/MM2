@@ -273,6 +273,7 @@ class MM2Apportioner(MM2ApportionerBase):
         """Assign list seats to parties based on election results"""
 
         for k, v in self.byState.items():
+            assert v["t"] > 0  # There must be *some* D/R votes
             two_party_seats: int = v["n"] - v["o"]
             list_seats: int = v["n'"] - v["n"]
             vote_share: float = v["v"] / v["t"]
