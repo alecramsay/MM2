@@ -4,7 +4,7 @@
 #
 # For example:
 #
-# scripts/run_batch.sh
+# scripts/assign_ALL.sh
 #
 
 echo "Running batch script ..."
