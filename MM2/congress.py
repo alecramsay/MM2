@@ -67,20 +67,30 @@ class MM2ApportionerBase:
         self.V: int = totals["DEM_V"]
         self.T: int = totals["REP_V"] + totals["DEM_V"]  # NOTE: Removes "other" votes.
 
-        # NOTE - This is how self.N is initialized for the sandbo class.
-        # It "works" because this termination check is a *delta* from the initial value.
+        """
+        NOTE - There's a bit of legacy cruft here, but it's important to keep it.
+
+        N is initialized next for the Sandbox apportioner class. MM2Apportioner resets N to 435,
+        after apportioning the nominal seats, i.e., N there is total seats vs. two-party seats here.
+
+        Initializing N this way for for the Sandbox class, because the termination check is a *delta*
+        from this initial value.
+
+        The reason to not factor the Sandbox-specific initialization into that class is that the initial 
+        gap & slack values below have *implicitly* removed "other" seats (correctly), and they are used in
+        the baseline characterization that follows. This routine works for both code paths.It doesn't matter 
+        that N is the total nominal seats (as one would expect) outside the Sandbox class.
+        """
+
         # The D seats and two-party seats (these grow w/ list seats)
         self.S: int = totals["DEM_S"]
         self.N: int = totals["REP_S"] + totals["DEM_S"]  # NOTE: Removes "other" seats.
-        # NOTE - In contrast, the final code (MM2Apportioner) resets this to 435, after apportioning
-        # the nominal seats, i.e., self.N is total seats vs. two-party seats.
 
         # The initial values for nominal seats
         self.S0: int = self.S
         self.N0: int = self.N
         self.O0: int = totals["OTH_S"]
 
-        # NOTE - These initial gap & slack values have *implicitly* removed "other" seats (correctly).
         # The initial gap & slack (these change)
         self.gap: int = gap_seats(self.V, self.T, self.S, self.N)
         self.slack: int = actual_slack(self.V, self.T, self.S, self.N)
