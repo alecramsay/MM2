@@ -17,7 +17,7 @@ class MM2ApportionerBase:
         census: list,
         elections: list,
         list_min: int = 0,
-        total_seats: int = 600,
+        total_seats: int = 601,
         verbose: bool = False,
     ) -> None:
 
@@ -36,6 +36,8 @@ class MM2ApportionerBase:
         self.byState: dict = dict()
         for xx in STATES:
             self.byState[xx] = {}
+
+        self.summary: dict = dict()
 
     def apportion_nominal_seats(self, n: int = 435) -> None:
         self._abstract_census_data()
@@ -106,6 +108,21 @@ class MM2ApportionerBase:
         #     self.V / self.T, self.S, self.N, self.gap, self.slack
         # )
 
+        # Capture summary data
+        self.summary["Year"] = self.YYYY
+
+        self.summary["V_D_%"] = self.V / self.T
+        self.summary["N_T"] = 435
+        self.summary["N_I"] = totals["OTH_S"]
+        self.summary["N_R"] = totals["REP_S"]
+        self.summary["N_D"] = totals["DEM_S"]
+        self.summary["N_D_%"] = totals["DEM_S"] / (totals["REP_S"] + totals["DEM_S"])
+
+        self.summary["L_T"] = self._total_seats - 435
+        self.summary["L_I"] = 0
+
+        self.summary["O_T"] = self._total_seats
+
     def _abstract_census_data(self) -> None:
         """Keep census population by state"""
         for state in self._census:
@@ -117,7 +134,10 @@ class MM2ApportionerBase:
 
     def _abstract_election_data(self) -> None:
         """Keep two-party election data by state"""
-        for state in self._elections:
+        for i, state in enumerate(self._elections):
+            if i == 0:
+                self.YYYY: int = state["YEAR"]
+
             xx: str = state["XX"]
 
             self.byState[xx]["v"] = state["DEM_V"]
@@ -193,6 +213,20 @@ class MM2ApportionerBase:
 
         return unbalanced
 
+    def summarize(self) -> None:
+        """Summarize the apportionment & assignment of list seats"""
+
+        self.summary["L_D"] = self.S - self.S0
+        self.summary["L_R"] = self.summary["L_T"] - self.summary["L_D"]
+        self.summary["L_D_%"] = self.summary["L_D"] / self.summary["L_T"]
+
+        self.summary["O_D"] = self.summary["N_D"] + self.summary["L_D"]
+        self.summary["O_I"] = self.summary["N_I"] + self.summary["L_I"]
+        self.summary["O_R"] = self.summary["N_R"] + self.summary["L_R"]
+        self.summary["O_D_%"] = self.summary["O_D"] / (
+            self.summary["O_D"] + self.summary["O_R"]
+        )
+
 
 class MM2Apportioner(MM2ApportionerBase):
     """The proposed MM2 apportionment algorithm for Congress."""
@@ -222,6 +256,7 @@ class MM2Apportioner(MM2ApportionerBase):
 
         self.apportion_seats()
         self.assign_party_mix()
+        self.summarize()
 
     def apportion_seats(self) -> None:
         """Apportion nominal & list seats based on a census"""
