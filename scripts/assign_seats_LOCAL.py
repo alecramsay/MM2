@@ -114,7 +114,7 @@ def main() -> None:
     report: str = "results/{}_report({},{}).txt".format(election, size, list_min)
     save_report(app, report)
 
-    summary: str = "results/{}_summary({},{}).txt".format(election, size, list_min)
+    summary: str = "results/{}_summary({},{}).csv".format(election, size, list_min)
     save_summary(app, summary)
 
 
