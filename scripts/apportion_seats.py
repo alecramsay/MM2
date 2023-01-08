@@ -6,15 +6,15 @@ Apportion nominal & list seats to states based on a census.
 
 For example:
 
-scripts/apportion_seats.py --cycle 1990 -l 1
-scripts/apportion_seats.py --cycle 2000 -l 1
-scripts/apportion_seats.py --cycle 2010 -l 1
-scripts/apportion_seats.py --cycle 2020 -l 1
+scripts/apportion_seats.py -c 1990 -r 601 -l 1
+scripts/apportion_seats.py -c 2000 -r 601 -l 1
+scripts/apportion_seats.py -c 2010 -r 601 -l 1
+scripts/apportion_seats.py -c 2020 -r 601 -l 1
 
-scripts/apportion_seats.py --cycle 1990 -l 0
-scripts/apportion_seats.py --cycle 2000 -l 0
-scripts/apportion_seats.py --cycle 2010 -l 0
-scripts/apportion_seats.py --cycle 2020 -l 0
+scripts/apportion_seats.py -c 1990 -r 601 -l 0
+scripts/apportion_seats.py -c 2000 -r 601 -l 0
+scripts/apportion_seats.py -c 2010 -r 601 -l 0
+scripts/apportion_seats.py -c 2020 -r 601 -l 0
 
 For documentation, type:
 
