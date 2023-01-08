@@ -7,6 +7,8 @@
 # scripts/apportion_ALL.sh
 #
 
+# TODO - Add # reps to apportion
+
 echo "Apportioning 1990 census ..."
 scripts/apportion_seats.py --cycle 1990 -l 1
 scripts/apportion_seats.py --cycle 1990 -l 0

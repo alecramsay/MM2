@@ -111,10 +111,11 @@ def main() -> None:
     )
     save_reps_by_state(app.byState, reps_by_state)
 
-    ### REPORT SOME BASIC INFO ###
-
     report: str = "results/{}_report({},{}).txt".format(election, size, list_min)
     save_report(app, report)
+
+    summary: str = "results/{}_summary({},{}).csv".format(election, size, list_min)
+    save_summary(app, summary)
 
 
 if __name__ == "__main__":

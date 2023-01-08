@@ -5,26 +5,26 @@
 Assign list seats to parties, based on an election.
 
 Options:
-- 's' is the total size of the House (600 [default] or 650 or whatever)
+- 's' is the total size of the House (601 [default] or 651 or whatever)
 - 'l' is the # of guaranteed list seats per state (0 or 1 [default])
 
 For example:
 
-scripts/assign_seats.py -c 1990 -e 2000 -s 600 -l 1
+scripts/assign_seats.py -c 1990 -e 2000 -s 601 -l 1
 
-scripts/assign_seats.py -c 2000 -e 2002 -s 600 -l 1
-scripts/assign_seats.py -c 2000 -e 2004 -s 600 -l 1
-scripts/assign_seats.py -c 2000 -e 2006 -s 600 -l 1
-scripts/assign_seats.py -c 2000 -e 2008 -s 600 -l 1
-scripts/assign_seats.py -c 2000 -e 2010 -s 600 -l 1
+scripts/assign_seats.py -c 2000 -e 2002 -s 601 -l 1
+scripts/assign_seats.py -c 2000 -e 2004 -s 601 -l 1
+scripts/assign_seats.py -c 2000 -e 2006 -s 601 -l 1
+scripts/assign_seats.py -c 2000 -e 2008 -s 601 -l 1
+scripts/assign_seats.py -c 2000 -e 2010 -s 601 -l 1
 
-scripts/assign_seats.py -c 2010 -e 2012 -s 600 -l 1
-scripts/assign_seats.py -c 2010 -e 2014 -s 600 -l 1
-scripts/assign_seats.py -c 2010 -e 2016 -s 600 -l 1
-scripts/assign_seats.py -c 2010 -e 2018 -s 600 -l 1
-scripts/assign_seats.py -c 2010 -e 2020 -s 600 -l 1
+scripts/assign_seats.py -c 2010 -e 2012 -s 601 -l 1
+scripts/assign_seats.py -c 2010 -e 2014 -s 601 -l 1
+scripts/assign_seats.py -c 2010 -e 2016 -s 601 -l 1
+scripts/assign_seats.py -c 2010 -e 2018 -s 601 -l 1
+scripts/assign_seats.py -c 2010 -e 2020 -s 601 -l 1
 
-scripts/assign_seats_LOCAL.py -c 2020 -e 2022 -s 600 -l 1
+scripts/assign_seats.py -c 2020 -e 2022 -s 601 -l 1
 
 For documentation, type:
 
@@ -66,8 +66,8 @@ def parse_args() -> Namespace:
     parser.add_argument(
         "-s",
         "--size",
-        default=600,
-        help="The total size of the House (e.g., 600 or 650)",
+        default=601,
+        help="The total size of the House (e.g., 601 or 651)",
         type=int,
     )
     parser.add_argument(
@@ -123,10 +123,11 @@ def main() -> None:
     )
     save_reps_by_state(app.byState, reps_by_state)
 
-    ### REPORT SOME BASIC INFO ###
-
     report: str = "results/{}_report({},{}).txt".format(election, size, list_min)
     save_report(app, report)
+
+    summary: str = "results/{}_summary({},{}).csv".format(election, size, list_min)
+    save_summary(app, summary)
 
 
 if __name__ == "__main__":

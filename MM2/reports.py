@@ -137,4 +137,31 @@ def save_report(app: MM2Apportioner, rel_path: str) -> None:
             print("All states are within one seat of proportional.\n", file=f)
 
 
+def save_summary(app: MM2Apportioner, rel_path: str) -> None:
+    """Write summary.csv"""
+    with open(rel_path, "w") as f:
+        print(
+            "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(
+                app.summary["Year"],
+                app.summary["V_D_%"],
+                app.summary["N_T"],
+                app.summary["N_I"],
+                app.summary["N_R"],
+                app.summary["N_D"],
+                app.summary["N_D_%"],
+                app.summary["L_T"],
+                app.summary["L_I"],
+                app.summary["L_R"],
+                app.summary["L_D"],
+                app.summary["L_D_%"],
+                app.summary["O_T"],
+                app.summary["O_I"],
+                app.summary["O_R"],
+                app.summary["O_D"],
+                app.summary["O_D_%"],
+            ),
+            file=f,
+        )
+
+
 ### END ###

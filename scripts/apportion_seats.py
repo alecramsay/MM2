@@ -38,7 +38,7 @@ def parse_args() -> Namespace:
     parser.add_argument(
         "-c", "--cycle", default=2020, help="The census cycle (e.g., 2020)", type=int
     )
-    parser.add_argument("-r", "--reps", default=600, help="The # of reps", type=int)
+    parser.add_argument("-r", "--reps", default=601, help="The # of reps", type=int)
     parser.add_argument(
         "-l",
         "--listmin",
