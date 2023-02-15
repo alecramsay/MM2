@@ -2,78 +2,44 @@
 #
 
 """
-DEBUG 
+Ingest Chris Warshaw's election data 
 """
+
+from typing import Dict, List
 
 from MM2 import *
 
 
-### ARGS ###
+### SETUP ###
 
-cycle: int = 2020
-election: int = 2022
-size: int = 601
-list_min: int = 1
-
-verbose: bool = False
-
-option: str = "e"
-strategy: int = 8
-
-### MODS FOR LOCAL USE ###
-
-census_root: str = "data/census"
-# elections_root: str = "data/elections"
-elections_root: str = "/Users/alecramsay/Downloads"
+rawdata: str = "data/census/intake/congress_elections_imputations_2023.csv"
+years: List[int] = list(range(1972, 2022 + 1, 2))
+csv_dir: str = "data/census/"
 
 
 def main() -> None:
 
-    ### LOAD THE CENSUS ###
+    print("Do something!")  # TODO
 
-    csv_data: str = "{}/{}_census.csv".format(census_root, cycle)
-    types: list = [str, str, int]
-    census: list = read_typed_csv(csv_data, types)
+    # Initialize accumulators for a state - a dict
+    # Initialize accumulators for all states - a dict of dicts
+    # Initialize accumulators for all elections - a dict of dicts of dicts (1972 - 2022)
 
-    ### LOAD THE ELECTION RESULTS ###
+    # Read the CSV and accumulate the data by state and election (year)
 
-    csv_data: str = "{}/Congressional Elections ({}).csv".format(
-        elections_root, election
-    )
-    types = [str] * 3 + [int] * 8 + [float] * 2
-    elections: list = read_typed_csv(csv_data, types)
+    # Convert the accumulated data to a list of list of dicts -- a list of elections,
+    #   where each election is a list of dicts for each state.
 
-    ### DO SOMETHING ###
+    elections: list = list()
+    for year in years:
+        election: list = list()
 
-    ## Apportion seats ##
+        print(f"Flatten the dict of dicts into a list of dicts for {year}")
 
-    # max_seats: int = 700
-    # baseapp: HH_Apportioner = HH_Apportioner(census)
-    # baseapp.log_priority_queue(max_seats)
-    # app: MM2Apportioner = MM2Apportioner(
-    #     census, None, list_min=list_min, total_seats=size, verbose=verbose
-    # )
-    # app.apportion_seats()
+    # Write each election to a CSV
 
-    ## Assign seats ##
-
-    app: MM2Apportioner = MM2Apportioner(
-        census, elections, list_min=list_min, total_seats=size, verbose=verbose
-    )
-    app.apportion_and_assign_seats()
-
-    ## Strategy 8 ##
-
-    # app: MM2ApportionerSandbox = MM2ApportionerSandbox(census, elections, verbose)
-    # app.list_min = list_min
-    # app.total_seats = size
-    # app._r: int = 1
-    # app.strategy8(size=size, option=option)
-
-    ## Strategy N ##
-
-    # app: MM2ApportionerSandbox = MM2ApportionerSandbox(census, elections, verbose)
-    # app.eliminate_gap(strategy=strategy)
+    for i, year in enumerate(years):
+        print(f"Write {year} to CSV")
 
     pass
 
