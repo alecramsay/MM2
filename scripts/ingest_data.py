@@ -14,7 +14,7 @@ from MM2 import *
 
 rawdata: str = "data/elections/intake/congress_elections_imputations_2023.csv"
 years: List[int] = list(range(1972, 2022 + 1, 2))
-csv_dir: str = "data/elections/"
+csv_dir: str = "data/elections"
 
 
 def main() -> None:
@@ -23,12 +23,12 @@ def main() -> None:
     state_bins: dict[str, int] = {
         "REP_V": 0,
         "DEM_V": 0,
-        "OTH_V": 0,
-        "TOT_V": 0,
+        # "OTH_V": 0,
+        # "TOT_V": 0,
         "REP_S": 0,
         "DEM_S": 0,
         "OTH_S": 0,
-        "TOT_S": 0,
+        # "TOT_S": 0,
     }
     election_bins: dict = dict()
     for xx in STATES:
@@ -93,7 +93,11 @@ def main() -> None:
 
     # Accumulate the data by state, election (year), and field
 
-    print("TODO - Accumulate the data by state, election (year), and field")
+    for row in subset:
+        year: int = row["YEAR"]
+        xx: str = row["XX"]
+        for field in state_bins.keys():
+            data_bins[year][xx][field] += row[field]
 
     # Convert the accumulated data to a list of list of dicts -- a list of elections,
     #   where each election is a list of dicts for each state.
@@ -104,8 +108,6 @@ def main() -> None:
         for key, value in data_bins[year].items():
             row: dict = {"YEAR": year, "XX": key}
             row.update(value)
-            # TODO - Calculate VOTE_% and SEAT_% here
-
             rows.append(row)
         elections.append(rows)
 
@@ -117,23 +119,23 @@ def main() -> None:
         "XX",
         "REP_V",
         "DEM_V",
-        "OTH_V",
-        "TOT_V",
+        # "OTH_V",
+        # "TOT_V",
         "REP_S",
         "DEM_S",
         "OTH_S",
-        "TOT_S",
-        "VOTE_%",
-        "SEAT_%",
+        # "TOT_S",
+        # "VOTE_%",
+        # "SEAT_%",
     ]
 
     for i, year in enumerate(years):
         name: str = f"Congressional Elections ({year}).csv"
-        rel_path: str = csv_dir + name
+        rel_path: str = csv_dir + "/" + name
         rows: list = elections[i]
 
-        print(f"Write '{name}' to CSV")
-        # TODO -  write_csv(rel_path, rows, cols)
+        write_csv(rel_path, rows, cols)
+        continue
 
     pass
 
