@@ -5,7 +5,7 @@
 Ingest Chris Warshaw's election data 
 """
 
-from typing import Dict, List
+from typing import List
 
 from MM2 import *
 
