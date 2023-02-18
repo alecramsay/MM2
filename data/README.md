@@ -41,5 +41,5 @@ The format for each election was a CSV with the following columns:
 To extend our analysis farther back in time, we switched over to use data from Chris Warshaw:
 
 - Observed results in each congressional election since 1972 in every state. These are mostly from [Constituency-Level Elections Archive (CLEA)](https://electiondataarchive.org). The 2022 election data are from the Cook Political Report.
-- Chris' imputations for each election based on the approach described in the appendix of his [LSQ paper](https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Flsq.12276&file=lsq12276-sup-0001-Supinfo.pdf) with Nick Stephanopoulos.
-- Data on incumbency and presidential vote (Democratic two-party share) in each district, generously shared by Gary Jacobson (see [paper](https://www.journals.uchicago.edu/doi/abs/10.1086/681670).
+- Including Chris' imputations for each election based on the approach described in the appendix of his [LSQ paper](https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Flsq.12276&file=lsq12276-sup-0001-Supinfo.pdf) with Nick Stephanopoulos.
+- Data on incumbency and presidential vote (Democratic two-party share) in each district was generously shared by Gary Jacobson (see [paper](https://www.journals.uchicago.edu/doi/abs/10.1086/681670)).
