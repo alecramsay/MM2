@@ -12,7 +12,7 @@ from MM2 import *
 
 ### SETUP ###
 
-rawdata: str = "data/census/intake/congress_elections_imputations_2023.csv"
+rawdata: str = "data/elections/intake/congress_elections_imputations_2023.csv"
 years: List[int] = list(range(1972, 2022 + 1, 2))
 csv_dir: str = "data/elections/"
 
@@ -40,8 +40,56 @@ def main() -> None:
 
     # Read the CSV and accumulate the data by state and election (year)
 
-    print("TODO - Read the CSV and accumulate the data by state and election (year)")
-    # TODO - read_typed_csv(rel_path, field_types)
+    field_types: list = [
+        int,  # ""
+        str,  # "stcd2"
+        int,  # "cycle",
+        str,  # "stateabrev"
+        str,  # "stcd"
+        str,  # "dem_share" -- float but contains a few NA's
+        float,  # "dem_share_imputed",
+        str,  # "dpres" -- float but contains a few NA's
+        int,  # "incumb"
+        str,  # "winner_dem" -- int but contains a few NA's
+        int,  # "uncontested"
+        float,  # "votes_dem" -- int but contains a few floats
+        float,  # "votes_rep" -- int but contains a few floats
+        float,  # "votes_dem_est"
+        float,  # "votes_rep_est"
+        str,  # "chamber"
+    ]
+    input: list[dict] = read_typed_csv(rawdata, field_types)
+
+    # Convert the data into the format we want
+
+    subset: list[dict] = list()
+    for row in input:
+        year: int = row["cycle"]
+        xx: str = row["stateabrev"]
+        state: str = STATE_NAMES[xx]
+        rep_v: int = int(round(row["votes_rep_est"]))
+        dem_v: int = int(round(row["votes_dem_est"]))
+        rep_s: int = 0
+        dem_s: int = 0
+        oth_s: int = 0
+        if row["winner_dem"] == "NA":
+            oth_s = 1
+        elif row["winner_dem"] == "1":
+            dem_s = 1
+        else:
+            rep_s = 1
+
+        keep: dict = {
+            "YEAR": year,
+            "STATE": state,
+            "XX": xx,
+            "REP_V": rep_v,
+            "DEM_V": dem_v,
+            "REP_S": rep_s,
+            "DEM_S": dem_s,
+            "OTH_S": oth_s,
+        }
+        subset.append(keep)
 
     # Accumulate the data by state, election (year), and field
 
