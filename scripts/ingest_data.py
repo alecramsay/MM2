@@ -5,6 +5,7 @@
 Ingest Chris Warshaw's election data 
 """
 
+import copy
 from typing import List
 
 from MM2 import *
@@ -32,11 +33,11 @@ def main() -> None:
     }
     election_bins: dict = dict()
     for xx in STATES:
-        election_bins[xx] = state_bins.copy()
+        election_bins[xx] = copy.deepcopy(state_bins)
         election_bins[xx]["STATE"] = STATE_NAMES[xx]
     data_bins: dict = dict()
     for year in years:
-        data_bins[year] = election_bins.copy()
+        data_bins[year] = copy.deepcopy(election_bins)
 
     # Read the CSV and accumulate the data by state and election (year)
 
