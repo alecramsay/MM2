@@ -101,7 +101,7 @@ class MM2ApportionerBase:
         )  # N is two-party seats here
 
         # Characterize the base apportionment
-        self.baseline: str = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap (skew) of {:+2} ({:.2%}) seats (%), respectively.".format(
+        self.baseline: str = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap (skew) of {:+2} ({:.2%}) seats, respectively.".format(
             self.V / self.T, self.S, self.N, self.gap, self.skew
         )
         # self.baseline: str = "D's got {:.2%} of the vote and won {:3} of {:3} seats yielding a gap & slack of {:+2} and {:+2} seats, respectively.".format(

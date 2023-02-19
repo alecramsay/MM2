@@ -100,7 +100,7 @@ def save_report(app: MM2Apportioner, rel_path: str) -> None:
             file=f,
         )
         print(
-            "This results in a gap (skew) of {:+2} ({:.2%}) seats (%), respectively.\n".format(
+            "This results in a gap (skew) of {:+2} ({:.2%}) seats, respectively.\n".format(
                 app.gap, app.skew
             ),
             file=f,
