@@ -10,21 +10,15 @@ from MM2 import *
 
 ### ARGS ###
 
-cycle: int = 2020
-election: int = 2022
+cycle: int = 1990
+election: int = 1998
 size: int = 601
 list_min: int = 1
 
 verbose: bool = False
 
-# option: str = "e"
-# strategy: int = 8
-
-### MODS FOR LOCAL USE ###
-
 census_root: str = "data/census"
 elections_root: str = "data/elections"
-# elections_root: str = "/Users/alecramsay/Downloads"
 
 
 def main() -> None:
