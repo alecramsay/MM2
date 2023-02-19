@@ -1,7 +1,7 @@
-D's got 49.19% of the vote and won 201 of 434 seats yielding a gap (skew) of +12 (2.88%) seats (%), respectively.
+D's got 49.31% of the vote and won 202 of 434 seats yielding a gap (skew) of +12 (2.77%) seats (%), respectively.
 
-166 list seats (94 Democratic) were added for a total of 601.
-This results in a gap (skew) of +0 (0.03%) seats (%), respectively.
+166 list seats (95 Democratic) were added for a total of 601.
+This results in a gap (skew) of -1 (0.19%) seats (%), respectively.
 
 All states have remaining priority values.
 

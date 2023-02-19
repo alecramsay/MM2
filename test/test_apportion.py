@@ -19,7 +19,7 @@ class TestHH_Apportioner:
         assert app._priority_value(4802982, 2) == 3396221
         assert app._priority_value(4802982, 3) == 1960809
 
-    @pytest.mark.parametrize("cycle", [1990, 2000, 2010, 2020])
+    @pytest.mark.parametrize("cycle", [1970, 1980, 1990, 2000, 2010, 2020])
     def test_assign_first_N(self, cycle) -> None:
         csv_data: str = "data/census/{}_census.csv".format(cycle)
         types: list = [str, str, int]

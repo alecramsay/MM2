@@ -2,28 +2,22 @@
 #
 
 """
-Assign list seats to parties, based on an election.
+Assign list seats to parties for an election
 
-Options:
-- 's' is the total size of the House (601 [default] or 651 or whatever)
-- 'l' is the # of guaranteed list seats per state (0 or 1 [default])
+options:
+  -c CYCLE, --cycle CYCLE           The census cycle (e.g., 2020)
+  -e ELECTION, --election ELECTION  The election year (e.g., 2022)
+  -s SIZE, --size SIZE              The total size of the House (e.g., 601 or 651)
+  -l LISTMIN, --listmin LISTMIN     The minimum list seats per state (e.g., 0 or 1)
+  -v, --verbose                     Verbose mode
 
 For example:
 
-scripts/assign_seats.py -c 1990 -e 2000 -s 601 -l 1
-
+scripts/assign_seats.py -c 1970 -e 1972 -s 601 -l 1
+scripts/assign_seats.py -c 1980 -e 1982 -s 601 -l 1
+scripts/assign_seats.py -c 1990 -e 1992 -s 601 -l 1
 scripts/assign_seats.py -c 2000 -e 2002 -s 601 -l 1
-scripts/assign_seats.py -c 2000 -e 2004 -s 601 -l 1
-scripts/assign_seats.py -c 2000 -e 2006 -s 601 -l 1
-scripts/assign_seats.py -c 2000 -e 2008 -s 601 -l 1
-scripts/assign_seats.py -c 2000 -e 2010 -s 601 -l 1
-
 scripts/assign_seats.py -c 2010 -e 2012 -s 601 -l 1
-scripts/assign_seats.py -c 2010 -e 2014 -s 601 -l 1
-scripts/assign_seats.py -c 2010 -e 2016 -s 601 -l 1
-scripts/assign_seats.py -c 2010 -e 2018 -s 601 -l 1
-scripts/assign_seats.py -c 2010 -e 2020 -s 601 -l 1
-
 scripts/assign_seats.py -c 2020 -e 2022 -s 601 -l 1
 
 For documentation, type:
@@ -34,7 +28,6 @@ scripts/assign_seats.py -h
 
 import argparse
 from argparse import ArgumentParser, Namespace
-from typing import Tuple
 
 from MM2 import *
 
@@ -50,7 +43,7 @@ elections_root: str = "data/elections"
 
 def parse_args() -> Namespace:
     parser: ArgumentParser = argparse.ArgumentParser(
-        description="Analyze # of seats per state for a census."
+        description="Assign list seats to parties for an election"
     )
 
     parser.add_argument(
@@ -79,6 +72,13 @@ def parse_args() -> Namespace:
     )
 
     parser.add_argument(
+        "-f",
+        "--format",
+        dest="format",
+        action="store_true",
+        help="Legacy election format",
+    )
+    parser.add_argument(
         "-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode"
     )
 
@@ -93,6 +93,7 @@ def main() -> None:
     election: int = args.election
     size: int = args.size
     list_min: int = args.listmin
+    legacy: bool = args.format
     verbose: bool = args.verbose
 
     ### LOAD THE CENSUS ###
@@ -106,7 +107,7 @@ def main() -> None:
     csv_data: str = "{}/Congressional Elections ({}).csv".format(
         elections_root, election
     )
-    types = [str] * 3 + [int] * 8 + [float] * 2
+    types = [str] * 3 + [int] * 5 if not legacy else [str] * 3 + [int] * 8 + [float] * 2
     elections: list = read_typed_csv(csv_data, types)
 
     ### APPORTION NOMINAL & LIST SEATS TO STATES ###

@@ -220,6 +220,7 @@ class MM2ApportionerBase:
         self.summary["L_R"] = self.summary["L_T"] - self.summary["L_D"]
         self.summary["L_D_%"] = self.summary["L_D"] / self.summary["L_T"]
 
+        # TODO - Where did "O_*" come from? What does 'O' stand for?
         self.summary["O_D"] = self.summary["N_D"] + self.summary["L_D"]
         self.summary["O_I"] = self.summary["N_I"] + self.summary["L_I"]
         self.summary["O_R"] = self.summary["N_R"] + self.summary["L_R"]
