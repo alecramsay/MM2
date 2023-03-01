@@ -77,7 +77,7 @@ def slack_formula(D: int, N: int) -> int:
 def skew_pct(V: int, T: int, S: int, N: int, r: int = 1) -> float | None:
     """
     This is a generalized definition of skew, using an ideal responsiveness, 'r'.
-    It expresses the absolute % deviation of vote share from the ideal seat share,
+    It expresses the absolute % deviation of the actual seat share from the ideal seat share,
     given 'r'. The simple version where r=1 captures deviation from proportionality.
     When r=2, skew measures the efficiency gap (EG).
     """

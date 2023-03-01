@@ -1,0 +1,5 @@
+State:     NC
+Districts: 13
+Plan:      Rucho
+Election:  Actual
+V:         0.486467
