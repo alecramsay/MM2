@@ -83,9 +83,10 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         the apportioner is instantiated.
         """
 
+        no_list_seats: set[str] = set()
         # For option 'e', keep track of states with no list seats
         if option == "e":
-            no_list_seats: set[str] = set()
+            # no_list_seats: set[str] = set()
             for xx in STATES:
                 no_list_seats.add(xx)
 
@@ -134,8 +135,8 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         Vf: float = v_i / t_i
         Sf: float = s_i / n_i
         # NOTE - n_i + 1 is always positive; can't be zero
-        d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
-        r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
+        d_skew: float | None = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
+        r_skew: float | None = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold: float = skew_threshold(0.1, n_i)
         gap: int = self.gap  # old gap
 
@@ -154,7 +155,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
         self.slack = actual_slack(self.V, self.T, self.S, self.N)
-        self.skew: float = skew_pct(
+        self.skew: float | None = skew_pct(
             self.V, self.T, self.S, self.N
         )  # N is two-party seats here
 
@@ -187,9 +188,9 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
 
         hs: int
         pv: int
-        xx: str
+        _: str
         ss: int
-        hs, pv, xx, ss = self._base_app.assign_named(xx)
+        hs, pv, _, ss = self._base_app.assign_named(xx)
 
         # Assign it to the *party* based on the chosen strategy
 
@@ -201,8 +202,8 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         Vf: float = v_i / t_i
         Sf: float = s_i / n_i
         # NOTE - n_i + 1 is always positive; can't be zero
-        d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
-        r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
+        d_skew: float | None = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
+        r_skew: float | None = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold: float = skew_threshold(0.1, n_i)
         gap: int = self.gap  # old gap
 
@@ -221,7 +222,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
         self.slack = actual_slack(self.V, self.T, self.S, self.N)
-        self.skew: float = skew_pct(
+        self.skew: float | None = skew_pct(
             self.V, self.T, self.S, self.N
         )  # N is two-party seats here
 
@@ -265,8 +266,8 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         Vf: float = v_i / t_i
         Sf: float = s_i / n_i
         # NOTE - n_i + 1 is always positive; can't be zero
-        d_skew: float = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
-        r_skew: float = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
+        d_skew: float | None = skew_pct(v_i, t_i, s_i + 1, n_i + 1, self._r)
+        r_skew: float | None = skew_pct(v_i, t_i, s_i, n_i + 1, self._r)
         threshold: float = skew_threshold(0.1, n_i)
         gap: int = self.gap  # old gap
 
@@ -281,10 +282,10 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
                 party = self._reducer_fn(gap)
             case 3:
                 # Balance the two, until gap is zero
-                party = self._balancer_fn(d_skew, r_skew, threshold, gap)
+                party = self._balancer_fn(d_skew, r_skew, threshold, gap, False)
             case 4:
                 # Balance the two, until gap is zero, except with skew(r=2)
-                party = self._balancer_fn(d_skew, r_skew, threshold, gap)
+                party = self._balancer_fn(d_skew, r_skew, threshold, gap, False)
             case 5:
                 # Assign 50 list seats (485 total), reducing the national gap
                 party = self._reducer_fn(gap)
@@ -318,7 +319,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         # New gap & slack w/o  "other" seats
         self.gap = gap_seats(self.V, self.T, self.S, self.N)
         self.slack = actual_slack(self.V, self.T, self.S, self.N)
-        self.skew: float = skew_pct(
+        self.skew = skew_pct(
             self.V, self.T, self.S, self.N
         )  # N is two-party seats here
 
@@ -378,7 +379,7 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
             self.V, self.T
         )
         self._balancer_fn: Callable[
-            [float, float, float, int, bool], Literal["REP", "DEM"]
+            [float | None, float | None, float, int, bool], Literal["REP", "DEM"]
         ] = make_balancer_fn(self._reducer_fn)
 
 
@@ -425,14 +426,21 @@ def make_reducer_fn(V, T) -> Callable[[int], Literal["DEM", "REP"]]:
 
 def make_balancer_fn(
     reducer_fn,
-) -> Callable[[float, float, float, int, bool], Literal["REP", "DEM"]]:
+) -> Callable[[float | None, float | None, float, int, bool], Literal["REP", "DEM"]]:
     def balance_state_and_national(
-        d_skew, r_skew, threshold, gap, gap_eliminated=False
+        d_skew: float | None,
+        r_skew: float | None,
+        threshold: float,
+        gap: int,
+        gap_eliminated=False,
     ) -> Literal["REP", "DEM"]:
         """
         Balance state skew (pct) and national gap (seats) until the gap has been eliminated.
         Then just minimize the national gap.
         """
+
+        if d_skew is None or r_skew is None:
+            raise ValueError("d_skew and r_skew must be floats")
 
         if (
             lt_threshold(d_skew, threshold) and lt_threshold(r_skew, threshold)
