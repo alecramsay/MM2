@@ -29,6 +29,8 @@ class MM2ApportionerBase:
         self._total_seats: int = total_seats
         self._verbose: bool = verbose
 
+        self._r: int = 1
+
         # Initialize data structures
 
         self._base_app: HH_Apportioner = HH_Apportioner(census, verbose=verbose)
@@ -96,7 +98,7 @@ class MM2ApportionerBase:
         # The initial gap & slack (these change)
         self.gap: int = gap_seats(self.V, self.T, self.S, self.N)
         self.slack: int = actual_slack(self.V, self.T, self.S, self.N)
-        self.skew: float = skew_pct(
+        self.skew: float | None = skew_pct(
             self.V, self.T, self.S, self.N
         )  # N is two-party seats here
 
@@ -248,7 +250,7 @@ class MM2Apportioner(MM2ApportionerBase):
             total_seats=total_seats,
             verbose=verbose,
         )
-        self._r: int = 1
+        # self._r: int = 1
 
     def apportion_and_assign_seats(self) -> None:
         """Apportion seats and assign party mix (requires election data)"""
@@ -312,9 +314,9 @@ class MM2Apportioner(MM2ApportionerBase):
 
         hs: int
         pv: int
-        xx: str
+        _: str
         ss: int
-        hs, pv, xx, ss = self._base_app.assign_named(xx)
+        hs, pv, _, ss = self._base_app.assign_named(xx)
 
         # self.N += 1  # Do this in the caller for greater transparency
         self.byState[xx]["n'"] += 1
