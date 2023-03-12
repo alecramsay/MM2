@@ -3,6 +3,7 @@
 # MM2 for Congress
 #
 
+from typing import Optional
 
 from .apportion import HH_Apportioner
 from .analytics import *
@@ -15,7 +16,7 @@ class MM2ApportionerBase:
     def __init__(
         self,
         census: list,
-        elections: list,
+        elections: list = list(),
         list_min: int = 0,
         total_seats: int = 601,
         verbose: bool = False,
@@ -237,7 +238,7 @@ class MM2Apportioner(MM2ApportionerBase):
     def __init__(
         self,
         census: list,
-        elections: list,
+        elections: list = list(),
         list_min: int = 0,
         total_seats: int = 600,
         verbose: bool = False,

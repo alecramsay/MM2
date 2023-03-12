@@ -74,7 +74,7 @@ def main() -> None:
     baseapp.log_priority_queue(max_seats)
 
     app: MM2Apportioner = MM2Apportioner(
-        census, None, list_min=list_min, total_seats=size, verbose=verbose
+        census, list(), list_min=list_min, total_seats=size, verbose=verbose
     )
     app.apportion_seats()
 
