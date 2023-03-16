@@ -6,7 +6,7 @@
 import math
 from typing import Tuple
 
-from .settings import *
+from .constants import *
 
 
 class HH_Apportioner:

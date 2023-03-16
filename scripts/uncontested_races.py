@@ -42,7 +42,7 @@ def main() -> None:
         float,  # "votes_rep_est"
         str,  # "chamber"
     ]
-    input: list[dict] = read_typed_csv(rawdata, field_types)
+    input: list[dict] = read_csv(rawdata, field_types)
 
     # Find & report uncontested races
 

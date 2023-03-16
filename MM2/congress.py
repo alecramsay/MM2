@@ -7,7 +7,7 @@ from typing import Optional
 
 from .apportion import HH_Apportioner
 from .analytics import *
-from .settings import *
+from .constants import *
 
 
 class MM2ApportionerBase:

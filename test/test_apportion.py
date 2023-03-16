@@ -12,7 +12,7 @@ class TestHH_Apportioner:
         # Any census ...
         csv_data: str = "data/census/{}_census.csv".format(2010)
         types: list = [str, str, int]
-        census: list = read_typed_csv(csv_data, types)
+        census: list = read_csv(csv_data, types)
 
         app: HH_Apportioner = HH_Apportioner(census)
 
@@ -23,14 +23,14 @@ class TestHH_Apportioner:
     def test_assign_first_N(self, cycle) -> None:
         csv_data: str = "data/census/{}_census.csv".format(cycle)
         types: list = [str, str, int]
-        census: list = read_typed_csv(csv_data, types)
+        census: list = read_csv(csv_data, types)
 
         app: HH_Apportioner = HH_Apportioner(census)
         app.assign_first_N(435)
 
         csv_data = "data/census/Reapportionment for {} Census.csv".format(cycle)
         types = [str, str, int]
-        reps_list: list = read_typed_csv(csv_data, types)
+        reps_list: list = read_csv(csv_data, types)
 
         for state in reps_list:
             xx: str = state["XX"]

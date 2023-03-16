@@ -6,7 +6,7 @@ Code for exploring Benjamin Plener Cover's [Two-Party Structural Countermanderin
 
 The HH_Apportioner class implements the Huntington-Hill method used today to apportion representatives to states 
 for the House based on a decennial census.
-It takes a census data as input: a list of dicts read from a CSV by DictReader (using `read_typed_csv()`).
+It takes a census data as input: a list of dicts read from a CSV by DictReader (using `read_csv()`).
 Examples are in the data/census/ directory.
 To apportion representatives to states based on a census, call the assign_first_N() method with a 435.
 
