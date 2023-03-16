@@ -5,7 +5,7 @@
 
 from pytest import approx
 
-from .settings import *
+from .constants import *
 
 
 def pr_seats(N, Vf) -> int:

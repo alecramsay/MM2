@@ -6,4 +6,4 @@ from .reports import *
 from .apportion import *
 from .analytics import *
 from .readwrite import *
-from .settings import *
+from .constants import *

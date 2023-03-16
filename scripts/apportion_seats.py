@@ -65,7 +65,7 @@ def main() -> None:
 
     csv_data: str = "data/census/{}_census.csv".format(cycle)
     types: list = [str, str, int]
-    census: list = read_typed_csv(csv_data, types)
+    census: list = read_csv(csv_data, types)
 
     ### APPORTION NOMINAL & LIST SEATS TO STATES ###
 

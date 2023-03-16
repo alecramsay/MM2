@@ -100,7 +100,7 @@ def main() -> None:
 
     csv_data: str = "{}/{}_census.csv".format(census_root, cycle)
     types: list = [str, str, int]
-    census: list = read_typed_csv(csv_data, types)
+    census: list = read_csv(csv_data, types)
 
     ### LOAD THE ELECTION RESULTS ###
 
@@ -108,7 +108,7 @@ def main() -> None:
         elections_root, election
     )
     types = [str] * 3 + [int] * 5 if not legacy else [str] * 3 + [int] * 8 + [float] * 2
-    elections: list = read_typed_csv(csv_data, types)
+    elections: list = read_csv(csv_data, types)
 
     ### APPORTION NOMINAL & LIST SEATS TO STATES ###
 

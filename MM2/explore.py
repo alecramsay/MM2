@@ -9,7 +9,7 @@ from typing import Literal, Callable
 
 from .congress import *
 from .analytics import *
-from .settings import *
+from .constants import *
 
 
 class MM2ApportionerSandbox(MM2ApportionerBase):

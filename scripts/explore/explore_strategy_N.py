@@ -53,7 +53,7 @@ print("{}({})|{}".format(args.election, args.strategy, args.cycle))
 
 csv_data = "data/census/{}_census.csv".format(args.cycle)
 types: list = [str, str, int]
-census: list = read_typed_csv(csv_data, types)
+census: list = read_csv(csv_data, types)
 
 
 ### LOAD THE ELECTION RESULTS ###
@@ -68,7 +68,7 @@ csv_data: str = (
 types = [str] * 3 + [int] * 8
 if args.raw == False:
     types += [float] * 2
-elections: list = read_typed_csv(csv_data, types)
+elections: list = read_csv(csv_data, types)
 
 
 ### APPORTION THE 435 NOMINAL SEATS & ADD LIST SEATS FOR PR ###
