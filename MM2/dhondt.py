@@ -3,7 +3,6 @@
 # The D'Hondt method of apportionment
 #
 
-from collections import defaultdict
 from typing import Tuple
 
 
@@ -20,7 +19,7 @@ class DHondt_Apportioner:
 
         self._queue: list = list()
 
-        self.reps: defaultdict = defaultdict(int)
+        self.reps: dict = {p["PARTY"]: 0 for p in self._election}
         self.byPriority: list = list()
 
         self._make_make_priority_queue()
