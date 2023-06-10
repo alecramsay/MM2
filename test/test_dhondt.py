@@ -59,5 +59,33 @@ class TestDHondt_Apportioner:
         for p in parties:
             assert app.reps[p] == seats[p]
 
+        # Scenario 1
+
+        nominal_seats: list = [
+            {"PARTY": "A", "SEATS": 3},
+            {"PARTY": "B", "SEATS": 2},
+            {"PARTY": "C", "SEATS": 0},
+            {"PARTY": "D", "SEATS": 0},
+        ]
+        actual: dict = app.calc_list_seats(nominal_seats)
+        expected: dict = {"A": 1, "B": 1, "C": 1, "D": 0}
+
+        for p in parties:
+            assert actual[p] == expected[p]
+
+        # Scenario 2
+
+        nominal_seats: list = [
+            {"PARTY": "A", "SEATS": 5},  # overhang
+            {"PARTY": "B", "SEATS": 0},
+            {"PARTY": "C", "SEATS": 0},
+            {"PARTY": "D", "SEATS": 0},
+        ]
+        actual: dict = app.calc_list_seats(nominal_seats)
+        expected: dict = {"A": -1, "B": 3, "C": 1, "D": 0}
+
+        for p in parties:
+            assert actual[p] == expected[p]
+
 
 ### END ###

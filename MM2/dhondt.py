@@ -24,22 +24,18 @@ class DHondt_Apportioner:
         self.byPriority: list = list()
 
     def apportion_seats(self) -> None:
+        """Return the baseline allocation of seats to parties."""
         self._make_make_priority_queue()
         self._assign_seats()
 
-    def baseline(self) -> dict:
-        """Return the baseline allocation of seats to parties."""
+    def calc_list_seats(self, nominal_seats: list[dict]) -> dict:
+        """Return the +/– number of list seats for parties, given nominal seats."""
 
-        return self.reps
+        indexed: dict = {item["PARTY"]: item["SEATS"] for item in nominal_seats}
 
-    def delta(self, seats: list[dict]) -> dict:
-        """Return the +/– delta of seats to parties."""
+        list_seats: dict = {p: (self.reps[p] - indexed[p]) for p in self._parties}
 
-        self.seats: list[dict] = seats
-
-        delta: dict = {p: (self.reps[p] - self.seats[p]) for p in self._parties}
-
-        return delta
+        return list_seats
 
     ### HELPERS ###
 
