@@ -12,25 +12,40 @@ class DHondt_Apportioner:
     https://en.wikipedia.org/wiki/D%27Hondt_method
     """
 
-    def __init__(self, N: int, election: list[dict], verbose=False) -> None:
-        self.N: int = N  # number of seats apportioned to the state
-        self._election = election  # list of dicts, each dict has a party and its votes
+    def __init__(self, N: int, votes: list[dict], verbose=False) -> None:
+        self.N: int = N
+        self._parties: list = [p["PARTY"] for p in votes]
+        self._votes: list[dict] = votes
         self._verbose: bool = verbose
 
         self._queue: list = list()
 
-        self.reps: dict = {p["PARTY"]: 0 for p in self._election}
+        self.reps: dict = {p: 0 for p in self._parties}
         self.byPriority: list = list()
 
         self._make_make_priority_queue()
         self._assign_seats()
+
+    def baseline(self) -> dict:
+        """Return the baseline allocation of seats to parties."""
+
+        return self.reps
+
+    def delta(self, seats: list[dict]) -> dict:
+        """Return the +/– delta of seats to parties."""
+
+        self.seats: list[dict] = seats
+
+        delta: dict = {p: (self.reps[p] - self.seats[p]) for p in self._parties}
+
+        return delta
 
     ### HELPERS ###
 
     def _make_make_priority_queue(self) -> None:
         """Make a sorted queue of priority values for each party."""
 
-        for party in self._election:
+        for party in self._votes:
             for i in range(0, self.N):
                 pv: int = quot(party["VOTES"], i)
                 self._queue.append({"PARTY": party["PARTY"], "PV": pv})
