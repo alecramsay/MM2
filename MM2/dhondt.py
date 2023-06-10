@@ -22,68 +22,80 @@ class DHondt_Apportioner:
         self.reps: dict = dict()
         self.byPriority: list = list()
 
-    def assign_next(self) -> Tuple[int, int, str, int]:
-        """Assign the next seat to the party with the highest priority value."""
+    # def assign_next(self) -> Tuple[int, int, str, int]:
+    #     """Assign the next seat to the party with the highest priority value."""
 
-        n: int = self.N
-        party: str = self._queue[n]["PARTY"]
-        pv: int = self._queue[n]["PV"]
+    #     n: int = self.N
+    #     party: str = self._queue[n]["PARTY"]
+    #     pv: int = self._queue[n]["PV"]
 
-        self.reps[party] += 1
-        self.N += 1
+    #     self.reps[party] += 1
+    #     self.N += 1
 
-        # HACK - To ensure that all the values of the tuple are explicitly typed.
-        N: int = self.N
-        nassigned: int = self.reps[party]
+    #     # HACK - To ensure that all the values of the tuple are explicitly typed.
+    #     N: int = self.N
+    #     nassigned: int = self.reps[party]
 
-        self.byPriority.append(
-            {
-                "STATE SEAT": N,
-                "PRIORITY VALUE": pv,
-                "PARTY": party,
-                "PARTY SEAT": nassigned,
-            }
-        )
+    #     self.byPriority.append(
+    #         {
+    #             "STATE SEAT": N,
+    #             "PRIORITY VALUE": pv,
+    #             "PARTY": party,
+    #             "PARTY SEAT": nassigned,
+    #         }
+    #     )
 
-        return (N, pv, party, nassigned)
+    #     return (N, pv, party, nassigned)
 
-    def assign_first_N(self, N) -> None:
-        """
-        Assign seats 1–N (N > 50).
-        """
+    # def assign_first_N(self, N) -> None:
+    #     """
+    #     Assign seats 1–N (N > 50).
+    #     """
 
-        for xx in STATES:
-            self.reps[xx] = 1
-        self.N = 50
+    #     for xx in STATES:
+    #         self.reps[xx] = 1
+    #     self.N = 50
 
-        self._make_make_priority_queue()
+    #     self._make_make_priority_queue()
 
-        if self._verbose:
-            print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
+    #     if self._verbose:
+    #         print("HOUSE SEAT,PRIORITY VALUE,STATE ABBREVIATION,STATE SEAT")
 
-        for i in range(51, N + 1):
-            hs: int
-            pv: int
-            xx: str
-            ss: int
-            hs, pv, xx, ss = self.assign_next()
+    #     for i in range(51, N + 1):
+    #         hs: int
+    #         pv: int
+    #         xx: str
+    #         ss: int
+    #         hs, pv, xx, ss = self.assign_next()
 
-            if self._verbose:
-                print("{},{},{},{}".format(hs, pv, xx, ss))
+    #         if self._verbose:
+    #             print("{},{},{},{}".format(hs, pv, xx, ss))
 
     ### HELPERS ###
 
     def _priority_value(self, votes: int, s: int) -> int:
-        quot: int = round(votes / (s + 1))
+        pv: int = quot(votes, s)
 
-        return quot
+        return pv
 
-    def _make_make_priority_queue(self) -> None:
-        """Make a sorted queue of priority values for each party."""
+        # def _make_make_priority_queue(self) -> None:
+        #     """Make a sorted queue of priority values for each party."""
 
-        for party in self._election:
-            for i in range(2, MAX_STATE_SEATS + 1):
-                pv: int = self._priority_value(state["Population"], i)
-                self._queue.append({"XX": state["XX"], "PV": pv})
+        #     for party in self._election:
+        #         for i in range(2, MAX_STATE_SEATS + 1):
+        #             pv: int = self._priority_value(state["Population"], i)
+        #             self._queue.append({"XX": state["XX"], "PV": pv})
 
         self._queue = sorted(self._queue, key=lambda x: x["PV"], reverse=True)
+
+
+### HELPERS ###
+
+
+def quot(votes: int, s: int) -> int:
+    """D'Hondt quotient - https://en.wikipedia.org/wiki/D%27Hondt_method"""
+
+    return round(votes / (s + 1))
+
+
+### END ###
