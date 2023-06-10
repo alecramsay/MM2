@@ -8,14 +8,14 @@ from MM2 import *
 
 
 class TestDHondt_Apportioner:
-    def test__priority_value(self) -> None:
+    def test_priority_value(self) -> None:
         """https://en.wikipedia.org/wiki/D%27Hondt_method"""
 
         N: int = 8
         P: int = 4
         V: int = 230000
 
-        parties: list = ["A", "B", "C", "D"]
+        # parties: list = ["A", "B", "C", "D"]
         election: list = [
             {"PARTY": "A", "VOTES": 100000},
             {"PARTY": "B", "VOTES": 80000},
@@ -36,6 +36,27 @@ class TestDHondt_Apportioner:
             for s in range(4):
                 pv: int = quot(v, s)
                 assert pv == q["QUOTIENTS"][s]
+
+    def test_allocation(self) -> None:
+        """https://en.wikipedia.org/wiki/D%27Hondt_method"""
+
+        N: int = 8
+        P: int = 4
+        V: int = 230000
+
+        parties: list = ["A", "B", "C", "D"]
+        election: list = [
+            {"PARTY": "A", "VOTES": 100000},
+            {"PARTY": "B", "VOTES": 80000},
+            {"PARTY": "C", "VOTES": 30000},
+            {"PARTY": "D", "VOTES": 20000},
+        ]
+        seats: dict = {"A": 4, "B": 3, "C": 1, "D": 0}
+
+        app: DHondt_Apportioner = DHondt_Apportioner(N, election, verbose=True)
+
+        for p in parties:
+            assert app.reps[p] == seats[p]
 
 
 ### END ###

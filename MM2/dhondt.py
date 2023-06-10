@@ -32,7 +32,7 @@ class DHondt_Apportioner:
         """Make a sorted queue of priority values for each party."""
 
         for party in self._election:
-            for i in range(1, self.N + 1):
+            for i in range(0, self.N):
                 pv: int = quot(party["VOTES"], i)
                 self._queue.append({"PARTY": party["PARTY"], "PV": pv})
 
