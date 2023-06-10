@@ -23,6 +23,7 @@ class DHondt_Apportioner:
         self.reps: dict = {p: 0 for p in self._parties}
         self.byPriority: list = list()
 
+    def apportion_seats(self) -> None:
         self._make_make_priority_queue()
         self._assign_seats()
 

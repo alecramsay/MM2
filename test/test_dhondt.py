@@ -54,6 +54,7 @@ class TestDHondt_Apportioner:
         seats: dict = {"A": 4, "B": 3, "C": 1, "D": 0}
 
         app: DHondt_Apportioner = DHondt_Apportioner(N, election, verbose=True)
+        app.apportion_seats()
 
         for p in parties:
             assert app.reps[p] == seats[p]
