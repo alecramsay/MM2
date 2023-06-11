@@ -17,7 +17,7 @@ import copy
 from MM2 import *
 
 
-### SAMPLE DATA ###
+### SAMPLE DATA for CA 2022 ###
 
 N: int = 52
 
