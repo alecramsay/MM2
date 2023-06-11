@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#
 
 """
 Apportion nominal & list seats to states based on a census.

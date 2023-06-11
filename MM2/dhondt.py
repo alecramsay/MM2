@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-#
-# The D'Hondt method of apportionment
-#
+
+"""
+THE D'HONDT METHOD OF APPORTIONMENT
+"""
 
 from typing import Tuple
 

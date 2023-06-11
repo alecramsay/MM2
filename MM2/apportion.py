@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-#
-# CONGRESSIONAL APPORTIONMENT
-#
+
+"""
+CONGRESSIONAL APPORTIONMENT
+"""
 
 import math
 from typing import Tuple

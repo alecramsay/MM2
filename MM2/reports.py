@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-#
-# REPORTS
-#
+
+"""
+REPORTS
+"""
 
 from .congress import *
 from .readwrite import *

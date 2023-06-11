@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#
 
 """
 DEBUG 
@@ -22,7 +21,6 @@ elections_root: str = "data/elections"
 
 
 def main() -> None:
-
     ### LOAD THE CENSUS ###
 
     csv_data: str = "{}/{}_census.csv".format(census_root, cycle)

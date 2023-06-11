@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#
 
 """
 Assign list seats to parties, based on a LOCAL election.

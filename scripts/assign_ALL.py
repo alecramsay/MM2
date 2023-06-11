@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#
 
 """
 Assign list seats to parties for all elections

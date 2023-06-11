@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-#
-# Sandbox for exploring various strategies for assigning list seats to seats & parties.
-#
+
+"""
+SANDBOX FOR EXPLORING VARIOUS STRATEGIES FOR ASSIGNING LIST SEATS TO SEATS & PARTIES
+"""
 
 
 from pytest import approx
@@ -21,7 +22,6 @@ class MM2ApportionerSandbox(MM2ApportionerBase):
         elections: list,
         verbose: bool,
     ) -> None:
-
         super().__init__(
             census,
             elections,

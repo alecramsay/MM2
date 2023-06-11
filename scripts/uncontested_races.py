@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#
 
 """
 Report uncontested races by year, state, and district using Chris Warshaw's election data 

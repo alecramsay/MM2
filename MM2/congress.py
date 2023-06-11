@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-#
-# MM2 for Congress
-#
+
+"""
+MM2 FOR CONGRESS
+"""
 
 from typing import Optional
 
@@ -21,7 +22,6 @@ class MM2ApportionerBase:
         total_seats: int = 601,
         verbose: bool = False,
     ) -> None:
-
         # Capture arguments
 
         self._census: list = census
@@ -243,7 +243,6 @@ class MM2Apportioner(MM2ApportionerBase):
         total_seats: int = 600,
         verbose: bool = False,
     ) -> None:
-
         super().__init__(
             census,
             elections,

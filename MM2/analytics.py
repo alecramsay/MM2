@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-#
-# Partisan analytics
-#
+
+"""
+PARTISAN ANALYTICS
+"""
 
 from pytest import approx
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#
 
 """
 Ingest Chris Warshaw's election data 

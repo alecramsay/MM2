@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#
 
 """
 Find # seats per state at:
