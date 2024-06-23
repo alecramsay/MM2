@@ -13,6 +13,7 @@ from MM2 import *
 
 ### SETUP ###
 
+# NOTE: The raw data is no longer in this repository. I have it stored locally.
 rawdata: str = "data/elections/intake/congress_elections_imputations_2023.csv"
 years: List[int] = list(range(1972, 2022 + 1, 2))
 csv_dir: str = "data/elections"
